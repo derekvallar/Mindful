@@ -9,9 +9,16 @@
 import UIKit
 
 enum Constants {
-    static let AppName = "Mindful"
+    static let appName = "Mindful"
+    static let spacingCGFloat: CGFloat = 10.0
 }
 
-extension UIView {
+extension NSLayoutConstraint {
 
+    public class func setupAndActivate(constraints: [NSLayoutConstraint]) {
+        if let view = constraints.first?.firstItem as? UIView {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            activate(constraints)
+        }
+    }
 }
