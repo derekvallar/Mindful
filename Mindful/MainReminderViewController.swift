@@ -11,6 +11,8 @@ import MapKit
 
 class MainReminderViewController: UITableViewController {
 
+    var sortingStyle: SortingStyle!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
