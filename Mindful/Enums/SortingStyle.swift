@@ -6,7 +6,7 @@
 //  Copyright © 2017 Derek Vallar. All rights reserved.
 //
 
-enum SortingStyle {
+enum SortingStyle: Int {
     case Priority
     case Date
 }

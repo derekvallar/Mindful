@@ -11,31 +11,34 @@ import MapKit
 
 class MainReminderViewController: UITableViewController {
 
-    var sortingStyle: SortingStyle!
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let createReminderButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Pencil 75px"), style: .plain, target: self, action: #selector(createMoment))
+        print("Main viewDidLoad()")
+
+        let createReminderButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Pencil"), style: .done, target: self, action: #selector(createMoment))
         navigationItem.rightBarButtonItem = createReminderButton
         navigationItem.title = Constants.appName
 
-        tableView.register(ReminderCell.self, forCellReuseIdentifier: "Cell")
+
+        tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 100.0
         tableView.separatorStyle = .none
-
+        
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        print("Main viewDidAppear()")
 
     }
 
 
     @objc func createMoment() {
 
-        let momentViewController = CreateReminderViewController()
+        let momentViewController = DetailedReminderViewController()
         momentViewController.providesPresentationContextTransitionStyle = true
         momentViewController.definesPresentationContext = true
         momentViewController.modalPresentationStyle = .overCurrentContext
@@ -57,7 +60,11 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
+
+//        cell.setup(withTitle: viewModel.getTitle(forIndex: indexPath.row),
+//                    detail: viewModel.getDetail(forIndex: indexPath.row))
+
         return cell
     }
 }

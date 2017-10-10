@@ -12,7 +12,7 @@ class ReminderCell: UITableViewCell {
 
     var cardView = UIView()
     var titleLabel = UILabel()
-    var remindDateLabel = UILabel()
+    var detailLabel = UILabel()
     var descriptionLabel = UILabel()
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -32,10 +32,10 @@ class ReminderCell: UITableViewCell {
         titleLabel.text = "Pick up sushi"
         cardView.addSubview(titleLabel)
 
-        remindDateLabel.text = "Created 5 hours ago"
-        remindDateLabel.textColor = UIColor.lightGray
-        remindDateLabel.font = remindDateLabel.font.withSize(14.0)
-        cardView.addSubview(remindDateLabel)
+        detailLabel.text = "Created 5 hours ago"
+        detailLabel.textColor = UIColor.lightGray
+        detailLabel.font = detailLabel.font.withSize(14.0)
+        cardView.addSubview(detailLabel)
 
         // Setup Constraints
 
@@ -54,13 +54,17 @@ class ReminderCell: UITableViewCell {
             titleLabel.bottomAnchor.constraint(equalTo: cardMargins.centerYAnchor, constant: -2.5)])
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            remindDateLabel.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
-            remindDateLabel.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
-            remindDateLabel.bottomAnchor.constraint(equalTo: cardMargins.bottomAnchor, constant: -10.0),
-            remindDateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5.0)])
+            detailLabel.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
+            detailLabel.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
+            detailLabel.bottomAnchor.constraint(equalTo: cardMargins.bottomAnchor, constant: -10.0),
+            detailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5.0)])
 
     }
 
+    func setup(withTitle title: String?, detail: String?) {
+        titleLabel.text = title
+        detailLabel.text = detail
+    }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
