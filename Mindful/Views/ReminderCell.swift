@@ -21,15 +21,19 @@ class ReminderCell: UITableViewCell {
         // Setup subviews
 
         self.selectionStyle = .none
-        contentView.backgroundColor = UIColor.lightGray
+        self.backgroundColor = UIColor.clear
 //        titleLabel.backgroundColor = UIColor.blue
 //        remindDateLabel.backgroundColor = UIColor.green
 
         cardView.backgroundColor = UIColor.white
-        cardView.layer.cornerRadius = 5.0
+        cardView.layer.cornerRadius = 7.0
+        cardView.layer.shadowOffset = CGSize.zero
+        cardView.layer.shadowRadius = 4.0
+        cardView.layer.shadowOpacity = 0.2
         self.contentView.addSubview(cardView)
 
         titleLabel.text = "Pick up sushi"
+        titleLabel.textColor = Constants.textColor
         cardView.addSubview(titleLabel)
 
         detailLabel.text = "Created 5 hours ago"
@@ -44,19 +48,18 @@ class ReminderCell: UITableViewCell {
             cardView.leadingAnchor.constraint(equalTo: cellMargins.leadingAnchor),
             cardView.trailingAnchor.constraint(equalTo: cellMargins.trailingAnchor),
             cardView.topAnchor.constraint(equalTo: cellMargins.topAnchor),
-            cardView.bottomAnchor.constraint(equalTo: cellMargins.bottomAnchor)])
+            cardView.bottomAnchor.constraint(equalTo: cellMargins.bottomAnchor),
+            cardView.heightAnchor.constraint(equalToConstant: 70.0)])
 
         let cardMargins = cardView.layoutMarginsGuide
         NSLayoutConstraint.setupAndActivate(constraints: [
             titleLabel.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
             titleLabel.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
-            titleLabel.topAnchor.constraint(equalTo: cardMargins.topAnchor, constant: 10.0),
             titleLabel.bottomAnchor.constraint(equalTo: cardMargins.centerYAnchor, constant: -2.5)])
 
         NSLayoutConstraint.setupAndActivate(constraints: [
             detailLabel.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
             detailLabel.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
-            detailLabel.bottomAnchor.constraint(equalTo: cardMargins.bottomAnchor, constant: -10.0),
             detailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5.0)])
 
     }

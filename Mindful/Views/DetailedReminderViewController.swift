@@ -26,12 +26,13 @@ class DetailedReminderViewController: UIViewController {
 
         let viewMargins = self.view.layoutMarginsGuide
         NSLayoutConstraint.setupAndActivate(constraints: [
-            detailedReminderView.widthAnchor.constraint(equalTo: viewMargins.widthAnchor, multiplier: 0.95),
+            detailedReminderView.widthAnchor.constraint(equalTo: viewMargins.widthAnchor, multiplier: 1.05),
             detailedReminderView.heightAnchor.constraint(equalTo: viewMargins.heightAnchor, multiplier: 0.7),
             detailedReminderView.centerXAnchor.constraint(equalTo: viewMargins.centerXAnchor),
             detailedReminderView.centerYAnchor.constraint(equalTo: viewMargins.centerYAnchor)])
 
-
+        exitGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(exitGestureRecognized))
+        self.view.addGestureRecognizer(exitGestureRecognizer)
 //        cardGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(cardGestureRecognized))
 //        detailedReminderView.addGestureRecognizer(cardGestureRecognizer)
     }
@@ -41,6 +42,16 @@ class DetailedReminderViewController: UIViewController {
         print("Reminder card:", detailedReminderView.frame, detailedReminderView.center)
     }
 
+    @objc func exitGestureRecognized(gesture: UITapGestureRecognizer) {
+print("background pressed")
+
+        let location = gesture.location(in: self.view)
+        if detailedReminderView.frame.contains(location) {
+            return
+        }
+
+        self.dismiss(animated: true, completion: nil)
+    }
 
 //    @objc func cardGestureRecognized(gesture: UIPanGestureRecognizer) {
 //        if let cardView = gesture.view {

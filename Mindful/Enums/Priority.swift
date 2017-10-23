@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Priority.swift
 //  Mindful
 //
 //  Created by Derek Vitaliano Vallar on 10/6/17.
