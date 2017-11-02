@@ -11,15 +11,17 @@ import UIKit
 class ReminderCell: UITableViewCell {
 
     var cardView = UIView()
-    var titleLabel = UILabel()
+    var titleField = UITextField()
     var detailLabel = UILabel()
     var descriptionLabel = UILabel()
+
+    var oldTitle: String!
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         // Setup subviews
-
+        
         self.selectionStyle = .none
         self.backgroundColor = UIColor.clear
 //        titleLabel.backgroundColor = UIColor.blue
@@ -32,9 +34,9 @@ class ReminderCell: UITableViewCell {
         cardView.layer.shadowOpacity = 0.2
         self.contentView.addSubview(cardView)
 
-        titleLabel.text = "Pick up sushi"
-        titleLabel.textColor = Constants.textColor
-        cardView.addSubview(titleLabel)
+        titleField.text = "Pick up sushi"
+        titleField.textColor = Constants.textColor
+        cardView.addSubview(titleField)
 
         detailLabel.text = "Created 5 hours ago"
         detailLabel.textColor = UIColor.lightGray
@@ -53,19 +55,19 @@ class ReminderCell: UITableViewCell {
 
         let cardMargins = cardView.layoutMarginsGuide
         NSLayoutConstraint.setupAndActivate(constraints: [
-            titleLabel.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
-            titleLabel.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
-            titleLabel.bottomAnchor.constraint(equalTo: cardMargins.centerYAnchor, constant: -2.5)])
+            titleField.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
+            titleField.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
+            titleField.bottomAnchor.constraint(equalTo: cardMargins.centerYAnchor, constant: -2.5)])
 
         NSLayoutConstraint.setupAndActivate(constraints: [
             detailLabel.leadingAnchor.constraint(equalTo: cardMargins.leadingAnchor, constant: 10.0),
             detailLabel.trailingAnchor.constraint(equalTo: cardMargins.trailingAnchor),
-            detailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5.0)])
+            detailLabel.topAnchor.constraint(equalTo: titleField.bottomAnchor, constant: 5.0)])
 
     }
 
     func setup(withTitle title: String?, detail: String?) {
-        titleLabel.text = title
+        titleField.text = title
         detailLabel.text = detail
     }
 

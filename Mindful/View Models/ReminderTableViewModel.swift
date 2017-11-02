@@ -39,22 +39,26 @@ class ReminderTableViewModel {
 
         do {
             fetchedReminders = try context.fetch(fetchRequest)
-            print("Entities1: ", fetchedReminders)
+            for reminder in fetchedReminders {
+                context.delete(reminder)
+            }
+            try context.save()
         } catch {
             print("Could not fetch:", error)
             return
         }
 
-        print("Entities2: ", fetchedReminders)
+        do {
+            fetchedReminders = try context.fetch(fetchRequest)
+        } catch {
+            print("Could not fetch:", error)
+            return
+        }
 
         self.reminders = fetchedReminders
 
         delegate?.synchronized()
     }
-
-//    func synchronizeCoreData() {
-//
-//    }
 
     func addReminder(withTitle title: String) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -64,7 +68,7 @@ class ReminderTableViewModel {
         let context = appDelegate.persistentContainer.viewContext
 
         let reminder = Reminder(context: context)
-        let nextIndex = reminders[0].index + 1
+        let nextIndex = reminders.count
         reminder.setup(title, index: nextIndex, priority: Priority.none.rawValue, creationDate: Date())
 
         reminders.insert(reminder, at: 0)
@@ -75,6 +79,12 @@ class ReminderTableViewModel {
             print("Error:", error)
         }
     }
+
+
+    // TODO: Add function to update Core Data
+
+
+
 
     func getReminderCount() -> Int {
         return reminders.count

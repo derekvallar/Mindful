@@ -13,9 +13,9 @@ import CoreData
 @objc(Reminder)
 public class Reminder: NSManagedObject {
 
-    func setup(_ title: String, index: Int16, priority: Int, creationDate: Date) {
+    func setup(_ title: String, index: Int, priority: Int, creationDate: Date) {
         self.title = title
-        self.index = index
+        self.index = Int16(index)
         self.priority = Int16(priority)
         self.creationDate = creationDate as NSDate
     }

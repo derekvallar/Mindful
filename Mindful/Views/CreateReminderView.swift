@@ -15,18 +15,17 @@ class CreateReminderView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        self.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
-        self.backgroundColor = UIColor.darkGray
+//        self.backgroundColor = UIColor.darkGray
 
-        let margins = self.layoutMarginsGuide
         let reminderView = UIView()
-        reminderView.backgroundColor = UIColor.blue
+//        reminderView.backgroundColor = UIColor.blue
         self.addSubview(reminderView)
 
+        let margins = self.layoutMarginsGuide
         NSLayoutConstraint.setupAndActivate(constraints: [
             reminderView.leadingAnchor.constraint(equalTo: margins.leadingAnchor),
             reminderView.trailingAnchor.constraint(equalTo: margins.trailingAnchor),
-            reminderView.heightAnchor.constraint(equalToConstant: 70.0),
+            reminderView.heightAnchor.constraint(equalToConstant: 65.0),
             reminderView.centerYAnchor.constraint(equalTo: margins.centerYAnchor)])
 
         print("Bounds:", reminderView.bounds)
@@ -34,8 +33,8 @@ class CreateReminderView: UIView {
         print("Bounds2:", reminderView.bounds)
         let path = UIBezierPath(roundedRect: reminderView.bounds, cornerRadius: 10.0)
         borderLayer.path = path.cgPath
-
-        borderLayer.lineWidth = 3.0
+        
+        borderLayer.lineWidth = 4.0
         borderLayer.lineDashPattern = [10,10]
         borderLayer.strokeColor = UIColor.white.cgColor
         borderLayer.fillColor = nil
