@@ -11,56 +11,45 @@ import MapKit
 
 class MainReminderViewController: UITableViewController {
 
-    var test: UIView!
-    var hideTest = false
+    var isCreatingReminder = false
+    var isFiltering = false
+    var remindersToDelete = [IndexPath]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         print("Main viewDidLoad()")
 
-
         // Setup the nav bar
 
-        let createReminderButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Pencil"), style: .done, target: self, action: #selector(createMoment))
+        let createReminderButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Pencil"), style: .done, target: self, action: #selector(rightButton))
         navigationItem.rightBarButtonItem = createReminderButton
         navigationItem.title = Constants.appName
+
+        let testButton = UIBarButtonItem(image: #imageLiteral(resourceName: "PriorityIcon"), style: .done, target: self, action: #selector(leftButton))
+        navigationItem.leftBarButtonItem = testButton
 
         let textAtr = [
             NSAttributedStringKey.foregroundColor: UIColor.white]
         navigationController?.navigationBar.titleTextAttributes = textAtr
 
         navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.barTintColor = UIColor.darkGray
-//        navigationController?.navigationBar.barTintColor = Constants.backgroundColor
-//        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationController?.navigationBar.barTintColor = Constants.backgroundColor
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
 
         // Setup the table view
 
-        test = CreateReminderView(frame: CGRect(x: 0.0, y: -100.0, width: tableView.bounds.width, height: 100.0))
 
-        tableView.addSubview(test)
         tableView.backgroundView = UIView(frame: self.view.bounds)
         tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
 
         tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 100.0
+        tableView.rowHeight = Constants.cellHeight
         tableView.separatorStyle = .none
 
-
-//        let refreshControl = UIRefreshControl()
-////        refreshControl.tintColor = UIColor.clear
-//        refreshControl.backgroundColor = UIColor.clear
-//        let createReminderView = CreateReminderView(frame: refreshControl.bounds)
-////        createReminderView.frame = refreshControl.bounds
-//        refreshControl.addSubview(createReminderView)
-//
-//        tableView.addSubview(refreshControl)
-
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard))
-//        tapGesture.cancelsTouchesInView = false
+        tapGesture.cancelsTouchesInView = false
         self.tableView.addGestureRecognizer(tapGesture)
     }
 
@@ -72,33 +61,63 @@ class MainReminderViewController: UITableViewController {
     }
 
 
-    @objc func createMoment() {
+    @objc func rightButton() {
 
-        let momentViewController = DetailedReminderViewController()
-        momentViewController.providesPresentationContextTransitionStyle = true
-        momentViewController.definesPresentationContext = true
-        momentViewController.modalPresentationStyle = .overCurrentContext
-        momentViewController.modalTransitionStyle = .crossDissolve
+        isFiltering = !isFiltering
+        if !isFiltering {
+            remindersToDelete.removeAll()
+            for cell in tableView.visibleCells {
+                let reminderCell = cell as? ReminderCell
+                reminderCell?.setDeletionIndicator(to: false)
+            }
+        }
 
-        self.present(momentViewController, animated: true, completion: nil)
+        for cell in tableView.visibleCells {
+            let reminderCell = cell as? ReminderCell
+            reminderCell?.showDeletionIndicator(isFiltering)
+        }
     }
 
-    @objc func dismissKeyboard() {
-        print("Tapped out")
-//        if let _ = tableView.indexPathForSelectedRow {
-//            print("Hooplah!")
-//        }
-//        self.view.endEditing(true)
+    @objc func leftButton() {
 
+        if isFiltering {
+            isFiltering = false
+            ReminderTableViewModel.standard.deleteReminders(atIndices: remindersToDelete)
+            tableView.reloadData()
+            for cell in tableView.visibleCells {
+                let reminderCell = cell as? ReminderCell
+                reminderCell?.setDeletionIndicator(to: false)
+                reminderCell?.showDeletionIndicator(false)
+            }
+            self.remindersToDelete.removeAll()
+
+        } else {
+            ReminderTableViewModel.standard.addBlankReminder()
+            tableView.reloadData()
+            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
+            cell?.titleField.becomeFirstResponder()
+        }
+    }
+
+
+    @objc func dismissKeyboard() {
+//        print("Tapped out")
+        self.view.endEditing(true)
     }
 }
 
 extension MainReminderViewController: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("Did being editing")
+//        print("Did being editing")
 
-        guard let cell = findCell(fromTextField: textField) else {
+        let textFieldPoint = textField.convert(textField.center, to: self.view)
+
+        guard let indexPath = self.tableView.indexPathForRow(at: textFieldPoint) else {
+            return
+        }
+
+        guard let cell = self.tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
 
@@ -106,31 +125,36 @@ extension MainReminderViewController: UITextFieldDelegate {
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        print("Did end editing")
 
-        guard let cell = findCell(fromTextField: textField) else {
-            return
-        }
-
-        if cell.titleField.text != cell.oldTitle {
-            print("Must saved new text!")
-        } else {
-            print("naw it same")
-        }
-    }
-
-    func findCell(fromTextField textField: UITextField) -> ReminderCell? {
         let textFieldPoint = textField.convert(textField.center, to: self.view)
 
         guard let indexPath = self.tableView.indexPathForRow(at: textFieldPoint) else {
-            return nil
+            return
         }
 
         guard let cell = self.tableView.cellForRow(at: indexPath) as? ReminderCell else {
-            return nil
+            return
         }
 
-        return cell
+//        if indexPath.row == 0 {
+//            isCreatingReminder = false
+//
+//            if cell.titleField.text != cell.oldTitle {
+//                print("Updated title, new")
+//                ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, indexPath: indexPath)
+//                ReminderTableViewModel.standard.addBlankReminder()
+//
+//                tableView.beginUpdates()
+//                tableView.insertRows(at: [indexPath], with: .fade)
+//                tableView.endUpdates()
+//            }
+//print("Gonna hide the blank")
+
+        if cell.titleField.text != cell.oldTitle {
+            ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, indexPath: indexPath)
+        }
+
+        cell.oldTitle = nil
     }
 }
 
@@ -149,22 +173,35 @@ extension MainReminderViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
-        cell.titleField.delegate = self
 
+        let title = ReminderTableViewModel.standard.getTitle(forIndex: indexPath.row)
+        cell.titleField.delegate = self
+        cell.indicatorDelegate = self
+
+        cell.setup(withTitle: title, detail: "Created now", filterMode: isFiltering)
         return cell
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Selected:", indexPath)
-
-//        let cell = tableView.cellForRow(at: indexPath) as? ReminderCell
-//        let titleField = cell?.titleField
-//        titleField?.isUserInteractionEnabled = true
-//        titleField?.becomeFirstResponder()
+        let cell = tableView.cellForRow(at: indexPath) as? ReminderCell
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        print("Deselected:", indexPath)
+//        print("Deselected:", indexPath)
+    }
+}
+
+extension MainReminderViewController: DeleteIndicatorDelegate {
+    func didTapIndicator(_ cell: ReminderCell, selected: Bool) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+
+        if selected {
+            remindersToDelete.append(indexPath)
+        } else if let index = remindersToDelete.index(of: indexPath) {
+            remindersToDelete.remove(at: index)
+        }
     }
 }
 
@@ -190,48 +227,25 @@ extension MainReminderViewController {
 //        }
 
 //        print("Scroll:", tableView.contentOffset.y, "HUH:", scrollView.contentOffset)
-        if hideTest && tableView.contentOffset.y >= 0.0 {
-            test.isHidden = false
-        }
+
     }
 
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+//        print("end drag:", tableView.contentOffset)
+//        print("Insets:", tableView.contentInset)
 
-//        print("End scroll:", tableView.contentOffset)
-
-        if tableView.contentOffset.y < -100.0 {
-            var oldOffset = tableView.contentOffset
-            tableView.contentInset = UIEdgeInsets(top: 100.0, left: 0.0, bottom: 0.0, right: 0.0)
-            tableView.contentOffset = oldOffset
-
-            ReminderTableViewModel.standard.addReminder(withTitle: "Test")
-            tableView.reloadData()
-            test.isHidden = true
-
-            print("offset1:", tableView.contentOffset)
-            tableView.contentInset = UIEdgeInsets.zero
-            print("offset2:", tableView.contentOffset)
-            oldOffset.y += 100.0
-            tableView.contentOffset = oldOffset
-            print("offset3:", tableView.contentOffset)
-            print("scroll offset3:", scrollView.contentOffset)
-            hideTest = true
-
-            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
-            cell?.titleField.becomeFirstResponder()
-        }
-    }
-
-    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        print("ended decelerate")
-    }
-
-    override func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        print("scrolling animation done")
-        if hideTest {
-            print("will show hidden view")
-            hideTest = false
-        }
+//        if isCreatingReminder == false && tableView.contentOffset.y < 0.0 {
+////print("Bringing it all into view")
+//
+//            var oldOffset = tableView.contentOffset
+//            tableView.contentInset = UIEdgeInsets.zero
+//            tableView.contentOffset = oldOffset
+//
+//            isCreatingReminder = true
+//
+//            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
+//            cell?.titleField.becomeFirstResponder()
+//        }
     }
 }
 

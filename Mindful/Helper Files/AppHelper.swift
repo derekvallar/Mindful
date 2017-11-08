@@ -10,8 +10,11 @@ import UIKit
 
 enum Constants {
     static let appName = "Mindful"
+
     static let viewSpacing: CGFloat = 10.0
     static let layoutSpacing: CGFloat = 15.0
+    static let cellHeight: CGFloat = 85.0
+
     static let backgroundColor: UIColor = #colorLiteral(red: 0.6077729797, green: 0.8089405031, blue: 0.9985881448, alpha: 1)
     static let gradientColor: UIColor = #colorLiteral(red: 0, green: 0.529114902, blue: 0.7376316786, alpha: 1)
     static let textColor: UIColor = #colorLiteral(red: 0.2068527919, green: 0.2068527919, blue: 0.2068527919, alpha: 1)

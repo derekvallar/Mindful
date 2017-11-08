@@ -19,4 +19,12 @@ public class Reminder: NSManagedObject {
         self.priority = Int16(priority)
         self.creationDate = creationDate as NSDate
     }
+
+    static var sortedFetchRequest: NSFetchRequest<Reminder> {
+        let request: NSFetchRequest<Reminder> = Reminder.fetchRequest()
+        let sort = NSSortDescriptor(key: "index", ascending: false)
+
+        request.sortDescriptors = [sort]
+        return request
+    }
 }
