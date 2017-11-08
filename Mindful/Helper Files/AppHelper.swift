@@ -40,3 +40,22 @@ extension UIView {
         self.layer.addSublayer(gradientLayer)
     }
 }
+
+extension TimeInterval {
+
+    static let secondsToDays = 86400.0
+    static let secondsToHours = 3600.0
+    static let secondsToMinutes = 60.0
+
+    func toDays() -> Int {
+        return Int((self / .secondsToDays).nextDown)
+    }
+
+    func toHours() -> Int {
+        return Int((self / .secondsToHours).nextDown)
+    }
+
+    func toMinutes() -> Int {
+        return Int((self / .secondsToMinutes).nextDown)
+    }
+}

@@ -13,6 +13,7 @@ class MainReminderViewController: UITableViewController {
 
     var isCreatingReminder = false
     var isFiltering = false
+    var justFinishedTyping = false
     var remindersToDelete = [IndexPath]()
 
     override func viewDidLoad() {
@@ -101,18 +102,58 @@ class MainReminderViewController: UITableViewController {
 
 
     @objc func dismissKeyboard() {
-//        print("Tapped out")
+        if self.justFinishedTyping {
+            self.justFinishedTyping = false
+        }
         self.view.endEditing(true)
     }
 }
 
+
+// MARK: - UITableViewDataSource
+
+extension MainReminderViewController {
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return ReminderTableViewModel.standard.reminders.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
+
+        let title = ReminderTableViewModel.standard.getTitle(forIndex: indexPath.row)
+        let detail = ReminderTableViewModel.standard.getDetail(forIndex: indexPath.row)
+        cell.titleField.delegate = self
+        cell.indicatorDelegate = self
+
+        cell.setup(withTitle: title, detail: detail, filterMode: isFiltering)
+        return cell
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("Select, justFinished:", justFinishedTyping)
+
+        if self.justFinishedTyping == false {
+            
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        //        print("Deselected:", indexPath)
+    }
+}
+
+
+// MARK: - UITextFieldDelegate
+
 extension MainReminderViewController: UITextFieldDelegate {
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-//        print("Did being editing")
-
         let textFieldPoint = textField.convert(textField.center, to: self.view)
-
         guard let indexPath = self.tableView.indexPathForRow(at: textFieldPoint) else {
             return
         }
@@ -125,9 +166,9 @@ extension MainReminderViewController: UITextFieldDelegate {
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
+        self.justFinishedTyping = true
 
         let textFieldPoint = textField.convert(textField.center, to: self.view)
-
         guard let indexPath = self.tableView.indexPathForRow(at: textFieldPoint) else {
             return
         }
@@ -159,37 +200,7 @@ extension MainReminderViewController: UITextFieldDelegate {
 }
 
 
-// MARK: - UITableViewDataSource
-
-extension MainReminderViewController {
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ReminderTableViewModel.standard.reminders.count
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
-
-        let title = ReminderTableViewModel.standard.getTitle(forIndex: indexPath.row)
-        cell.titleField.delegate = self
-        cell.indicatorDelegate = self
-
-        cell.setup(withTitle: title, detail: "Created now", filterMode: isFiltering)
-        return cell
-    }
-
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as? ReminderCell
-    }
-
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-//        print("Deselected:", indexPath)
-    }
-}
+// MARK: - DeleteIndicatorDelegate
 
 extension MainReminderViewController: DeleteIndicatorDelegate {
     func didTapIndicator(_ cell: ReminderCell, selected: Bool) {

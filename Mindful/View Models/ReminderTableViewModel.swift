@@ -41,9 +41,16 @@ class ReminderTableViewModel {
     }
 
     func getDetail(forIndex index: Int) -> String {
-        
 
-        return reminders![index].creationDate!.description(with: Locale.current)
+        if let alarmDate = reminders?[index].alarmDate as Date? {
+            return "Found alarm date"
+        }
+
+        guard let creationDate = reminders?[index].creationDate as Date? else {
+            return "Error: Cannot find reminder detail"
+        }
+
+        return self.creationString(creationDate)
     }
 
     func addBlankReminder() {
@@ -115,6 +122,51 @@ class ReminderTableViewModel {
         deletionReminders.removeAll()
     }
 
+
+    // MARK: - Private Funcs
+
+    private func creationString(_ date: Date) -> String {
+        var result = "Created "
+        let timeSince = date.timeIntervalSinceNow.rounded() * -1.0
+
+        let daysSince = timeSince.toDays()
+        if daysSince > 0 {
+            result += String(daysSince) + " day"
+            if daysSince > 1 {
+                result += "s"
+            }
+            return result + " ago"
+        }
+
+        let hoursSince = timeSince.toHours()
+        if hoursSince > 0 {
+            result += String(hoursSince) + " hour"
+            if hoursSince > 1 {
+                result += "s"
+            }
+            return result + " ago"
+        }
+
+        let minutesSince = timeSince.toMinutes()
+        if minutesSince > 0 {
+            result += String(minutesSince) + " minute"
+            if minutesSince > 1 {
+                result += "s"
+            }
+            return result + " ago"
+        }
+
+        if timeSince > 0 {
+            result += String(Int(timeSince)) + " second"
+            if timeSince > 1 {
+                result += "s"
+            }
+            return result + " ago"
+        }
+
+        return "Created now"
+    }
+
     private func updateIndices() {
         var count = reminders.count
         for reminder in reminders {
@@ -155,10 +207,10 @@ class ReminderTableViewModel {
         self.reminders = fetchedReminders
         delegate?.synchronized()
 
-
-        for test in fetchedReminders {
-            print("Title:", test.title, "Creation:", test.creationDate)
-        }
+//
+//        for test in fetchedReminders {
+//            print("Title:", test.title, "Creation:", test.creationDate)
+//        }
     }
 
 
