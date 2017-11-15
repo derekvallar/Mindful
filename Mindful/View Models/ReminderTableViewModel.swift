@@ -36,17 +36,19 @@ class ReminderTableViewModel {
         return reminders.count
     }
 
-    func getTitle(forIndex index: Int) -> String {
-        return reminders[index].title ?? ""
+    func getTitle(forIndexPath indexPath: IndexPath) -> String {
+        let reminder = getReminder(forIndexPath: indexPath)
+        return reminder.title ?? ""
     }
 
-    func getDetail(forIndex index: Int) -> String {
+    func getDetail(forIndexPath indexPath: IndexPath) -> String {
+        let reminder = getReminder(forIndexPath: indexPath)
 
-        if let alarmDate = reminders?[index].alarmDate as Date? {
+        if let alarmDate = reminder.alarmDate as Date? {
             return "Found alarm date"
         }
 
-        guard let creationDate = reminders?[index].creationDate as Date? else {
+        guard let creationDate = reminder.creationDate as Date? else {
             return "Error: Cannot find reminder detail"
         }
 
@@ -73,10 +75,20 @@ class ReminderTableViewModel {
         }
     }
 
-    func updateReminder(withTitle title: String, indexPath: IndexPath) {
-        let reminder = reminders[indexPath.row]
-        print("Oldtitle:", reminder.title, "NewTitle:", title)
-        reminder.title = title
+    func updateReminder(withTitle title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
+        let reminder = getReminder(forIndexPath: indexPath)
+
+        if title != nil {
+            reminder.title = title
+        }
+
+        if detail != nil {
+            reminder.detail = detail
+        }
+
+        if priority != nil {
+            reminder.priority = Int16(priority!.rawValue)
+        }
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             print("Could not find App Delegate")
@@ -90,6 +102,7 @@ class ReminderTableViewModel {
             print("Error:", error)
         }
     }
+
 
     func deleteReminders(atIndices indices: [IndexPath]) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -122,8 +135,15 @@ class ReminderTableViewModel {
         deletionReminders.removeAll()
     }
 
+//    func 
+
 
     // MARK: - Private Funcs
+
+    private func getReminder(forIndexPath indexPath: IndexPath) -> Reminder {
+        let index = indexPath.row
+        return reminders[index]
+    }
 
     private func creationString(_ date: Date) -> String {
         var result = "Created "

@@ -39,11 +39,8 @@ class MainReminderViewController: UITableViewController {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
 
+
         // Setup the table view
-
-
-        tableView.backgroundView = UIView(frame: self.view.bounds)
-        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
 
         tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
         tableView.rowHeight = Constants.cellHeight
@@ -56,6 +53,9 @@ class MainReminderViewController: UITableViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        tableView.backgroundView = UIView(frame: self.view.bounds)
+        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
 
         print("Main viewDidAppear()")
 
@@ -125,8 +125,8 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
 
-        let title = ReminderTableViewModel.standard.getTitle(forIndex: indexPath.row)
-        let detail = ReminderTableViewModel.standard.getDetail(forIndex: indexPath.row)
+        let title = ReminderTableViewModel.standard.getTitle(forIndexPath: indexPath)
+        let detail = ReminderTableViewModel.standard.getDetail(forIndexPath: indexPath)
         cell.titleField.delegate = self
         cell.indicatorDelegate = self
 
@@ -138,7 +138,12 @@ extension MainReminderViewController {
         print("Select, justFinished:", justFinishedTyping)
 
         if self.justFinishedTyping == false {
-            
+
+            // TODO: - Seguu to detailed reminderview
+            let detailedViewController = DetailedReminderViewController()
+
+            detailedViewController.reminderIndex = indexPath
+            self.navigationController?.pushViewController(detailedViewController, animated: true)
         }
     }
 
@@ -192,7 +197,7 @@ extension MainReminderViewController: UITextFieldDelegate {
 //print("Gonna hide the blank")
 
         if cell.titleField.text != cell.oldTitle {
-            ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, indexPath: indexPath)
+            ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, detail: nil, priority: nil, indexPath: indexPath)
         }
 
         cell.oldTitle = nil

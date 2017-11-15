@@ -33,9 +33,9 @@ class ReminderCell: UITableViewCell {
 
         cardView.backgroundColor = UIColor.white
         cardView.layer.cornerRadius = 7.0
-        cardView.layer.shadowOffset = CGSize.zero
-        cardView.layer.shadowRadius = 4.0
-        cardView.layer.shadowOpacity = 0.2
+//        cardView.layer.shadowOffset = CGSize.zero
+//        cardView.layer.shadowRadius = 4.0
+//        cardView.layer.shadowOpacity = 0.2
 
         titleField.text = ""
         titleField.textColor = Constants.textColor

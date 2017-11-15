@@ -12,16 +12,16 @@ class DetailedReminderViewModel {
 
     var reminder: Reminder!
 
-//    init(_ title: String?, detail: String?, creationDate: Date, remindDate: Date?, priority: Priority) {
-//
-//        reminder.title = title ?? ""
-//        reminder.detail = detail ?? ""
-//        reminder.creationDate = creationDate
-//        reminder.alarmDate = remindDate
-//        reminder.priority = priority
-//    }
+    init(withIndexPath indexPath: IndexPath) {
 
-    
+        reminder.title = title ?? ""
+        reminder.detail = detail ?? ""
+        reminder.creationDate = creationDate
+        reminder.alarmDate = remindDate
+        reminder.priority = priority
+    }
+
+
 }
 
 

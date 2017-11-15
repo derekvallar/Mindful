@@ -11,9 +11,9 @@ import UIKit
 class DetailedReminderView: UIView {
 
     var titleField: UITextField!
-    var alarmPicker: UIDatePicker!
-    var prioritySegmentedControl: UISegmentedControl!
     var detailsField: UITextField!
+    var prioritySegmentedControl: UISegmentedControl!
+    var alarmPicker: UIDatePicker!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -25,23 +25,27 @@ class DetailedReminderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setupLayout() {
+    func setup(_ title: String) {
+        titleField.text = title
+    }
+
+    private func setupLayout() {
         let remindLabel: UILabel!
         let scrollView: UIScrollView!
         let stackView: UIStackView!
         let mentionStackView: UIStackView!
 
         let noneSegment = "None"
-        let prioritySegment = #imageLiteral(resourceName: "Priority")
-        let highPrioritySegment = #imageLiteral(resourceName: "HighPriority")
+        let prioritySegment = #imageLiteral(resourceName: "PriorityIcon")
+        let highPrioritySegment = #imageLiteral(resourceName: "HighPriorityIcon")
 
         let indicatorButton: UIButton!
 
         self.backgroundColor = UIColor.white
         self.layer.cornerRadius = 10
-        self.layer.shadowOffset = CGSize.zero
-        self.layer.shadowRadius = 25
-        self.layer.shadowOpacity = 0.25
+//        self.layer.shadowOffset = CGSize.zero
+//        self.layer.shadowRadius = 25
+//        self.layer.shadowOpacity = 0.25
 
 
         // Setting up the structure
@@ -60,7 +64,7 @@ class DetailedReminderView: UIView {
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.alignment = .fill
-        stackView.spacing = 10.0
+        stackView.spacing = 20.0
 
         scrollView.addSubview(stackView)
         NSLayoutConstraint.setupAndActivate(constraints: [
@@ -71,13 +75,22 @@ class DetailedReminderView: UIView {
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)])
 
 
-        // Setting up the UIViews
+        // Setting up the Title field
 
         titleField = UITextField()
         titleField.placeholder = "Reminder"
         titleField.textColor = Constants.textColor
         titleField.font = titleField.font?.withSize(25.0)
         stackView.addArrangedSubview(titleField)
+
+        detailsField = UITextField()
+        detailsField.placeholder = "Add some details"
+        detailsField.textColor = Constants.textWrittenSecondaryColor
+        stackView.addArrangedSubview(detailsField)
+
+        prioritySegmentedControl = UISegmentedControl(items: [noneSegment, prioritySegment, highPrioritySegment])
+        prioritySegmentedControl.selectedSegmentIndex = 0
+        stackView.addArrangedSubview(prioritySegmentedControl)
 
         let line = UISeparatorLine(withColor: Constants.textSecondaryColor, height: 1.0)
         stackView.addArrangedSubview(line)
@@ -86,6 +99,7 @@ class DetailedReminderView: UIView {
         mentionStackView.axis = .horizontal
         mentionStackView.alignment = .center
         mentionStackView.distribution = .fill
+        stackView.addArrangedSubview(mentionStackView)
 
         remindLabel = UILabel()
         remindLabel.textColor = Constants.textColor
@@ -99,23 +113,17 @@ class DetailedReminderView: UIView {
         indicatorButton.setContentHuggingPriority(UILayoutPriority.init(rawValue: 251.0), for: UILayoutConstraintAxis.horizontal)
         mentionStackView.addArrangedSubview(indicatorButton)
 
-        stackView.addArrangedSubview(mentionStackView)
+
+        // TODO: Figure out animation bug with alarm picker
 
         alarmPicker = UIDatePicker()
         alarmPicker.datePickerMode = .dateAndTime
+        alarmPicker.isHidden = true
+        alarmPicker.setContentCompressionResistancePriority(UILayoutPriority.init(251.0), for: UILayoutConstraintAxis.vertical)
         stackView.addArrangedSubview(alarmPicker)
 
-        let segmentLine = UISeparatorLine(withColor: Constants.textSecondaryColor, height: 1.0)
-        stackView.addArrangedSubview(segmentLine)
-
-        prioritySegmentedControl = UISegmentedControl(items: [noneSegment, prioritySegment, highPrioritySegment])
-        prioritySegmentedControl.selectedSegmentIndex = 0
-
-        stackView.addArrangedSubview(prioritySegmentedControl)
-
-        detailsField = UITextField()
-        detailsField.placeholder = "Add some details"
-        self.addSubview(detailsField)
+//        let segmentLine = UISeparatorLine(withColor: Constants.textSecondaryColor, height: 1.0)
+//        stackView.addArrangedSubview(segmentLine)
     }
 
     @objc func mentionButtonPressed(sender: UIButton!) {
@@ -124,6 +132,10 @@ class DetailedReminderView: UIView {
         }
 
         button.isSelected = button.isSelected ? false : true
+        UIView.animate(withDuration: 0.4, animations: {
+            self.alarmPicker.isHidden = !button.isSelected
+            self.alarmPicker.alpha = button.isSelected ? 100.0 : 0.0
+        })
     }
 }
 
