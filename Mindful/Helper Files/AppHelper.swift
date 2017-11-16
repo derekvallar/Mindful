@@ -13,6 +13,7 @@ enum Constants {
 
     static let viewSpacing: CGFloat = 10.0
     static let layoutSpacing: CGFloat = 15.0
+    static let layoutSpacingInverse: CGFloat = -15.0
     static let cellHeight: CGFloat = 85.0
 
     static let backgroundColor: UIColor = #colorLiteral(red: 0.6077729797, green: 0.8089405031, blue: 0.9985881448, alpha: 1)

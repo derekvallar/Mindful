@@ -11,23 +11,35 @@ import UIKit
 class DetailedReminderViewController: UIViewController {
 
     var viewModel: DetailedReminderViewModel!
-
     var detailedReminderView: DetailedReminderView!
-    var reminderIndex: IndexPath!
 
     var oldTitle: String!
     var oldDetail: String!
     var oldPriority: Priority!
 
+    public init(viewModel: DetailedReminderViewModel) {
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel = viewModel
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        viewModel = DetailedReminderViewModel()
 
         detailedReminderView = DetailedReminderView(frame: CGRect.zero)
         self.view.addSubview(detailedReminderView)
 
+        self.navigationItem.hidesBackButton = true
+
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneEditing))
+        self.navigationItem.rightBarButtonItem = doneButton
+
+
         // Setup constraints
+
         let viewMargins = self.view.layoutMarginsGuide
         NSLayoutConstraint.setupAndActivate(constraints: [
             detailedReminderView.leadingAnchor.constraint(equalTo: viewMargins.leadingAnchor),
@@ -35,9 +47,7 @@ class DetailedReminderViewController: UIViewController {
             detailedReminderView.topAnchor.constraint(equalTo: viewMargins.topAnchor),
             detailedReminderView.bottomAnchor.constraint(equalTo: viewMargins.bottomAnchor, constant: -15.0)])
 
-        // Initialize views
-        let title = ReminderTableViewModel.standard.getTitle(forIndexPath: reminderIndex)
-        detailedReminderView.setup(title)
+        initializeFields()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -49,7 +59,13 @@ class DetailedReminderViewController: UIViewController {
 
     }
 
-    func setup(_ reminder: Reminder) {
+    func initializeFields() {
+        let title = viewModel.getTitle()
+        self.detailedReminderView.titleField.text = title
+    }
 
+    @objc func doneEditing() {
+        self.navigationController?.popViewController(animated: true)
+        self.viewModel.updateTitle(detailedReminderView.titleField.text!)
     }
 }

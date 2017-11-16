@@ -135,8 +135,19 @@ class ReminderTableViewModel {
         deletionReminders.removeAll()
     }
 
-//    func 
+    func detailedReminderViewModelForIndexPath(_ indexPath: IndexPath) -> DetailedReminderViewModel {
+        let reminder = getReminder(forIndexPath: indexPath)
+        let viewModel = DetailedReminderViewModel(reminder: reminder)
+        return viewModel
+    }
 
+
+    // TODO: Remove this test function
+    func checkReminders() {
+        for reminder in reminders {
+            print("Title:", reminder.title)
+        }
+    }
 
     // MARK: - Private Funcs
 
@@ -226,6 +237,8 @@ class ReminderTableViewModel {
 
         self.reminders = fetchedReminders
         delegate?.synchronized()
+
+        print("Reminder Count:", self.reminders.count)
 
 //
 //        for test in fetchedReminders {

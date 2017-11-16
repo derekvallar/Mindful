@@ -54,11 +54,9 @@ class MainReminderViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        tableView.reloadData()
         tableView.backgroundView = UIView(frame: self.view.bounds)
         tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
-
-        print("Main viewDidAppear()")
-
     }
 
 
@@ -135,14 +133,10 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Select, justFinished:", justFinishedTyping)
-
         if self.justFinishedTyping == false {
 
-            // TODO: - Seguu to detailed reminderview
-            let detailedViewController = DetailedReminderViewController()
-
-            detailedViewController.reminderIndex = indexPath
+            let viewModel = ReminderTableViewModel.standard.detailedReminderViewModelForIndexPath(indexPath)
+            let detailedViewController = DetailedReminderViewController(viewModel: viewModel)
             self.navigationController?.pushViewController(detailedViewController, animated: true)
         }
     }

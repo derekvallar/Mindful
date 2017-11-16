@@ -30,10 +30,10 @@ class DetailedReminderView: UIView {
     }
 
     private func setupLayout() {
-        let remindLabel: UILabel!
         let scrollView: UIScrollView!
         let stackView: UIStackView!
         let mentionStackView: UIStackView!
+        let remindLabel: UILabel!
 
         let noneSegment = "None"
         let prioritySegment = #imageLiteral(resourceName: "PriorityIcon")
@@ -56,9 +56,9 @@ class DetailedReminderView: UIView {
         self.addSubview(scrollView)
         NSLayoutConstraint.setupAndActivate(constraints: [
             scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.layoutSpacing),
-            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.layoutSpacing * -1),
+            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.layoutSpacingInverse),
             scrollView.topAnchor.constraint(equalTo: self.topAnchor, constant: Constants.layoutSpacing),
-            scrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: Constants.layoutSpacing * -1)])
+            scrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: Constants.layoutSpacingInverse)])
 
         stackView = UIStackView()
         stackView.axis = .vertical
@@ -75,7 +75,7 @@ class DetailedReminderView: UIView {
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)])
 
 
-        // Setting up the Title field
+
 
         titleField = UITextField()
         titleField.placeholder = "Reminder"
