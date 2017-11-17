@@ -21,19 +21,46 @@ class DetailedReminderViewModel {
         return reminder.title!
     }
 
-    public func updateTitle(_ title: String) {
-        reminder.title = title
+    public func getDetail() -> String {
+        return reminder.detail ?? ""
+    }
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            print("Could not find App Delegate")
-            return
+    public func getPriority() -> Priority {
+        let priority = reminder.priority
+        return Priority(rawValue: Int(priority))!
+    }
+
+    public func updateReminder(title: String, detail: String, priority: Priority) {
+        var hasChanges = false
+
+        if reminder.title != title {
+            reminder.title = title
+            hasChanges = true
         }
-        let context = appDelegate.persistentContainer.viewContext
 
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
+        if reminder.detail != detail {
+            reminder.detail = detail
+            hasChanges = true
+        }
+
+        let int16Priority = Int16(priority.rawValue)
+        if reminder.priority != int16Priority {
+            reminder.priority = int16Priority
+            hasChanges = true
+        }
+
+        if hasChanges {
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                print("Could not find App Delegate")
+                return
+            }
+            let context = appDelegate.persistentContainer.viewContext
+
+            do {
+                try context.save()
+            } catch {
+                print("Error:", error)
+            }
         }
     }
 }

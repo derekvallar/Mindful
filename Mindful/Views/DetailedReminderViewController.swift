@@ -61,11 +61,18 @@ class DetailedReminderViewController: UIViewController {
 
     func initializeFields() {
         let title = viewModel.getTitle()
-        self.detailedReminderView.titleField.text = title
+        let detail = viewModel.getDetail()
+        let priority = viewModel.getPriority()
+
+        self.detailedReminderView.setup(title: title, detail: detail, priority: priority)
     }
 
     @objc func doneEditing() {
+        let title = detailedReminderView.titleField.text
+        let detail = detailedReminderView.detailsField.text
+        let priority = Priority(rawValue: detailedReminderView.prioritySegmentedControl.selectedSegmentIndex)
+
+        self.viewModel.updateReminder(title: title!, detail: detail!, priority: priority!)
         self.navigationController?.popViewController(animated: true)
-        self.viewModel.updateTitle(detailedReminderView.titleField.text!)
     }
 }

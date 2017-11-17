@@ -18,6 +18,8 @@ public class Reminder: NSManagedObject {
         self.index = Int16(index)
         self.priority = Int16(priority)
         self.creationDate = creationDate as NSDate
+
+        self.detail = String()
     }
 
     static var sortedFetchRequest: NSFetchRequest<Reminder> {

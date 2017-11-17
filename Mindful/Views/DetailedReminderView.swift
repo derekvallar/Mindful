@@ -25,8 +25,10 @@ class DetailedReminderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup(_ title: String) {
+    func setup(title: String, detail: String, priority: Priority) {
         titleField.text = title
+        detailsField.text = detail
+        prioritySegmentedControl.selectedSegmentIndex = priority.rawValue
     }
 
     private func setupLayout() {
