@@ -13,8 +13,6 @@ class MainReminderViewController: UITableViewController {
 
     var isCreatingReminder = false
     var isFiltering = false
-    var justFinishedTyping = false
-    var remindersToDelete = [IndexPath]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,12 +21,13 @@ class MainReminderViewController: UITableViewController {
 
         // Setup the nav bar
 
-        let createReminderButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Pencil"), style: .done, target: self, action: #selector(rightButton))
-        navigationItem.rightBarButtonItem = createReminderButton
         navigationItem.title = Constants.appName
 
-        let testButton = UIBarButtonItem(image: #imageLiteral(resourceName: "PriorityIcon"), style: .done, target: self, action: #selector(leftButton))
-        navigationItem.leftBarButtonItem = testButton
+        let rightButton = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(addReminders))
+        navigationItem.rightBarButtonItem = rightButton
+
+        let leftButton = UIBarButtonItem(title: "Filter", style: .done, target: self, action: #selector(filterReminders))
+        navigationItem.leftBarButtonItem = leftButton
 
         let textAtr = [
             NSAttributedStringKey.foregroundColor: UIColor.white]
@@ -45,65 +44,48 @@ class MainReminderViewController: UITableViewController {
         tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
         tableView.rowHeight = Constants.cellHeight
         tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
-        self.tableView.addGestureRecognizer(tapGesture)
+        tableView.addGestureRecognizer(tapGesture)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        // TODO: Reload data only on return from DetailedReminderController
         tableView.reloadData()
-        tableView.backgroundView = UIView(frame: self.view.bounds)
+
+        tableView.backgroundView = UIView(frame: view.bounds)
         tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
 
 
-    @objc func rightButton() {
-
+    @objc func filterReminders() {
         isFiltering = !isFiltering
-        if !isFiltering {
-            remindersToDelete.removeAll()
-            for cell in tableView.visibleCells {
-                let reminderCell = cell as? ReminderCell
-                reminderCell?.setDeletionIndicator(to: false)
-            }
+        view.endEditing(true)
+
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
         }
 
         for cell in tableView.visibleCells {
             let reminderCell = cell as? ReminderCell
-            reminderCell?.showDeletionIndicator(isFiltering)
+            reminderCell?.changeFilterMode(isFiltering)
         }
     }
 
-    @objc func leftButton() {
-
-        if isFiltering {
-            isFiltering = false
-            ReminderTableViewModel.standard.deleteReminders(atIndices: remindersToDelete)
-            tableView.reloadData()
-            for cell in tableView.visibleCells {
-                let reminderCell = cell as? ReminderCell
-                reminderCell?.setDeletionIndicator(to: false)
-                reminderCell?.showDeletionIndicator(false)
-            }
-            self.remindersToDelete.removeAll()
-
-        } else {
-            ReminderTableViewModel.standard.addBlankReminder()
-            tableView.reloadData()
-            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
-            cell?.titleField.becomeFirstResponder()
-        }
+    @objc func addReminders() {
+        ReminderTableViewModel.standard.addBlankReminder()
+        tableView.reloadData()
+        let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
+        cell?.titleField.becomeFirstResponder()
     }
 
 
     @objc func dismissKeyboard() {
-        if self.justFinishedTyping {
-            self.justFinishedTyping = false
-        }
-        self.view.endEditing(true)
+        view.endEditing(true)
     }
 }
 
@@ -125,24 +107,43 @@ extension MainReminderViewController {
 
         let title = ReminderTableViewModel.standard.getTitle(forIndexPath: indexPath)
         let detail = ReminderTableViewModel.standard.getDetail(forIndexPath: indexPath)
-        cell.titleField.delegate = self
-        cell.indicatorDelegate = self
+        let priority = ReminderTableViewModel.standard.getPriority(forIndexPath: indexPath)
+        let priorityImage: UIImage!
 
-        cell.setup(withTitle: title, detail: detail, filterMode: isFiltering)
+        switch priority {
+        case .none:
+            priorityImage = UIImage(named: Constants.emptyIconString)!
+        case .priority:
+            priorityImage = UIImage(named: Constants.priorityIconString)!
+        case .highPriority:
+            priorityImage = UIImage(named: Constants.highPriorityIconString)!
+        }
+
+        cell.titleField.delegate = self
+        cell.buttonDelegate = self
+
+        cell.setup(withTitle: title, detail: detail, image: priorityImage, filtering: isFiltering)
         return cell
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if self.justFinishedTyping == false {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+            return
+        }
 
-            let viewModel = ReminderTableViewModel.standard.detailedReminderViewModelForIndexPath(indexPath)
-            let detailedViewController = DetailedReminderViewController(viewModel: viewModel)
-            self.navigationController?.pushViewController(detailedViewController, animated: true)
+        if !isFiltering {
+            cell.userSelected(true)
         }
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        //        print("Deselected:", indexPath)
+        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+            return
+        }
+
+        if !isFiltering {
+            cell.userSelected(false)
+        }
     }
 }
 
@@ -151,66 +152,55 @@ extension MainReminderViewController {
 
 extension MainReminderViewController: UITextFieldDelegate {
 
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        let textFieldPoint = textField.convert(textField.center, to: self.view)
-        guard let indexPath = self.tableView.indexPathForRow(at: textFieldPoint) else {
-            return
-        }
-
-        guard let cell = self.tableView.cellForRow(at: indexPath) as? ReminderCell else {
-            return
-        }
-
-        cell.oldTitle = cell.titleField.text
-    }
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//        let textFieldPoint = textField.convert(textField.center, to: view)
+//        guard let indexPath = tableView.indexPathForRow(at: textFieldPoint) else {
+//            return
+//        }
+//
+//        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+//            return
+//        }
+//    }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        self.justFinishedTyping = true
-
-        let textFieldPoint = textField.convert(textField.center, to: self.view)
-        guard let indexPath = self.tableView.indexPathForRow(at: textFieldPoint) else {
+        let textFieldPoint = textField.convert(textField.center, to: view)
+        guard let indexPath = tableView.indexPathForRow(at: textFieldPoint) else {
             return
         }
 
-        guard let cell = self.tableView.cellForRow(at: indexPath) as? ReminderCell else {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
 
-//        if indexPath.row == 0 {
-//            isCreatingReminder = false
-//
-//            if cell.titleField.text != cell.oldTitle {
-//                print("Updated title, new")
-//                ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, indexPath: indexPath)
-//                ReminderTableViewModel.standard.addBlankReminder()
-//
-//                tableView.beginUpdates()
-//                tableView.insertRows(at: [indexPath], with: .fade)
-//                tableView.endUpdates()
-//            }
-//print("Gonna hide the blank")
-
-        if cell.titleField.text != cell.oldTitle {
-            ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, detail: nil, priority: nil, indexPath: indexPath)
-        }
-
-        cell.oldTitle = nil
+        ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, detail: nil, priority: nil, indexPath: indexPath)
     }
 }
 
 
-// MARK: - DeleteIndicatorDelegate
+// MARK: - CellButtonDelegate
 
-extension MainReminderViewController: DeleteIndicatorDelegate {
-    func didTapIndicator(_ cell: ReminderCell, selected: Bool) {
+extension MainReminderViewController: CellButtonDelegate {
+    func didTapButton(_ cell: ReminderCell, button: String) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
 
-        if selected {
-            remindersToDelete.append(indexPath)
-        } else if let index = remindersToDelete.index(of: indexPath) {
-            remindersToDelete.remove(at: index)
+        if button == Constants.completeDeleteButtonString {
+            if isFiltering {
+                ReminderTableViewModel.standard.deleteReminder(atIndexPath: indexPath)
+                tableView.beginUpdates()
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                tableView.endUpdates()
+            }
+        } else if button == Constants.detailRearrangeButtonString {
+            if isFiltering {
+
+            } else {
+                let viewModel = ReminderTableViewModel.standard.detailedReminderViewModelForIndexPath(indexPath)
+                let detailedViewController = DetailedReminderViewController(viewModel: viewModel)
+                navigationController?.pushViewController(detailedViewController, animated: true)
+            }
         }
     }
 }
@@ -220,42 +210,20 @@ extension MainReminderViewController: DeleteIndicatorDelegate {
 
 extension MainReminderViewController {
 
+    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
+            tableView(tableView, didDeselectRowAt: indexPath)
+            view.endEditing(true)
+        }
+    }
+
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-
-//        let pullDistance = max(0.0, -scrollView.contentOffset.y)
-//
-//        var frame = test.frame
-//        if (pullDistance > frame.size.height) {
-//            frame.origin.y = -pullDistance;
-//        }
-//        test.frame = frame;
-
-//        if (self.refreshing) {
-//            if (pullDistance == 0) {
-//                self.tableView.contentInset = UIEdgeInsetsZero;
-//            }
-//        }
-
-//        print("Scroll:", tableView.contentOffset.y, "HUH:", scrollView.contentOffset)
 
     }
 
     override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-//        print("end drag:", tableView.contentOffset)
-//        print("Insets:", tableView.contentInset)
 
-//        if isCreatingReminder == false && tableView.contentOffset.y < 0.0 {
-////print("Bringing it all into view")
-//
-//            var oldOffset = tableView.contentOffset
-//            tableView.contentInset = UIEdgeInsets.zero
-//            tableView.contentOffset = oldOffset
-//
-//            isCreatingReminder = true
-//
-//            let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
-//            cell?.titleField.becomeFirstResponder()
-//        }
     }
 }
 

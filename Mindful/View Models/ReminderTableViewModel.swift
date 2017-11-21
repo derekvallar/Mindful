@@ -44,15 +44,18 @@ class ReminderTableViewModel {
     func getDetail(forIndexPath indexPath: IndexPath) -> String {
         let reminder = getReminder(forIndexPath: indexPath)
 
-        if let alarmDate = reminder.alarmDate as Date? {
-            return "Found alarm date"
-        }
-
         guard let creationDate = reminder.creationDate as Date? else {
             return "Error: Cannot find reminder detail"
         }
 
         return self.creationString(creationDate)
+    }
+
+    func getPriority(forIndexPath indexPath: IndexPath) -> Priority {
+        let reminder = getReminder(forIndexPath: indexPath)
+        let intPriority = Int(reminder.priority)
+
+        return Priority(rawValue: intPriority)!
     }
 
     func addBlankReminder() {
@@ -104,26 +107,15 @@ class ReminderTableViewModel {
     }
 
 
-    func deleteReminders(atIndices indices: [IndexPath]) {
+    func deleteReminder(atIndexPath indexPath: IndexPath) {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
         let context = appDelegate.persistentContainer.viewContext
 
-        var deletionReminders = [Reminder]()
-
-        for indexPath in indices {
-            let reminder = reminders[indexPath.row]
-            deletionReminders.append(reminder)
-            context.delete(reminder)
-        }
-
-        for reminder in deletionReminders {
-            if let index = reminders.index(of: reminder) {
-                reminders.remove(at: index)
-            }
-        }
-
+        let reminder = reminders[indexPath.row]
+        context.delete(reminder)
+        reminders.remove(at: indexPath.row)
         updateIndices()
 
         do {
@@ -131,8 +123,6 @@ class ReminderTableViewModel {
         } catch {
             print("Error:", error)
         }
-
-        deletionReminders.removeAll()
     }
 
     func detailedReminderViewModelForIndexPath(_ indexPath: IndexPath) -> DetailedReminderViewModel {

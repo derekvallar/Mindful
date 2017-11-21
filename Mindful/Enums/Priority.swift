@@ -6,6 +6,8 @@
 //  Copyright © 2017 Derek Vallar. All rights reserved.
 //
 
+import UIKit
+
 enum Priority: Int {
     case none
     case priority
