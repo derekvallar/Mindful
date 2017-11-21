@@ -42,7 +42,7 @@ class MainReminderViewController: UITableViewController {
         // Setup the table view
 
         tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
-        tableView.rowHeight = Constants.cellHeight
+//        tableView.rowHeight = Constants.cellHeight
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
 
@@ -77,10 +77,16 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func addReminders() {
+        let firstRow = IndexPath.init(row: 0, section: 0)
+
         ReminderTableViewModel.standard.addBlankReminder()
-        tableView.reloadData()
+        tableView.beginUpdates()
+        tableView.insertRows(at: [firstRow], with: .top)
+        tableView.endUpdates()
+
         let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
-        cell?.titleField.becomeFirstResponder()
+        tableView.selectRow(at: firstRow, animated: true, scrollPosition: .none)
+        tableView(tableView, didSelectRowAt: firstRow)
     }
 
 
@@ -108,7 +114,7 @@ extension MainReminderViewController {
         let title = ReminderTableViewModel.standard.getTitle(forIndexPath: indexPath)
         let detail = ReminderTableViewModel.standard.getDetail(forIndexPath: indexPath)
         let priority = ReminderTableViewModel.standard.getPriority(forIndexPath: indexPath)
-        let priorityImage: UIImage!
+        let priorityImage: UIImage?
 
         switch priority {
         case .none:
@@ -122,7 +128,7 @@ extension MainReminderViewController {
         cell.titleField.delegate = self
         cell.buttonDelegate = self
 
-        cell.setup(withTitle: title, detail: detail, image: priorityImage, filtering: isFiltering)
+        cell.setup(withTitle: title, detail: detail, priority: priorityImage, filtering: isFiltering)
         return cell
     }
 
@@ -164,6 +170,8 @@ extension MainReminderViewController: UITextFieldDelegate {
 //    }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
+print("EndEditing")
+
         let textFieldPoint = textField.convert(textField.center, to: view)
         guard let indexPath = tableView.indexPathForRow(at: textFieldPoint) else {
             return

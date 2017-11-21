@@ -41,7 +41,7 @@ class ReminderTableViewModel {
         return reminder.title ?? ""
     }
 
-    func getDetail(forIndexPath indexPath: IndexPath) -> String {
+    func getDetail(forIndexPath indexPath: IndexPath) -> String? {
         let reminder = getReminder(forIndexPath: indexPath)
 
         guard let creationDate = reminder.creationDate as Date? else {
@@ -79,30 +79,38 @@ class ReminderTableViewModel {
     }
 
     func updateReminder(withTitle title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
+        var updated = false
         let reminder = getReminder(forIndexPath: indexPath)
 
         if title != nil {
             reminder.title = title
+            updated = true
         }
 
         if detail != nil {
             reminder.detail = detail
+            updated = true
         }
 
         if priority != nil {
             reminder.priority = Int16(priority!.rawValue)
+            updated = true
         }
 
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            print("Could not find App Delegate")
-            return
-        }
-        let context = appDelegate.persistentContainer.viewContext
+        if updated {
+            print("Updated:", reminder.index)
 
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                print("Could not find App Delegate")
+                return
+            }
+            let context = appDelegate.persistentContainer.viewContext
+
+            do {
+                try context.save()
+            } catch {
+                print("Error:", error)
+            }
         }
     }
 

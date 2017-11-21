@@ -18,11 +18,12 @@ enum Constants {
 
     static let cellHeight: CGFloat = 85.0
 
-    static let backgroundColor: UIColor = #colorLiteral(red: 0.6077729797, green: 0.8089405031, blue: 0.9985881448, alpha: 1)
+    static let backgroundColor: UIColor = #colorLiteral(red: 0.5198073602, green: 0.8550287484, blue: 0.9985881448, alpha: 1)
     static let gradientColor: UIColor = #colorLiteral(red: 0, green: 0.529114902, blue: 0.7376316786, alpha: 1)
     static let textColor: UIColor = #colorLiteral(red: 0.2068527919, green: 0.2068527919, blue: 0.2068527919, alpha: 1)
     static let textSecondaryColor: UIColor = #colorLiteral(red: 0.7597485179, green: 0.7672707804, blue: 0.7672707804, alpha: 1)
     static let textWrittenSecondaryColor: UIColor = #colorLiteral(red: 0.6094480939, green: 0.6154822334, blue: 0.6154822334, alpha: 1)
+    static let textCompletedColor: UIColor = #colorLiteral(red: 0.5762559828, green: 0.8832685596, blue: 0.5388941573, alpha: 1)
 
     static let emptyIconString: String = "EmptyIcon"
     static let priorityIconString: String = "PriorityIcon"
