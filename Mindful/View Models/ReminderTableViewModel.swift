@@ -22,8 +22,6 @@ class ReminderTableViewModel {
     var sortingStyle: SortingStyle!
 
     private init() {
-        print("init ReminderViewModel.shared")
-
         self.initializeTableData()
         sortingStyle = SortingStyle(rawValue: UserDefaults.standard.integer(forKey: "SortingStyleKey"))
 
@@ -98,8 +96,6 @@ class ReminderTableViewModel {
         }
 
         if updated {
-            print("Updated:", reminder.index)
-
             guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
                 print("Could not find App Delegate")
                 return
@@ -235,13 +231,6 @@ class ReminderTableViewModel {
 
         self.reminders = fetchedReminders
         delegate?.synchronized()
-
-        print("Reminder Count:", self.reminders.count)
-
-//
-//        for test in fetchedReminders {
-//            print("Title:", test.title, "Creation:", test.creationDate)
-//        }
     }
 
 

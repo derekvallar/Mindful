@@ -42,7 +42,8 @@ class MainReminderViewController: UITableViewController {
         // Setup the table view
 
         tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
-//        tableView.rowHeight = Constants.cellHeight
+        tableView.estimatedRowHeight = Constants.estimatedRowHeight
+        tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
 
@@ -74,6 +75,9 @@ class MainReminderViewController: UITableViewController {
             let reminderCell = cell as? ReminderCell
             reminderCell?.changeFilterMode(isFiltering)
         }
+
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 
     @objc func addReminders() {
@@ -84,7 +88,6 @@ class MainReminderViewController: UITableViewController {
         tableView.insertRows(at: [firstRow], with: .top)
         tableView.endUpdates()
 
-        let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell
         tableView.selectRow(at: firstRow, animated: true, scrollPosition: .none)
         tableView(tableView, didSelectRowAt: firstRow)
     }
@@ -125,10 +128,11 @@ extension MainReminderViewController {
             priorityImage = UIImage(named: Constants.highPriorityIconString)!
         }
 
-        cell.titleField.delegate = self
+        cell.titleTextView.delegate = self
         cell.buttonDelegate = self
 
         cell.setup(withTitle: title, detail: detail, priority: priorityImage, filtering: isFiltering)
+
         return cell
     }
 
@@ -156,24 +160,20 @@ extension MainReminderViewController {
 
 // MARK: - UITextFieldDelegate
 
-extension MainReminderViewController: UITextFieldDelegate {
+extension MainReminderViewController: UITextViewDelegate {
 
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        let textFieldPoint = textField.convert(textField.center, to: view)
-//        guard let indexPath = tableView.indexPathForRow(at: textFieldPoint) else {
-//            return
-//        }
-//
-//        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
-//            return
-//        }
-//    }
+    func textViewDidChange(_ textView: UITextView) {
+        let currentOffset = tableView.contentOffset
+        UIView.setAnimationsEnabled(false)
+        tableView.beginUpdates()
+        tableView.endUpdates()
+        UIView.setAnimationsEnabled(true)
+        tableView.setContentOffset(currentOffset, animated: false)
+    }
 
-    func textFieldDidEndEditing(_ textField: UITextField) {
-print("EndEditing")
-
-        let textFieldPoint = textField.convert(textField.center, to: view)
-        guard let indexPath = tableView.indexPathForRow(at: textFieldPoint) else {
+    func textViewDidEndEditing(_ textView: UITextView) {
+        let textViewPoint = textView.convert(textView.center, to: view)
+        guard let indexPath = tableView.indexPathForRow(at: textViewPoint) else {
             return
         }
 
@@ -181,7 +181,7 @@ print("EndEditing")
             return
         }
 
-        ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleField.text!, detail: nil, priority: nil, indexPath: indexPath)
+        ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleTextView.text!, detail: nil, priority: nil, indexPath: indexPath)
     }
 }
 

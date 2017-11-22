@@ -16,7 +16,7 @@ enum Constants {
     static let layoutSpacing: CGFloat = 15.0
     static let layoutSpacingInverse: CGFloat = -15.0
 
-    static let cellHeight: CGFloat = 85.0
+    static let estimatedRowHeight: CGFloat = 86.0
 
     static let backgroundColor: UIColor = #colorLiteral(red: 0.5198073602, green: 0.8550287484, blue: 0.9985881448, alpha: 1)
     static let gradientColor: UIColor = #colorLiteral(red: 0, green: 0.529114902, blue: 0.7376316786, alpha: 1)

@@ -29,7 +29,7 @@ class ReminderCell: UITableViewCell {
 
     private var filterMode = false
 
-    var titleField = UITextField()
+    var titleTextView = UITextView()
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -47,17 +47,24 @@ class ReminderCell: UITableViewCell {
         cardStackView.alignment = .center
 
         completeDeleteButton.addTarget(self, action: #selector(completeDeleteButtonPressed), for: .touchUpInside)
+        completeDeleteButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
+
         detailRearrangeButton.addTarget(self, action: #selector(detailRearrangeButtonPressed), for: .touchUpInside)
+        detailRearrangeButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
 
         infoStackView.axis = .vertical
         infoStackView.alignment = .leading
-        infoStackView.distribution = .fillEqually
+        infoStackView.distribution = .fill
 //        infoStackView.spacing = -3.0
         infoStackView.setContentHuggingPriority(UILayoutPriority.defaultLow, for: UILayoutConstraintAxis.horizontal)
 
-        titleField.textColor = Constants.textColor
-        titleField.isUserInteractionEnabled = false
-        titleField.font = titleField.font?.withSize(16.0)
+        titleTextView.textColor = Constants.textColor
+        titleTextView.isScrollEnabled = false
+//        titleTextView.siz
+        titleTextView.isUserInteractionEnabled = false
+        titleTextView.font = UIFont.systemFont(ofSize: 16.0)
+        titleTextView.textContainerInset = UIEdgeInsets.zero
+        titleTextView.textContainer.lineFragmentPadding = 0.0
 
         alarmLabel.isHidden = true
         detailLabel.isHidden = true
@@ -87,15 +94,15 @@ class ReminderCell: UITableViewCell {
         cardStackView.addArrangedSubview(completeDeleteButton)
         cardStackView.addArrangedSubview(infoStackView)
         cardStackView.addArrangedSubview(detailRearrangeButton)
-        NSLayoutConstraint.setupAndActivate(constraints: [
-            completeDeleteButton.widthAnchor.constraint(equalTo: cardView.heightAnchor, multiplier: 0.5)])
+//        NSLayoutConstraint.setupAndActivate(constraints: [
+//            completeDeleteButton.widthAnchor.constraint(equalTo: cardView.heightAnchor, multiplier: 0.5)])
 
-        infoStackView.addArrangedSubview(titleField)
+        infoStackView.addArrangedSubview(titleTextView)
         infoStackView.addArrangedSubview(detailLabel)
     }
 
     func setup(withTitle title: String, detail: String?, priority: UIImage?, filtering: Bool) {
-        titleField.text = title
+        titleTextView.text = title
         if let detailText = detail {
             detailLabel.isHidden = false
             detailLabel.text = detailText
@@ -133,10 +140,10 @@ class ReminderCell: UITableViewCell {
         }
 
         if selected {
-            titleField.isUserInteractionEnabled = true
-            titleField.becomeFirstResponder()
+            titleTextView.isUserInteractionEnabled = true
+            titleTextView.becomeFirstResponder()
         } else {
-            titleField.isUserInteractionEnabled = false
+            titleTextView.isUserInteractionEnabled = false
         }
     }
 
