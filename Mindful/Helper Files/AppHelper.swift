@@ -11,10 +11,15 @@ import UIKit
 enum Constants {
     static let appName = "Mindful"
 
-    static let viewSpacing: CGFloat = 5.0
-    static let viewSpacingInverse: CGFloat = -5.0
+    static let viewSpacing: CGFloat = 8.0
+    static let viewSpacingInverse: CGFloat = -8.0
     static let layoutSpacing: CGFloat = 15.0
     static let layoutSpacingInverse: CGFloat = -15.0
+    
+    static let cellXSpacing: CGFloat = 8.0
+    static let cellXSpacingInverse: CGFloat = -8.0
+    static let cellYSpacing: CGFloat = 5.0
+    static let cellYSpacingInverse: CGFloat = -5.0
 
     static let estimatedRowHeight: CGFloat = 86.0
 

@@ -9,29 +9,30 @@
 import UIKit
 import CoreData
 
-protocol ReminderTableViewModelDelegate {
-    func synchronized()
-}
-
 class ReminderTableViewModel {
 
     static let standard = ReminderTableViewModel()
-
-    var delegate: ReminderTableViewModelDelegate?
+    var context: NSManagedObjectContext!
     var reminders: [Reminder]!
-    var sortingStyle: SortingStyle!
 
     private init() {
-        self.initializeTableData()
-        sortingStyle = SortingStyle(rawValue: UserDefaults.standard.integer(forKey: "SortingStyleKey"))
-
-        if reminders.count == 0 {
-            addBlankReminder()
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            print("Could not find App Delegate")
+            return
         }
+        context = appDelegate.persistentContainer.viewContext
+
+        self.initializeTableData(withCompleted: false, completion: nil)
+        checkReminders()
     }
 
     func getReminderCount() -> Int {
         return reminders.count
+    }
+
+    func getCompleted(forIndexPath indexPath: IndexPath) -> Bool {
+        let reminder = getReminder(forIndexPath: indexPath)
+        return reminder.completed
     }
 
     func getTitle(forIndexPath indexPath: IndexPath) -> String {
@@ -57,12 +58,6 @@ class ReminderTableViewModel {
     }
 
     func addBlankReminder() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            print("Could not find App Delegate")
-            return
-        }
-        let context = appDelegate.persistentContainer.viewContext
-
         let reminder = Reminder(context: context)
         let nextIndex = reminders.count
         reminder.setup("", index: nextIndex, priority: Priority.none.rawValue, creationDate: Date())
@@ -76,7 +71,24 @@ class ReminderTableViewModel {
         }
     }
 
-    func updateReminder(withTitle title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
+    func setCompleted(completed: Bool, indexPath: IndexPath) {
+        let reminder = getReminder(forIndexPath: indexPath)
+        reminder.completed = completed
+
+        if completed {
+            reminder.completedDate = Date() as NSDate
+        } else {
+            
+        }
+
+        do {
+            try context.save()
+        } catch {
+            print("Error:", error)
+        }
+    }
+
+    func updateReminder(title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
         var updated = false
         let reminder = getReminder(forIndexPath: indexPath)
 
@@ -96,12 +108,6 @@ class ReminderTableViewModel {
         }
 
         if updated {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-                print("Could not find App Delegate")
-                return
-            }
-            let context = appDelegate.persistentContainer.viewContext
-
             do {
                 try context.save()
             } catch {
@@ -110,13 +116,7 @@ class ReminderTableViewModel {
         }
     }
 
-
     func deleteReminder(atIndexPath indexPath: IndexPath) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        let context = appDelegate.persistentContainer.viewContext
-
         let reminder = reminders[indexPath.row]
         context.delete(reminder)
         reminders.remove(at: indexPath.row)
@@ -135,11 +135,30 @@ class ReminderTableViewModel {
         return viewModel
     }
 
+    func initializeTableData(withCompleted completed: Bool, completion: ((_ result: Bool) -> Void)?) {
+        let fetchRequest: NSFetchRequest<Reminder> = Reminder.sortedFetchRequest(withCompleted: completed)
+        var fetchedReminders: [Reminder]
+
+        do {
+            fetchedReminders = try context.fetch(fetchRequest)
+        } catch {
+            print("Could not fetch:", error)
+            completion?(false)
+            return
+        }
+
+        self.reminders = fetchedReminders
+        completion?(true)
+    }
+
+    func removeTableData() {
+        reminders.removeAll()
+    }
 
     // TODO: Remove this test function
     func checkReminders() {
         for reminder in reminders {
-            print("Title:", reminder.title)
+            print("Title:", reminder.title, ", Completed:", reminder.completed)
         }
     }
 
@@ -199,76 +218,6 @@ class ReminderTableViewModel {
             reminder.index = Int16(count)
         }
     }
-
-    private func initializeTableData() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-
-        let context = appDelegate.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<Reminder> = Reminder.sortedFetchRequest
-        var fetchedReminders: [Reminder]
-
-        // TODO: Remove this once reminder deletion in place
-
-        //        do {
-        //            fetchedReminders = try context.fetch(fetchRequest)
-        //            for reminder in fetchedReminders {
-        //                context.delete(reminder)
-        //            }
-        //            try context.save()
-        //        } catch {
-        //            print("Could not fetch:", error)
-        //            return
-        //        }
-
-        do {
-            fetchedReminders = try context.fetch(fetchRequest)
-        } catch {
-            print("Could not fetch:", error)
-            return
-        }
-
-        self.reminders = fetchedReminders
-        delegate?.synchronized()
-    }
-
-
-//    func sortReminders(byStyle style: SortingStyle)  {
-//        switch style {
-//        case .Priority:
-//            reminders.sort { a, b in
-//                if a.priority > b.priority {
-//                    return true
-//                } else if a.priority < b.priority {
-//                    return false
-//                } else {
-//                    if a.alarmDate != nil && b.alarmDate != nil {
-//                        return a.alarmDate! > b.alarmDate!
-//                    } else if a.alarmDate != nil {
-//                        return true
-//                    } else if b.alarmDate != nil {
-//                        return false
-//                    } else {
-//                        return a.creationDate > b.creationDate
-//                    }
-//                }
-//            }
-//
-//        case .Date:
-//            reminders.sort { a, b in
-//                if a.alarmDate != nil && b.alarmDate != nil {
-//                    return a.alarmDate! > b.alarmDate!
-//                } else if a.alarmDate != nil {
-//                    return true
-//                } else if b.alarmDate != nil {
-//                    return false
-//                } else {
-//                    return a.creationDate > b.creationDate
-//                }
-//            }
-//        }
-//    }
 }
 
 

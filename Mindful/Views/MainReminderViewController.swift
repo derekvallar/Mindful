@@ -11,23 +11,47 @@ import MapKit
 
 class MainReminderViewController: UITableViewController {
 
-    var isCreatingReminder = false
-    var isFiltering = false
+    var viewModel: ReminderTableViewModel!
+
+    var filterMode: Bool!
+    var currentMode: MindfulMode!
+    var previousMode: MindfulMode!
+
+    convenience init() {
+        self.init(nibName: nil, bundle: nil)
+        viewModel = ReminderTableViewModel.standard
+    }
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        print("Main viewDidLoad()")
+        filterMode = false
+        currentMode = MindfulMode.main
+        previousMode = MindfulMode.main
 
         // Setup the nav bar
 
         navigationItem.title = Constants.appName
 
-        let rightButton = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(addReminders))
-        navigationItem.rightBarButtonItem = rightButton
+        let addButton = UIBarButtonItem(image: #imageLiteral(resourceName: "AddIcon"), style: .done, target: self, action: #selector(addButtonPressed))
+        let completedButton = UIBarButtonItem(image: #imageLiteral(resourceName: "CompletedIcon"), style: .done, target: self, action: #selector(completedButtonPressed))
+        
+        addButton.tintColor = UIColor.white
+        completedButton.tintColor = UIColor.white
 
-        let leftButton = UIBarButtonItem(title: "Filter", style: .done, target: self, action: #selector(filterReminders))
-        navigationItem.leftBarButtonItem = leftButton
+        navigationItem.rightBarButtonItems = [addButton, completedButton]
+        
+        let detailButton = UIBarButtonItem(image: #imageLiteral(resourceName: "DetailIcon"), style: .done, target: self, action: #selector(detailButtonPressed))
+        detailButton.tintColor = UIColor.white
+        navigationItem.leftBarButtonItem = detailButton
 
         let textAtr = [
             NSAttributedStringKey.foregroundColor: UIColor.white]
@@ -63,27 +87,44 @@ class MainReminderViewController: UITableViewController {
     }
 
 
-    @objc func filterReminders() {
-        isFiltering = !isFiltering
-        view.endEditing(true)
-
+    @objc func detailButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: indexPath, animated: true)
+            tableView(tableView, didDeselectRowAt: indexPath)
         }
 
-        for cell in tableView.visibleCells {
-            let reminderCell = cell as? ReminderCell
-            reminderCell?.changeFilterMode(isFiltering)
-        }
-
-        tableView.beginUpdates()
-        tableView.endUpdates()
+        toggleFilterMode()
     }
 
-    @objc func addReminders() {
+    @objc func completedButtonPressed() {
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView(tableView, didDeselectRowAt: indexPath)
+        }
+
+        if filterMode {
+            toggleFilterMode()
+        }
+
+        var completed = false
+        if currentMode == .main {
+            completed = true
+            currentMode = .completed
+        } else if currentMode == .completed {
+            currentMode = .main
+        }
+
+        viewModel.initializeTableData(withCompleted: completed) { (result) in
+            if result {
+                self.tableView.reloadData()
+            } else {
+                print("Could not fetch reminders")
+            }
+        }
+    }
+
+    @objc func addButtonPressed() {
         let firstRow = IndexPath.init(row: 0, section: 0)
 
-        ReminderTableViewModel.standard.addBlankReminder()
+        viewModel.addBlankReminder()
         tableView.beginUpdates()
         tableView.insertRows(at: [firstRow], with: .top)
         tableView.endUpdates()
@@ -92,9 +133,23 @@ class MainReminderViewController: UITableViewController {
         tableView(tableView, didSelectRowAt: firstRow)
     }
 
-
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+
+    private func toggleFilterMode() {
+        filterMode = !filterMode
+        if filterMode {
+            for cell in tableView.visibleCells {
+                let reminderCell = cell as? ReminderCell
+                reminderCell?.changeFilterMode(true)
+            }
+        } else {
+            for cell in tableView.visibleCells {
+                let reminderCell = cell as? ReminderCell
+                reminderCell?.changeFilterMode(false)
+            }
+        }
     }
 }
 
@@ -108,17 +163,18 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ReminderTableViewModel.standard.reminders.count
+        return viewModel.reminders.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
 
-        let title = ReminderTableViewModel.standard.getTitle(forIndexPath: indexPath)
-        let detail = ReminderTableViewModel.standard.getDetail(forIndexPath: indexPath)
-        let priority = ReminderTableViewModel.standard.getPriority(forIndexPath: indexPath)
+        let completed = viewModel.getCompleted(forIndexPath: indexPath)
+        let title = viewModel.getTitle(forIndexPath: indexPath)
+        let detail = viewModel.getDetail(forIndexPath: indexPath)
+        let priority = viewModel.getPriority(forIndexPath: indexPath)
         let priorityImage: UIImage?
-
+        
         switch priority {
         case .none:
             priorityImage = UIImage(named: Constants.emptyIconString)!
@@ -131,7 +187,7 @@ extension MainReminderViewController {
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
 
-        cell.setup(withTitle: title, detail: detail, priority: priorityImage, filtering: isFiltering)
+        cell.setup(completed, title: title, detail: detail, priority: priorityImage, filtering: filterMode)
 
         return cell
     }
@@ -141,7 +197,7 @@ extension MainReminderViewController {
             return
         }
 
-        if !isFiltering {
+        if !filterMode {
             cell.userSelected(true)
         }
     }
@@ -151,7 +207,7 @@ extension MainReminderViewController {
             return
         }
 
-        if !isFiltering {
+        if !filterMode {
             cell.userSelected(false)
         }
     }
@@ -181,7 +237,7 @@ extension MainReminderViewController: UITextViewDelegate {
             return
         }
 
-        ReminderTableViewModel.standard.updateReminder(withTitle: cell.titleTextView.text!, detail: nil, priority: nil, indexPath: indexPath)
+        viewModel.updateReminder(title: cell.titleTextView.text!, detail: nil, priority: nil, indexPath: indexPath)
     }
 }
 
@@ -195,18 +251,23 @@ extension MainReminderViewController: CellButtonDelegate {
         }
 
         if button == Constants.completeDeleteButtonString {
-            if isFiltering {
-                ReminderTableViewModel.standard.deleteReminder(atIndexPath: indexPath)
+            if filterMode {
+                viewModel.deleteReminder(atIndexPath: indexPath)
                 tableView.beginUpdates()
                 tableView.deleteRows(at: [indexPath], with: .fade)
                 tableView.endUpdates()
+            } else {
+                print("Complete button pushed:", cell.isCompleted())
+                if let completed = cell.isCompleted() {
+                    viewModel.setCompleted(completed: completed, indexPath: indexPath)
+                }
             }
         } else if button == Constants.detailRearrangeButtonString {
-            if isFiltering {
+            if filterMode {
 
             } else {
-                let viewModel = ReminderTableViewModel.standard.detailedReminderViewModelForIndexPath(indexPath)
-                let detailedViewController = DetailedReminderViewController(viewModel: viewModel)
+                let detailedViewModel = viewModel.detailedReminderViewModelForIndexPath(indexPath)
+                let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
                 navigationController?.pushViewController(detailedViewController, animated: true)
             }
         }

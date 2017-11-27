@@ -109,8 +109,8 @@ class DetailedReminderView: UIView {
         mentionStackView.addArrangedSubview(remindLabel)
 
         indicatorButton = UIButton(type: .custom)
-        indicatorButton.setBackgroundImage(#imageLiteral(resourceName: "Indicator"), for: .normal)
-        indicatorButton.setBackgroundImage(#imageLiteral(resourceName: "Checked Indicator"), for: .selected)
+        indicatorButton.setBackgroundImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
+        indicatorButton.setBackgroundImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
         indicatorButton.addTarget(self, action: #selector(mentionButtonPressed(sender:)), for: .touchUpInside)
         indicatorButton.setContentHuggingPriority(UILayoutPriority.init(rawValue: 251.0), for: UILayoutConstraintAxis.horizontal)
         mentionStackView.addArrangedSubview(indicatorButton)

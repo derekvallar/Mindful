@@ -7,6 +7,5 @@
 //
 
 enum SortingStyle: Int {
-    case Priority
-    case Date
+    case Priority, Date
 }

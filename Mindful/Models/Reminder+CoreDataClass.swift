@@ -19,14 +19,22 @@ public class Reminder: NSManagedObject {
         self.priority = Int16(priority)
         self.creationDate = creationDate as NSDate
 
+        self.completed = false
         self.detail = String()
     }
 
-    static var sortedFetchRequest: NSFetchRequest<Reminder> {
+    static func sortedFetchRequest(withCompleted completed: Bool) -> NSFetchRequest<Reminder> {
         let request: NSFetchRequest<Reminder> = Reminder.fetchRequest()
-        let sort = NSSortDescriptor(key: "index", ascending: false)
+        let indexSort: NSSortDescriptor!
+        if completed {
+            indexSort = NSSortDescriptor(key: "completedDate", ascending: false)
+        } else {
+            indexSort = NSSortDescriptor(key: "index", ascending: false)
+        }
+        let completedPredicate = NSPredicate(format: "completed == %@", NSNumber(value: completed))
 
-        request.sortDescriptors = [sort]
+        request.sortDescriptors = [indexSort]
+        request.predicate = completedPredicate
         return request
     }
 }

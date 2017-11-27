@@ -9,7 +9,5 @@
 import UIKit
 
 enum Priority: Int {
-    case none
-    case priority
-    case highPriority
+    case none, priority, highPriority
 }
