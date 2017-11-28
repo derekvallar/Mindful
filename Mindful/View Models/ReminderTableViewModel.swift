@@ -14,6 +14,7 @@ class ReminderTableViewModel {
     static let standard = ReminderTableViewModel()
     var context: NSManagedObjectContext!
     var reminders: [Reminder]!
+    var subReminders: [Reminder]!
 
     private init() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -30,38 +31,27 @@ class ReminderTableViewModel {
         return reminders.count
     }
 
-    func getCompleted(forIndexPath indexPath: IndexPath) -> Bool {
-        let reminder = getReminder(forIndexPath: indexPath)
-        return reminder.completed
-    }
-
-    func getTitle(forIndexPath indexPath: IndexPath) -> String {
-        let reminder = getReminder(forIndexPath: indexPath)
-        return reminder.title ?? ""
-    }
-
-    func getDetail(forIndexPath indexPath: IndexPath) -> String? {
+    func getReminderTableViewModelItem(forIndexPath indexPath: IndexPath) -> ReminderTableViewModelItem {
         let reminder = getReminder(forIndexPath: indexPath)
 
-        guard let creationDate = reminder.creationDate as Date? else {
-            return "Error: Cannot find reminder detail"
+        let completed = reminder.completed
+        let title = reminder.title ?? ""
+        var detail: String?
+
+        if let creationDate = reminder.creationDate as Date? {
+            detail = creationString(creationDate)
         }
 
-        return self.creationString(creationDate)
-    }
+        let priority = Priority(rawValue: (reminder.priority))!
 
-    func getPriority(forIndexPath indexPath: IndexPath) -> Priority {
-        let reminder = getReminder(forIndexPath: indexPath)
-        let intPriority = Int(reminder.priority)
-
-        return Priority(rawValue: intPriority)!
+        return ReminderTableViewModelItem(completed: completed, title: title, detail: detail, priority: priority)
     }
 
     func addBlankReminder() {
         let reminder = Reminder(context: context)
         let nextIndex = reminders.count
-        reminder.setup("", index: nextIndex, priority: Priority.none.rawValue, creationDate: Date())
 
+        reminder.setup("", index: nextIndex, priority: Priority.none.rawValue, creationDate: Date())
         reminders.insert(reminder, at: 0)
 
         do {
@@ -151,8 +141,15 @@ class ReminderTableViewModel {
         completion?(true)
     }
 
-    func removeTableData() {
-        reminders.removeAll()
+    func moveReminder(fromIndex start: IndexPath, toIndex end: IndexPath) {
+        let reminder = getReminder(forIndexPath: start)
+
+        guard let index = reminders.index(of: reminder) else {
+            return
+        }
+
+        reminders.remove(at: index)
+        reminders.insert(reminder, at: end.row)
     }
 
     // TODO: Remove this test function

@@ -169,25 +169,10 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
 
-        let completed = viewModel.getCompleted(forIndexPath: indexPath)
-        let title = viewModel.getTitle(forIndexPath: indexPath)
-        let detail = viewModel.getDetail(forIndexPath: indexPath)
-        let priority = viewModel.getPriority(forIndexPath: indexPath)
-        let priorityImage: UIImage?
-        
-        switch priority {
-        case .none:
-            priorityImage = UIImage(named: Constants.emptyIconString)!
-        case .priority:
-            priorityImage = UIImage(named: Constants.priorityIconString)!
-        case .highPriority:
-            priorityImage = UIImage(named: Constants.highPriorityIconString)!
-        }
-
+        let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
-
-        cell.setup(completed, title: title, detail: detail, priority: priorityImage, filtering: filterMode)
+        cell.setup(item: item, filtering: filterMode)
 
         return cell
     }

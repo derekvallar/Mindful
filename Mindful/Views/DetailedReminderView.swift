@@ -28,7 +28,7 @@ class DetailedReminderView: UIView {
     func setup(title: String, detail: String, priority: Priority) {
         titleField.text = title
         detailsField.text = detail
-        prioritySegmentedControl.selectedSegmentIndex = priority.rawValue
+        prioritySegmentedControl.selectedSegmentIndex = Int(priority.rawValue)
     }
 
     private func setupLayout() {

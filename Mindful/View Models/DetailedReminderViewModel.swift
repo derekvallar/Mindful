@@ -27,7 +27,7 @@ class DetailedReminderViewModel {
 
     public func getPriority() -> Priority {
         let priority = reminder.priority
-        return Priority(rawValue: Int(priority))!
+        return Priority(rawValue: priority)!
     }
 
     public func updateReminder(title: String, detail: String, priority: Priority) {

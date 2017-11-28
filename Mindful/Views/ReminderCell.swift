@@ -93,23 +93,21 @@ class ReminderCell: UITableViewCell {
         cardStackView.addArrangedSubview(completeDeleteButton)
         cardStackView.addArrangedSubview(infoStackView)
         cardStackView.addArrangedSubview(detailRearrangeButton)
-//        NSLayoutConstraint.setupAndActivate(constraints: [
-//            completeDeleteButton.widthAnchor.constraint(equalTo: cardView.heightAnchor, multiplier: 0.5)])
 
         infoStackView.addArrangedSubview(titleTextView)
         infoStackView.addArrangedSubview(detailLabel)
     }
 
-    func setup(_ completed: Bool, title: String, detail: String?, priority: UIImage?, filtering: Bool) {
+    func setup(item: ReminderTableViewModelItem, filtering: Bool) {
 
-        completeDeleteButton.isSelected = completed
+        completeDeleteButton.isSelected = item.completed
 
-        titleTextView.text = title
-        if let detailText = detail {
+        titleTextView.text = item.title
+        if let detailText = item.detail {
             detailLabel.isHidden = false
             detailLabel.text = detailText
         }
-        priorityImageView.image = priority
+        priorityImageView.image = UIImage(named: item.priority.imageLocation)
         filterMode = filtering
 
         synchronizeButtonImages()
@@ -142,11 +140,9 @@ class ReminderCell: UITableViewCell {
             self.detailRearrangeButton.isHidden = !selected
         }
 
+        titleTextView.isUserInteractionEnabled = selected
         if selected {
-            titleTextView.isUserInteractionEnabled = true
             titleTextView.becomeFirstResponder()
-        } else {
-            titleTextView.isUserInteractionEnabled = false
         }
     }
 

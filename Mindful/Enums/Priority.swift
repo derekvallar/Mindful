@@ -6,8 +6,19 @@
 //  Copyright © 2017 Derek Vallar. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
-enum Priority: Int {
+enum Priority: Int16 {
     case none, priority, highPriority
+
+    var imageLocation: String {
+        switch self {
+        case .none:
+            return Constants.emptyIconString
+        case .priority:
+            return Constants.priorityIconString
+        case .highPriority:
+            return Constants.highPriorityIconString
+        }
+    }
 }
