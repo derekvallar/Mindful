@@ -2,7 +2,7 @@
 //  Reminder+CoreDataProperties.swift
 //  Mindful
 //
-//  Created by Derek Vitaliano Vallar on 11/26/17.
+//  Created by Derek Vitaliano Vallar on 12/1/17.
 //  Copyright © 2017 Derek Vallar. All rights reserved.
 //
 //
@@ -25,5 +25,24 @@ extension Reminder {
     @NSManaged public var index: Int16
     @NSManaged public var priority: Int16
     @NSManaged public var title: String?
+    @NSManaged public var subreminder: Bool
+    @NSManaged public var subReminders: NSSet?
+
+}
+
+// MARK: Generated accessors for subReminders
+extension Reminder {
+
+    @objc(addSubRemindersObject:)
+    @NSManaged public func addToSubReminders(_ value: Reminder)
+
+    @objc(removeSubRemindersObject:)
+    @NSManaged public func removeFromSubReminders(_ value: Reminder)
+
+    @objc(addSubReminders:)
+    @NSManaged public func addToSubReminders(_ values: NSSet)
+
+    @objc(removeSubReminders:)
+    @NSManaged public func removeFromSubReminders(_ values: NSSet)
 
 }

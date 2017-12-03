@@ -98,10 +98,10 @@ class ReminderCell: UITableViewCell {
         infoStackView.addArrangedSubview(detailLabel)
     }
 
-    func setup(item: ReminderTableViewModelItem, filtering: Bool) {
+    func setup(item: ReminderViewModelItem, filtering: Bool) {
 
         completeDeleteButton.isSelected = item.completed
-
+        
         titleTextView.text = item.title
         if let detailText = item.detail {
             detailLabel.isHidden = false

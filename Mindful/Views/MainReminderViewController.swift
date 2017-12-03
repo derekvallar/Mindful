@@ -13,6 +13,10 @@ class MainReminderViewController: UITableViewController {
 
     var viewModel: ReminderTableViewModel!
 
+    var addButton: UIBarButtonItem!
+    var completedButton: UIBarButtonItem!
+    var detailButton: UIBarButtonItem!
+
     var filterMode: Bool!
     var currentMode: MindfulMode!
     var previousMode: MindfulMode!
@@ -41,14 +45,14 @@ class MainReminderViewController: UITableViewController {
 
         navigationItem.title = Constants.appName
 
-        let addButton = UIBarButtonItem(image: #imageLiteral(resourceName: "AddIcon"), style: .done, target: self, action: #selector(addButtonPressed))
-        let completedButton = UIBarButtonItem(image: #imageLiteral(resourceName: "CompletedIcon"), style: .done, target: self, action: #selector(completedButtonPressed))
+        addButton = UIBarButtonItem(image: #imageLiteral(resourceName: "AddIcon"), style: .done, target: self, action: #selector(addButtonPressed))
+        completedButton = UIBarButtonItem(image: #imageLiteral(resourceName: "CompletedIcon"), style: .done, target: self, action: #selector(completedButtonPressed))
         
         addButton.tintColor = UIColor.white
         completedButton.tintColor = UIColor.white
 
         navigationItem.rightBarButtonItems = [addButton, completedButton]
-        
+
         let detailButton = UIBarButtonItem(image: #imageLiteral(resourceName: "DetailIcon"), style: .done, target: self, action: #selector(detailButtonPressed))
         detailButton.tintColor = UIColor.white
         navigationItem.leftBarButtonItem = detailButton
@@ -86,22 +90,40 @@ class MainReminderViewController: UITableViewController {
         tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
 
-
     @objc func detailButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView(tableView, didDeselectRowAt: indexPath)
         }
 
-        toggleFilterMode()
+        filterMode = !filterMode
+        setFilterMode(filterMode)
+    }
+
+    @objc func addButtonPressed() {
+        if let selectedIndex = tableView.indexPathForSelectedRow {
+            let index = viewModel.addSubreminder()
+            tableView.beginUpdates()
+            tableView.insertRows(at: [index], with: .top)
+            tableView.endUpdates()
+
+            tableView.selectRow(at: index, animated: true, scrollPosition: .none)
+            tableView(tableView, didSelectRowAt: index)
+        } else {
+            let firstRow = IndexPath.init(row: 0, section: 0)
+
+            viewModel.addReminder()
+            tableView.beginUpdates()
+            tableView.insertRows(at: [firstRow], with: .top)
+            tableView.endUpdates()
+
+            tableView.selectRow(at: firstRow, animated: true, scrollPosition: .none)
+            tableView(tableView, didSelectRowAt: firstRow)
+        }
     }
 
     @objc func completedButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView(tableView, didDeselectRowAt: indexPath)
-        }
-
-        if filterMode {
-            toggleFilterMode()
         }
 
         var completed = false
@@ -112,7 +134,7 @@ class MainReminderViewController: UITableViewController {
             currentMode = .main
         }
 
-        viewModel.initializeTableData(withCompleted: completed) { (result) in
+        viewModel.initializeTableData(withCompleted: completed) { result in
             if result {
                 self.tableView.reloadData()
             } else {
@@ -121,34 +143,19 @@ class MainReminderViewController: UITableViewController {
         }
     }
 
-    @objc func addButtonPressed() {
-        let firstRow = IndexPath.init(row: 0, section: 0)
-
-        viewModel.addBlankReminder()
-        tableView.beginUpdates()
-        tableView.insertRows(at: [firstRow], with: .top)
-        tableView.endUpdates()
-
-        tableView.selectRow(at: firstRow, animated: true, scrollPosition: .none)
-        tableView(tableView, didSelectRowAt: firstRow)
-    }
-
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
 
-    private func toggleFilterMode() {
-        filterMode = !filterMode
-        if filterMode {
-            for cell in tableView.visibleCells {
-                let reminderCell = cell as? ReminderCell
-                reminderCell?.changeFilterMode(true)
-            }
+    private func setFilterMode(_ filter: Bool) {
+        if filter {
+            navigationItem.rightBarButtonItems = nil
         } else {
-            for cell in tableView.visibleCells {
-                let reminderCell = cell as? ReminderCell
-                reminderCell?.changeFilterMode(false)
-            }
+            navigationItem.rightBarButtonItems = [addButton, completedButton]
+        }
+        for cell in tableView.visibleCells {
+            let reminderCell = cell as? ReminderCell
+            reminderCell?.changeFilterMode(filter)
         }
     }
 }
@@ -163,7 +170,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.reminders.count
+        return viewModel.getReminderCount()
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -182,6 +189,15 @@ extension MainReminderViewController {
             return
         }
 
+        print("Selected:", indexPath)
+
+        addButton.image = #imageLiteral(resourceName: "AddSubreminderIcon")
+
+        let indices = viewModel.reminderSelected(indexPath: indexPath)
+        tableView.beginUpdates()
+        tableView.insertRows(at: indices, with: .top)
+        tableView.endUpdates()
+
         if !filterMode {
             cell.userSelected(true)
         }
@@ -191,6 +207,15 @@ extension MainReminderViewController {
         guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
+
+        print("Deselected", indexPath)
+
+        addButton.image = #imageLiteral(resourceName: "AddIcon")
+
+        let indices = viewModel.reminderDeselected(indexPath: indexPath)
+        tableView.beginUpdates()
+        tableView.deleteRows(at: indices, with: .top)
+        tableView.endUpdates()
 
         if !filterMode {
             cell.userSelected(false)

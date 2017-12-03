@@ -12,9 +12,13 @@ import CoreData
 class ReminderTableViewModel {
 
     static let standard = ReminderTableViewModel()
+
     var context: NSManagedObjectContext!
-    var reminders: [Reminder]!
-    var subReminders: [Reminder]!
+    var reminders = [Reminder]()
+    var subreminders = [Reminder]()
+
+    var selectedIndexPath: IndexPath!
+    var parentIndexPath: IndexPath!
 
     private init() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -28,30 +32,14 @@ class ReminderTableViewModel {
     }
 
     func getReminderCount() -> Int {
-        return reminders.count
+        return reminders.count + subreminders.count
     }
 
-    func getReminderTableViewModelItem(forIndexPath indexPath: IndexPath) -> ReminderTableViewModelItem {
-        let reminder = getReminder(forIndexPath: indexPath)
-
-        let completed = reminder.completed
-        let title = reminder.title ?? ""
-        var detail: String?
-
-        if let creationDate = reminder.creationDate as Date? {
-            detail = creationString(creationDate)
-        }
-
-        let priority = Priority(rawValue: (reminder.priority))!
-
-        return ReminderTableViewModelItem(completed: completed, title: title, detail: detail, priority: priority)
-    }
-
-    func addBlankReminder() {
+    func addReminder() {
         let reminder = Reminder(context: context)
         let nextIndex = reminders.count
 
-        reminder.setup("", index: nextIndex, priority: Priority.none.rawValue, creationDate: Date())
+        reminder.setup(index: nextIndex, subreminder: false)
         reminders.insert(reminder, at: 0)
 
         do {
@@ -61,69 +49,27 @@ class ReminderTableViewModel {
         }
     }
 
-    func setCompleted(completed: Bool, indexPath: IndexPath) {
-        let reminder = getReminder(forIndexPath: indexPath)
-        reminder.completed = completed
+    func addSubreminder() -> IndexPath {
+        let subreminder = Reminder(context: context)
+        let nextIndex = subreminders.count
+        subreminder.setup(index: nextIndex, subreminder: true)
+        subreminders.insert(subreminder, at: 0)
 
-        if completed {
-            reminder.completedDate = Date() as NSDate
-        } else {
-            
-        }
-
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
-        }
-    }
-
-    func updateReminder(title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
-        var updated = false
-        let reminder = getReminder(forIndexPath: indexPath)
-
-        if title != nil {
-            reminder.title = title
-            updated = true
-        }
-
-        if detail != nil {
-            reminder.detail = detail
-            updated = true
-        }
-
-        if priority != nil {
-            reminder.priority = Int16(priority!.rawValue)
-            updated = true
-        }
-
-        if updated {
-            do {
-                try context.save()
-            } catch {
-                print("Error:", error)
-            }
-        }
-    }
-
-    func deleteReminder(atIndexPath indexPath: IndexPath) {
-        let reminder = reminders[indexPath.row]
-        context.delete(reminder)
-        reminders.remove(at: indexPath.row)
-        updateIndices()
+        let parent = getReminder(forIndexPath: parentIndexPath)
+        parent.addToSubReminders(subreminder)
 
         do {
             try context.save()
         } catch {
             print("Error:", error)
         }
+
+        var subreminderIndexPath = parentIndexPath!
+        subreminderIndexPath.row += 1
+
+        return subreminderIndexPath
     }
 
-    func detailedReminderViewModelForIndexPath(_ indexPath: IndexPath) -> DetailedReminderViewModel {
-        let reminder = getReminder(forIndexPath: indexPath)
-        let viewModel = DetailedReminderViewModel(reminder: reminder)
-        return viewModel
-    }
 
     func initializeTableData(withCompleted completed: Bool, completion: ((_ result: Bool) -> Void)?) {
         let fetchRequest: NSFetchRequest<Reminder> = Reminder.sortedFetchRequest(withCompleted: completed)
@@ -137,8 +83,32 @@ class ReminderTableViewModel {
             return
         }
 
-        self.reminders = fetchedReminders
+        reminders = fetchedReminders
         completion?(true)
+    }
+
+    func reminderSelected(indexPath: IndexPath) -> [IndexPath] {
+        let reminder = getReminder(forIndexPath: indexPath)
+        if !reminder.subreminder {
+            parentIndexPath = indexPath
+        }
+        selectedIndexPath = indexPath
+
+        if let subRemindersSet = reminder.subReminders {
+            for anyReminder in subRemindersSet {
+                let subreminder = anyReminder as! Reminder
+                subreminders.append(subreminder)
+            }
+        }
+
+        var indices = getSubreminderIndices()
+        return indices
+    }
+
+    func reminderDeselected(indexPath: IndexPath) -> [IndexPath] {
+        var indices = getSubreminderIndices()
+        subreminders.removeAll()
+        return indices
     }
 
     func moveReminder(fromIndex start: IndexPath, toIndex end: IndexPath) {
@@ -154,16 +124,34 @@ class ReminderTableViewModel {
 
     // TODO: Remove this test function
     func checkReminders() {
-        for reminder in reminders {
-            print("Title:", reminder.title, ", Completed:", reminder.completed)
+
+        let fetchRequest: NSFetchRequest<Reminder> = Reminder.fetchRequest()
+        var fetchedReminders: [Reminder]
+
+        do {
+            fetchedReminders = try context.fetch(fetchRequest)
+            for reminder in fetchedReminders {
+                print("Reminder:", reminder.title, "Completed:", reminder.completed, "Sub:", reminder.subreminder)
+            }
+
+        } catch {
+            print("Could not fetch:", error)
         }
     }
 
     // MARK: - Private Funcs
 
     private func getReminder(forIndexPath indexPath: IndexPath) -> Reminder {
-        let index = indexPath.row
-        return reminders[index]
+        if selectedIndexPath == nil || indexPath.row <= selectedIndexPath.row {
+            return reminders[indexPath.row]
+        }
+
+        let remainder = indexPath.row - selectedIndexPath.row
+        if remainder <= subreminders.count {
+            return subreminders[remainder - 1]
+        }
+
+        return reminders[indexPath.row - subreminders.count]
     }
 
     private func creationString(_ date: Date) -> String {
@@ -214,6 +202,26 @@ class ReminderTableViewModel {
             count -= 1
             reminder.index = Int16(count)
         }
+
+        count = subreminders.count
+        for reminder in subreminders {
+            count -= 1
+            reminder.index = Int16(count)
+        }
+    }
+
+    private func getSubreminderIndices() -> [IndexPath] {
+        var indices = [IndexPath]()
+        let count = subreminders.count
+
+        if parentIndexPath != nil {
+            for offset in stride(from: 1, through: count, by: 1) {
+                var subIndexPath = parentIndexPath!
+                subIndexPath.row += offset
+                indices.append(subIndexPath)
+            }
+        }
+        return indices
     }
 }
 
