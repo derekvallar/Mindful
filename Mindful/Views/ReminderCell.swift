@@ -115,9 +115,6 @@ class ReminderCell: UITableViewCell {
 
     func changeFilterMode(_ filtering: Bool) {
         filterMode = filtering
-
-        print("FilteringMode:", filterMode)
-
         if filterMode {
             completeDeleteButton.isSelected = false
         }
