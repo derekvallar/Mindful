@@ -81,19 +81,18 @@ class SubreminderViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("viewWillAppear")
-        print("View:", view.bounds)
-        view.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
+
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         print("viewDidAppear")
-        print("View:", view.bounds)
 
         // TODO: Reload data only on return from DetailedReminderController
         tableView.reloadData()
-
+        tableView.backgroundView = UIView(frame: view.bounds)
+        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
 
         if startWithNewReminder {
             viewModel.addReminder()
@@ -162,7 +161,7 @@ extension SubreminderViewController: UITableViewDataSource {
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
-        cell.setup(item: item, filtering: filterMode)
+        cell.setup(item: item, hasSubreminders: false, filtering: filterMode)
 
         return cell
     }
@@ -224,31 +223,36 @@ extension SubreminderViewController: UITextViewDelegate {
 // MARK: - CellButtonDelegate
 
 extension SubreminderViewController: CellButtonDelegate {
-    func didTapButton(_ cell: ReminderCell, button: String) {
+    func didTapButton(_ cell: ReminderCell, button: UICellButtonType) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
 
-        if button == Constants.completeDeleteButtonString {
-            if filterMode {
-                viewModel.deleteReminder(atIndexPath: indexPath)
-                tableView.beginUpdates()
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                tableView.endUpdates()
-            } else {
-                print("Complete button pushed:", cell.isCompleted())
-                if let completed = cell.isCompleted() {
-                    viewModel.updateReminder(completed: completed, title: nil, detail: nil, priority: nil, indexPath: indexPath)
-                }
+        switch button {
+        case .complete:
+            if let completed = cell.isCompleted() {
+                viewModel.updateReminder(completed: completed, title: nil, detail: nil, priority: nil, indexPath: indexPath)
             }
-        } else if button == Constants.detailRearrangeButtonString {
-            if filterMode {
 
-            } else {
-                let detailedViewModel = viewModel.getDetailedReminderViewModelForIndexPath(indexPath)
-                let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
-                navigationController?.pushViewController(detailedViewController, animated: true)
-            }
+        case .delete:
+            viewModel.deleteReminder(atIndexPath: indexPath)
+            tableView.beginUpdates()
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.endUpdates()
+
+        case .detail:
+            let detailedViewModel = viewModel.getDetailedReminderViewModelForIndexPath(indexPath)
+            let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
+            navigationController?.pushViewController(detailedViewController, animated: true)
+
+        case .rearrange:
+            break
+
+        case .subreminder:
+            break
+
+        case .none:
+            break
         }
     }
 }

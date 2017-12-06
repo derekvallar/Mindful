@@ -13,11 +13,11 @@ enum Constants {
 
     static let viewSpacing: CGFloat = 8.0
     static let viewSpacingInverse: CGFloat = -8.0
-    static let layoutSpacing: CGFloat = 15.0
-    static let layoutSpacingInverse: CGFloat = -15.0
+    static let layoutSpacing: CGFloat = 12.0
+    static let layoutSpacingInverse: CGFloat = -12.0
     
-    static let cellXSpacing: CGFloat = 8.0
-    static let cellXSpacingInverse: CGFloat = -8.0
+    static let cellXSpacing: CGFloat = 10.0
+    static let cellXSpacingInverse: CGFloat = -10.0
     static let cellYSpacing: CGFloat = 5.0
     static let cellYSpacingInverse: CGFloat = -5.0
 
@@ -25,6 +25,8 @@ enum Constants {
 
     static let backgroundColor: UIColor = #colorLiteral(red: 0.5198073602, green: 0.8550287484, blue: 0.9985881448, alpha: 1)
     static let gradientColor: UIColor = #colorLiteral(red: 0, green: 0.529114902, blue: 0.7376316786, alpha: 1)
+    static let backgroundCellColor: UIColor = #colorLiteral(red: 1, green: 1, blue: 0.9607843137, alpha: 1)
+
     static let textColor: UIColor = #colorLiteral(red: 0.2068527919, green: 0.2068527919, blue: 0.2068527919, alpha: 1)
     static let textSecondaryColor: UIColor = #colorLiteral(red: 0.7597485179, green: 0.7672707804, blue: 0.7672707804, alpha: 1)
     static let textWrittenSecondaryColor: UIColor = #colorLiteral(red: 0.6094480939, green: 0.6154822334, blue: 0.6154822334, alpha: 1)

@@ -9,7 +9,7 @@
 import UIKit
 
 protocol CellButtonDelegate: class {
-    func didTapButton(_ cell: ReminderCell, button: String)
+    func didTapButton(_ cell: ReminderCell, button: UICellButtonType)
 }
 
 class ReminderCell: UITableViewCell {
@@ -19,8 +19,9 @@ class ReminderCell: UITableViewCell {
     private var cardView = UIView()
     private var cardStackView = UIStackView()
 
-    private var completeDeleteButton = UIButton()
-    private var detailRearrangeButton = UIButton()
+    private var leftButton = UICellButton()
+    private var rightButton = UICellButton()
+    private var subreminderButton = UICellButton()
 
     private var infoStackView = UIStackView()
     private var priorityImageView = UIImageView()
@@ -46,11 +47,14 @@ class ReminderCell: UITableViewCell {
         cardStackView.spacing = Constants.viewSpacing
         cardStackView.alignment = .center
 
-        completeDeleteButton.addTarget(self, action: #selector(completeDeleteButtonPressed), for: .touchUpInside)
-        completeDeleteButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
+        leftButton.addTarget(self, action: #selector(leftButtonPressed), for: .touchUpInside)
+        leftButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
 
-        detailRearrangeButton.addTarget(self, action: #selector(detailRearrangeButtonPressed), for: .touchUpInside)
-        detailRearrangeButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
+        rightButton.addTarget(self, action: #selector(rightButtonPressed), for: .touchUpInside)
+        rightButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
+
+        subreminderButton.addTarget(self, action: #selector(subreminderButtonPressed), for: .touchUpInside)
+        subreminderButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
 
         infoStackView.axis = .vertical
         infoStackView.alignment = .leading
@@ -60,16 +64,20 @@ class ReminderCell: UITableViewCell {
         titleTextView.textColor = Constants.textColor
         titleTextView.isScrollEnabled = false
         titleTextView.isUserInteractionEnabled = false
-        titleTextView.font = UIFont.systemFont(ofSize: 15.0)
+        titleTextView.font = UIFont.systemFont(ofSize: 14.5)
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
 
         alarmLabel.isHidden = true
         detailLabel.isHidden = true
         detailLabel.textColor = Constants.textSecondaryColor
-        detailLabel.font = detailLabel.font.withSize(13.0)
+        detailLabel.font = detailLabel.font.withSize(12.5)
 
-        detailRearrangeButton.isHidden = true
+        rightButton.isHidden = true
+
+        subreminderButton.setImage(#imageLiteral(resourceName: "SubreminderIcon"), for: .normal)
+        subreminderButton.setType(.subreminder)
+        subreminderButton.isHidden = true
 
         // Setup Constraints
 
@@ -77,8 +85,8 @@ class ReminderCell: UITableViewCell {
 
         let cellMargins = contentView.layoutMarginsGuide
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cardView.leadingAnchor.constraint(equalTo: cellMargins.leadingAnchor),
-            cardView.trailingAnchor.constraint(equalTo: cellMargins.trailingAnchor),
+            cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.cellXSpacing),
+            cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Constants.cellXSpacingInverse),
             cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.cellYSpacing),
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.cellYSpacingInverse)
             ])
@@ -90,24 +98,26 @@ class ReminderCell: UITableViewCell {
             cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: Constants.layoutSpacing),
             cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: Constants.layoutSpacingInverse)])
 
-        cardStackView.addArrangedSubview(completeDeleteButton)
+        cardStackView.addArrangedSubview(leftButton)
         cardStackView.addArrangedSubview(infoStackView)
-        cardStackView.addArrangedSubview(detailRearrangeButton)
+        cardStackView.addArrangedSubview(subreminderButton)
+        cardStackView.addArrangedSubview(rightButton)
 
         infoStackView.addArrangedSubview(titleTextView)
         infoStackView.addArrangedSubview(detailLabel)
     }
 
-    func setup(item: ReminderViewModelItem, filtering: Bool) {
+    func setup(item: ReminderViewModelItem, hasSubreminders: Bool, filtering: Bool) {
 
-        completeDeleteButton.isSelected = item.completed
-        
+        leftButton.isSelected = item.completed
         titleTextView.text = item.title
         if let detailText = item.detail {
             detailLabel.isHidden = false
             detailLabel.text = detailText
         }
         priorityImageView.image = UIImage(named: item.priority.imageLocation)
+
+        subreminderButton.isHidden = !hasSubreminders
         filterMode = filtering
 
         synchronizeButtonImages()
@@ -116,25 +126,25 @@ class ReminderCell: UITableViewCell {
     func changeFilterMode(_ filtering: Bool) {
         filterMode = filtering
         if filterMode {
-            completeDeleteButton.isSelected = false
+            leftButton.isSelected = false
         }
 
         UIView.animate(withDuration: 0.075, animations: {
-            self.completeDeleteButton.alpha = 0.0
-            self.detailRearrangeButton.alpha = 0.0
+            self.leftButton.alpha = 0.0
+            self.rightButton.alpha = 0.0
         }) { (finished) in
             self.synchronizeButtonImages()
             UIView.animate(withDuration: 0.075, animations: {
-                self.completeDeleteButton.alpha = 1.0
-                self.detailRearrangeButton.alpha = 1.0
+                self.leftButton.alpha = 1.0
+                self.rightButton.alpha = 1.0
             })
         }
     }
 
     func userSelected(_ selected: Bool) {
         UIView.animate(withDuration: 0.15) {
-            self.detailRearrangeButton.alpha = selected ? 1.0 : 0.0
-            self.detailRearrangeButton.isHidden = !selected
+            self.rightButton.alpha = selected ? 1.0 : 0.0
+            self.rightButton.isHidden = !selected
         }
 
         titleTextView.isUserInteractionEnabled = selected
@@ -145,36 +155,46 @@ class ReminderCell: UITableViewCell {
 
     func isCompleted() -> Bool? {
         if !filterMode {
-            return completeDeleteButton.isSelected
+            return leftButton.isSelected
         }
         return nil
     }
 
-    @objc func completeDeleteButtonPressed() {
+    @objc func leftButtonPressed() {
         if filterMode {
 
         } else {
-            completeDeleteButton.isSelected = !completeDeleteButton.isSelected
+            leftButton.isSelected = !leftButton.isSelected
         }
 
-        buttonDelegate?.didTapButton(self, button: Constants.completeDeleteButtonString)
+        buttonDelegate?.didTapButton(self, button: leftButton.type)
     }
 
-    @objc func detailRearrangeButtonPressed() {
-        buttonDelegate?.didTapButton(self, button: Constants.detailRearrangeButtonString)
+    @objc func rightButtonPressed() {
+        buttonDelegate?.didTapButton(self, button: rightButton.type)
+    }
+
+    @objc func subreminderButtonPressed() {
+        buttonDelegate?.didTapButton(self, button: subreminderButton.type)
     }
 
     private func synchronizeButtonImages() {
         if filterMode {
-            completeDeleteButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .normal)
-            completeDeleteButton.setImage(nil, for: .selected)
-            detailRearrangeButton.setImage(#imageLiteral(resourceName: "RearrangeIcon"), for: .normal)
-            detailRearrangeButton.isHidden = false
+            leftButton.setType(.delete)
+            leftButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .normal)
+            leftButton.setImage(nil, for: .selected)
+
+            rightButton.setType(.rearrange)
+            rightButton.setImage(#imageLiteral(resourceName: "RearrangeIcon"), for: .normal)
+            rightButton.isHidden = false
         } else {
-            completeDeleteButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
-            completeDeleteButton.setImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
-            detailRearrangeButton.setImage(#imageLiteral(resourceName: "DetailIcon"), for: .normal)
-            detailRearrangeButton.isHidden = true
+            leftButton.setType(.complete)
+            leftButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
+            leftButton.setImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
+
+            rightButton.setType(.delete)
+            rightButton.setImage(#imageLiteral(resourceName: "DetailIcon"), for: .normal)
+            rightButton.isHidden = true
         }
     }
 
