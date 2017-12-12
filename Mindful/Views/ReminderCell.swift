@@ -108,7 +108,6 @@ class ReminderCell: UITableViewCell {
     }
 
     func setup(item: ReminderViewModelItem, hasSubreminders: Bool, filtering: Bool) {
-
         leftButton.isSelected = item.completed
         titleTextView.text = item.title
         if let detailText = item.detail {
@@ -119,7 +118,6 @@ class ReminderCell: UITableViewCell {
 
         subreminderButton.isHidden = !hasSubreminders
         filterMode = filtering
-
         synchronizeButtonImages()
     }
 
@@ -127,6 +125,9 @@ class ReminderCell: UITableViewCell {
         filterMode = filtering
         if filterMode {
             leftButton.isSelected = false
+            subreminderButton.isEnabled = false
+        } else {
+            subreminderButton.isEnabled = true
         }
 
         UIView.animate(withDuration: 0.075, animations: {
@@ -175,7 +176,9 @@ class ReminderCell: UITableViewCell {
     }
 
     @objc func subreminderButtonPressed() {
-        buttonDelegate?.didTapButton(self, button: subreminderButton.type)
+        if !filterMode {
+            buttonDelegate?.didTapButton(self, button: subreminderButton.type)
+        }
     }
 
     private func synchronizeButtonImages() {
@@ -192,7 +195,7 @@ class ReminderCell: UITableViewCell {
             leftButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
             leftButton.setImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
 
-            rightButton.setType(.delete)
+            rightButton.setType(.detail)
             rightButton.setImage(#imageLiteral(resourceName: "DetailIcon"), for: .normal)
             rightButton.isHidden = true
         }

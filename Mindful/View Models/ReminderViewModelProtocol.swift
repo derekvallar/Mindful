@@ -99,7 +99,7 @@ extension ReminderViewModelProtocol {
         }
     }
 
-    private func updateIndices() {
+    func updateIndices() {
         var count = reminders.count
         for reminder in reminders {
             count -= 1

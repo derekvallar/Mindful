@@ -80,10 +80,7 @@ class MainReminderViewController: UITableViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        // TODO: Reload data only on return from DetailedReminderController
-        tableView.reloadData()
-
+        
         tableView.backgroundView = UIView(frame: view.bounds)
         tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
@@ -198,6 +195,7 @@ extension MainReminderViewController {
         if !filterMode {
             cell.userSelected(false)
         }
+        
         addButton.image = #imageLiteral(resourceName: "AddIcon")
     }
 }
@@ -256,6 +254,10 @@ extension MainReminderViewController: CellButtonDelegate {
             let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
             navigationController?.pushViewController(detailedViewController, animated: true)
 
+            if let selectedIndex = tableView.indexPathForSelectedRow {
+                tableView(tableView, didDeselectRowAt: selectedIndex)
+            }
+            
         case .rearrange:
             break
 
@@ -263,6 +265,10 @@ extension MainReminderViewController: CellButtonDelegate {
             let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
             let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: false)
             navigationController?.pushViewController(subreminderViewController, animated: true)
+
+            if let selectedIndex = tableView.indexPathForSelectedRow {
+                tableView(tableView, didDeselectRowAt: selectedIndex)
+            }
 
         case .none:
             break

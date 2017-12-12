@@ -41,8 +41,6 @@ class SubreminderViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        print("ViewDidLoad")
-
         view.addSubview(tableView)
         NSLayoutConstraint.setupAndActivate(constraints: [
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -53,7 +51,6 @@ class SubreminderViewController: UIViewController {
 
         navigationItem.leftItemsSupplementBackButton = true
         navigationItem.backBarButtonItem?.tintColor = UIColor.white
-        print("Back exists:", navigationItem.backBarButtonItem != nil)
 
         navigationItem.leftBarButtonItem = detailButton
         navigationItem.rightBarButtonItem = addButton
@@ -70,29 +67,29 @@ class SubreminderViewController: UIViewController {
         tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
+
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
+        tableView.backgroundView = nil
+        tableView.backgroundColor = UIColor.clear
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         tableView.addGestureRecognizer(tapGesture)
+
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("viewWillAppear")
-
+        view.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        print("viewDidAppear")
-
         // TODO: Reload data only on return from DetailedReminderController
         tableView.reloadData()
-        tableView.backgroundView = UIView(frame: view.bounds)
-        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
 
         if startWithNewReminder {
             viewModel.addReminder()

@@ -69,10 +69,12 @@ class SubreminderViewModel: ReminderViewModelProtocol {
                 if $0.completed {
                     return $0.completedDate! as Date > $1.completedDate! as Date
                 }
-                return $0.index < $1.index
+                return $0.index > $1.index
             }
             return !$0.completed && $1.completed
         }
+
+        updateIndices()
 
         for item in reminders {
             print("Sub", item.index, ", completed:", item.completed, ", title:", item.title)

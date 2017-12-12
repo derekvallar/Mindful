@@ -10,7 +10,7 @@
         <attribute name="priority" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="subreminder" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
-        <relationship name="subReminders" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Reminder" syncable="YES"/>
+        <relationship name="subReminders" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Reminder" syncable="YES"/>
     </entity>
     <elements>
         <element name="Reminder" positionX="-63" positionY="-18" width="128" height="195"/>

@@ -73,6 +73,9 @@ class DetailedReminderViewController: UIViewController {
         let priority = Priority(rawValue: Int16(detailedReminderView.prioritySegmentedControl.selectedSegmentIndex))
 
         self.viewModel.updateReminder(title: title!, detail: detail!, priority: priority!)
+        
         self.navigationController?.popViewController(animated: true)
+        let mainController = self.navigationController?.topViewController as? MainReminderViewController
+        mainController?.tableView.reloadData()
     }
 }
