@@ -56,11 +56,7 @@ extension ReminderViewModelProtocol {
         reminders.remove(at: indexPath.row)
         updateIndices()
 
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
-        }
+        saveReminders()
     }
 
     func updateReminder(completed: Bool?, title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
@@ -91,11 +87,7 @@ extension ReminderViewModelProtocol {
         }
 
         if updated {
-            do {
-                try context.save()
-            } catch {
-                print("Error:", error)
-            }
+            saveReminders()
         }
     }
 
@@ -107,6 +99,27 @@ extension ReminderViewModelProtocol {
         }
     }
 
+    mutating func swapReminders(fromIndexPath: IndexPath, to: IndexPath) {
+        let fromReminder = getReminder(forIndexPath: fromIndexPath)
+        let toReminder = getReminder(forIndexPath: to)
+        let fromReminderIndex = fromReminder.index
+        
+        print("Swapping:", fromReminder.index, ",", toReminder.index)
+
+        fromReminder.index = toReminder.index
+        toReminder.index = fromReminderIndex
+        
+        reminders.swapAt(fromIndexPath.row, to.row)        
+    }
+    
+    func saveReminders() {
+        do {
+            try context.save()
+        } catch {
+            print("Error:", error)
+        }
+    }
+    
     func creationString(_ date: Date) -> String {
         var result = "Created "
         let timeSince = date.timeIntervalSinceNow.rounded() * -1.0

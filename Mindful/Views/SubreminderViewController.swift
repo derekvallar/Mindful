@@ -204,11 +204,9 @@ extension SubreminderViewController: UITextViewDelegate {
 
     func textViewDidEndEditing(_ textView: UITextView) {
         let textViewPoint = textView.convert(textView.center, to: tableView)
-        guard let indexPath = tableView.indexPathForRow(at: textViewPoint) else {
-            return
-        }
-
-        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+        
+        guard let indexPath = tableView.indexPathForRow(at: textViewPoint),
+              let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
 

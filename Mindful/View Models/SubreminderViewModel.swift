@@ -32,11 +32,7 @@ class SubreminderViewModel: ReminderViewModelProtocol {
         reminders.insert(subreminder, at: 0)
         reminder.addToSubReminders(subreminder)
 
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
-        }
+        saveReminders()
     }
 
     func getSectionReminder() -> ReminderViewModelItem {

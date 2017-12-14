@@ -35,11 +35,7 @@ class ReminderViewModel: ReminderViewModelProtocol {
         reminder.setup(index: nextIndex, subreminder: false)
         reminders.insert(reminder, at: 0)
 
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
-        }
+        saveReminders()
     }
 
 

@@ -20,6 +20,12 @@ class MainReminderViewController: UITableViewController {
     var filterMode: Bool!
     var currentMode: MindfulMode!
 
+    struct Rearrange {
+        static var snapshotView: UIView?
+        static var snapshotOffset: CGFloat?
+        static var currentIndexPath: IndexPath?
+    }
+
     convenience init() {
         self.init(nibName: nil, bundle: nil)
         viewModel = ReminderViewModel.standard
@@ -76,6 +82,9 @@ class MainReminderViewController: UITableViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         tableView.addGestureRecognizer(tapGesture)
+
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(rearrangeLongPress(gestureRecognizer:)))
+        tableView.addGestureRecognizer(longPressGesture)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -216,11 +225,9 @@ extension MainReminderViewController: UITextViewDelegate {
 
     func textViewDidEndEditing(_ textView: UITextView) {
         let textViewPoint = textView.convert(textView.center, to: tableView)
-        guard let indexPath = tableView.indexPathForRow(at: textViewPoint) else {
-            return
-        }
-
-        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+        
+        guard let indexPath = tableView.indexPathForRow(at: textViewPoint),
+              let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
 
