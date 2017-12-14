@@ -215,7 +215,7 @@ extension MainReminderViewController: UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        let textViewPoint = textView.convert(textView.center, to: view)
+        let textViewPoint = textView.convert(textView.center, to: tableView)
         guard let indexPath = tableView.indexPathForRow(at: textViewPoint) else {
             return
         }

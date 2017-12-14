@@ -55,7 +55,7 @@ class ReminderCell: UITableViewCell {
 
         subreminderButton.addTarget(self, action: #selector(subreminderButtonPressed), for: .touchUpInside)
         subreminderButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
-
+        
         infoStackView.axis = .vertical
         infoStackView.alignment = .leading
         infoStackView.distribution = .fill
@@ -119,6 +119,12 @@ class ReminderCell: UITableViewCell {
         subreminderButton.isHidden = !hasSubreminders
         filterMode = filtering
         synchronizeButtonImages()
+        
+        if filterMode {
+            rightButton.isHidden = false
+        } else {
+            rightButton.isHidden = true
+        }
     }
 
     func changeFilterMode(_ filtering: Bool) {
@@ -126,14 +132,25 @@ class ReminderCell: UITableViewCell {
         if filterMode {
             leftButton.isSelected = false
             subreminderButton.isEnabled = false
+            
+            if rightButton.isHidden {
+                UIView.animate(withDuration: 0.15, animations: {
+                    self.rightButton.isHidden = false
+                })
+            }
         } else {
             subreminderButton.isEnabled = true
+            if !rightButton.isHidden {
+                UIView.animate(withDuration: 0.15, animations: {
+                    self.rightButton.isHidden = true
+                })
+            }
         }
 
         UIView.animate(withDuration: 0.075, animations: {
             self.leftButton.alpha = 0.0
             self.rightButton.alpha = 0.0
-        }) { (finished) in
+        }) { (_) in
             self.synchronizeButtonImages()
             UIView.animate(withDuration: 0.075, animations: {
                 self.leftButton.alpha = 1.0
@@ -189,7 +206,6 @@ class ReminderCell: UITableViewCell {
 
             rightButton.setType(.rearrange)
             rightButton.setImage(#imageLiteral(resourceName: "RearrangeIcon"), for: .normal)
-            rightButton.isHidden = false
         } else {
             leftButton.setType(.complete)
             leftButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
@@ -197,7 +213,6 @@ class ReminderCell: UITableViewCell {
 
             rightButton.setType(.detail)
             rightButton.setImage(#imageLiteral(resourceName: "DetailIcon"), for: .normal)
-            rightButton.isHidden = true
         }
     }
 
