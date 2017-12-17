@@ -23,7 +23,7 @@ class SubreminderViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
 
-        navigationItem.title = "Subreminders"
+        navigationItem.title = Constants.subreminderTitle
         
         tableView = UITableView()
         tableView.dataSource = self
@@ -66,7 +66,7 @@ class SubreminderViewController: UIViewController {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
 
-        tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
+        tableView.register(ReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
 
@@ -112,7 +112,18 @@ class SubreminderViewController: UIViewController {
         }
 
         filterMode = !filterMode
-        setFilterMode(filterMode)
+        if filterMode {
+            navigationItem.title = Constants.filterTitle
+            navigationItem.rightBarButtonItem = nil
+        } else {
+            navigationItem.title = Constants.subreminderTitle
+            navigationItem.rightBarButtonItem = addButton
+        }
+
+        for cell in tableView.visibleCells {
+            let reminderCell = cell as? ReminderCell
+            reminderCell?.changeFilterMode(filterMode)
+        }
     }
 
     @objc func addButtonPressed() {
@@ -130,18 +141,6 @@ class SubreminderViewController: UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-
-    private func setFilterMode(_ filter: Bool) {
-        if filter {
-            navigationItem.rightBarButtonItem = nil
-        } else {
-            navigationItem.rightBarButtonItem = addButton
-        }
-        for cell in tableView.visibleCells {
-            let reminderCell = cell as? ReminderCell
-            reminderCell?.changeFilterMode(filter)
-        }
-    }
 }
 
 extension SubreminderViewController: UITableViewDataSource {
@@ -155,7 +154,7 @@ extension SubreminderViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! ReminderCell
 
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         cell.titleTextView.delegate = self

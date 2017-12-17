@@ -73,7 +73,7 @@ class MainReminderViewController: UITableViewController {
 
         // Setup the table view
 
-        tableView.register(ReminderCell.self, forCellReuseIdentifier: "ReminderCell")
+        tableView.register(ReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .none
@@ -100,7 +100,23 @@ class MainReminderViewController: UITableViewController {
         }
 
         filterMode = !filterMode
-        setFilterMode(filterMode)
+        if filterMode {
+            navigationItem.title = Constants.filterTitle
+            navigationItem.rightBarButtonItems = nil
+        } else {
+            if currentMode == .main {
+                navigationItem.title = Constants.appName
+            } else if currentMode == .completed {
+                navigationItem.title = Constants.completedTitle
+            }
+            
+            navigationItem.rightBarButtonItems = [addButton, completedButton]
+        }
+        
+        for cell in tableView.visibleCells {
+            let reminderCell = cell as? ReminderCell
+            reminderCell?.changeFilterMode(filterMode)
+        }
     }
 
     @objc func addButtonPressed() {
@@ -130,7 +146,7 @@ class MainReminderViewController: UITableViewController {
         if currentMode == .main {
             completed = true
             navigationItem.rightBarButtonItems = [completedButton]
-            navigationItem.title = "Completed"
+            navigationItem.title = Constants.completedTitle
             currentMode = .completed
         } else if currentMode == .completed {
             navigationItem.rightBarButtonItems = [addButton, completedButton]
@@ -150,18 +166,6 @@ class MainReminderViewController: UITableViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-
-    private func setFilterMode(_ filter: Bool) {
-        if filter {
-            navigationItem.rightBarButtonItems = nil
-        } else {
-            navigationItem.rightBarButtonItems = [addButton, completedButton]
-        }
-        for cell in tableView.visibleCells {
-            let reminderCell = cell as? ReminderCell
-            reminderCell?.changeFilterMode(filter)
-        }
-    }
 }
 
 
@@ -178,7 +182,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! ReminderCell
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
         
