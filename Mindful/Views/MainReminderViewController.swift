@@ -129,11 +129,15 @@ class MainReminderViewController: UITableViewController {
         var completed = false
         if currentMode == .main {
             completed = true
+            navigationItem.rightBarButtonItems = [completedButton]
+            navigationItem.title = "Completed"
             currentMode = .completed
         } else if currentMode == .completed {
+            navigationItem.rightBarButtonItems = [addButton, completedButton]
+            navigationItem.title = Constants.appName
             currentMode = .main
         }
-
+        
         viewModel.initializeTableData(withCompleted: completed) { result in
             if result {
                 self.tableView.reloadData()
@@ -175,13 +179,13 @@ extension MainReminderViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ReminderCell", for: indexPath) as! ReminderCell
-
-        let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
-
+        
+        let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         let hasSubreminders = viewModel.hasSubreminders(indexPath: indexPath)
         cell.setup(item: item, hasSubreminders: hasSubreminders, filtering: filterMode)
+        
         return cell
     }
 
@@ -201,6 +205,7 @@ extension MainReminderViewController {
             return
         }
 
+        view.endEditing(true)
         if !filterMode {
             cell.userSelected(false)
         }

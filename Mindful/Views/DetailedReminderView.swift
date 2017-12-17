@@ -10,7 +10,7 @@ import UIKit
 
 class DetailedReminderView: UIView {
 
-    var titleField: UITextField!
+    var titleTextView: UITextView!
     var detailsField: UITextField!
     var prioritySegmentedControl: UISegmentedControl!
     var alarmPicker: UIDatePicker!
@@ -26,7 +26,7 @@ class DetailedReminderView: UIView {
     }
 
     func setup(title: String, detail: String, priority: Priority) {
-        titleField.text = title
+        titleTextView.text = title
         detailsField.text = detail
         prioritySegmentedControl.selectedSegmentIndex = Int(priority.rawValue)
     }
@@ -45,10 +45,6 @@ class DetailedReminderView: UIView {
 
         self.backgroundColor = UIColor.white
         self.layer.cornerRadius = 10
-//        self.layer.shadowOffset = CGSize.zero
-//        self.layer.shadowRadius = 25
-//        self.layer.shadowOpacity = 0.25
-
 
         // Setting up the structure
 
@@ -76,17 +72,19 @@ class DetailedReminderView: UIView {
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)])
 
-
-
-
-        titleField = UITextField()
-        titleField.placeholder = "Reminder"
-        titleField.textColor = Constants.textColor
-        titleField.font = titleField.font?.withSize(25.0)
-        stackView.addArrangedSubview(titleField)
+        titleTextView = UITextView()
+        titleTextView.font = UIFont.systemFont(ofSize: 17.5)
+        titleTextView.textColor = Constants.textColor
+        titleTextView.isScrollEnabled = false
+        
+        titleTextView.textContainerInset = UIEdgeInsets.zero
+        titleTextView.textContainer.lineFragmentPadding = 0.0
+        titleTextView.layer.masksToBounds = false
+        stackView.addArrangedSubview(titleTextView)
 
         detailsField = UITextField()
-        detailsField.placeholder = "Add some details"
+        detailsField.placeholder = "Add details"
+        detailsField.font = UIFont.systemFont(ofSize: 15.5)
         detailsField.textColor = Constants.textWrittenSecondaryColor
         stackView.addArrangedSubview(detailsField)
 

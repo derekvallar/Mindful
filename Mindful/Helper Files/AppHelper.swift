@@ -30,8 +30,10 @@ enum Constants {
     static let textColor: UIColor = #colorLiteral(red: 0.2068527919, green: 0.2068527919, blue: 0.2068527919, alpha: 1)
     static let textSecondaryColor: UIColor = #colorLiteral(red: 0.7597485179, green: 0.7672707804, blue: 0.7672707804, alpha: 1)
     static let textWrittenSecondaryColor: UIColor = #colorLiteral(red: 0.6094480939, green: 0.6154822334, blue: 0.6154822334, alpha: 1)
-    static let textCompletedColor: UIColor = #colorLiteral(red: 0.5762559828, green: 0.8832685596, blue: 0.5388941573, alpha: 1)
+    static let textCompletedColor: UIColor = #colorLiteral(red: 1, green: 0.7485261518, blue: 0.3213167326, alpha: 1)
 
+    static let priorityColor: UIColor = #colorLiteral(red: 1, green: 0.7485261518, blue: 0.3213167326, alpha: 1)
+    
     static let emptyIconString: String = "EmptyIcon"
     static let priorityIconString: String = "PriorityIcon"
     static let highPriorityIconString: String = "HighPriorityIcon"

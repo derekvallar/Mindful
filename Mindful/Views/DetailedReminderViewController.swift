@@ -55,10 +55,6 @@ class DetailedReminderViewController: UIViewController {
         self.view.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
 
-    func updateCoreData() {
-
-    }
-
     func initializeFields() {
         let title = viewModel.getTitle()
         let detail = viewModel.getDetail()
@@ -68,7 +64,7 @@ class DetailedReminderViewController: UIViewController {
     }
 
     @objc func doneEditing() {
-        let title = detailedReminderView.titleField.text
+        let title = detailedReminderView.titleTextView.text
         let detail = detailedReminderView.detailsField.text
         let priority = Priority(rawValue: Int16(detailedReminderView.prioritySegmentedControl.selectedSegmentIndex))
 

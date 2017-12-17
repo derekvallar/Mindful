@@ -35,7 +35,7 @@ class SubreminderViewModel: ReminderViewModelProtocol {
         saveReminders()
     }
 
-    func getSectionReminder() -> ReminderViewModelItem {
+    func getSectionViewModelItem() -> ReminderViewModelItem {
         let completed = reminder.completed
         let title = reminder.title!
         var detail: String?

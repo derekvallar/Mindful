@@ -18,7 +18,8 @@ class ReminderCell: UITableViewCell {
 
     private var cardView = UIView()
     private var cardStackView = UIStackView()
-
+    private var borderLayer: CAShapeLayer?
+    
     private var leftButton = UICellButton()
     private var rightButton = UICellButton()
     private var subreminderButton = UICellButton()
@@ -67,12 +68,14 @@ class ReminderCell: UITableViewCell {
         titleTextView.font = UIFont.systemFont(ofSize: 14.5)
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
+        titleTextView.layer.masksToBounds = false
 
         alarmLabel.isHidden = true
+        
         detailLabel.isHidden = true
         detailLabel.textColor = Constants.textSecondaryColor
-        detailLabel.font = detailLabel.font.withSize(12.5)
-
+        detailLabel.font = UIFont.systemFont(ofSize: 12.5)
+        
         rightButton.isHidden = true
 
         subreminderButton.setImage(#imageLiteral(resourceName: "SubreminderIcon"), for: .normal)
@@ -168,8 +171,26 @@ class ReminderCell: UITableViewCell {
         titleTextView.isUserInteractionEnabled = selected
         if selected {
             titleTextView.becomeFirstResponder()
+            
+            if borderLayer != nil {
+                return
+            }
+
+            borderLayer = CAShapeLayer()
+            borderLayer?.frame = cardView.bounds
+            borderLayer?.path = UIBezierPath(roundedRect: cardView.bounds, cornerRadius: 7.0).cgPath
+            borderLayer?.fillColor = UIColor.clear.cgColor
+            borderLayer?.strokeColor = Constants.priorityColor.cgColor
+            borderLayer?.lineWidth = 5.0
+            cardView.layer.addSublayer(borderLayer!)
+            
+        } else {
+            if borderLayer != nil {
+                borderLayer?.removeFromSuperlayer()
+                borderLayer = nil
+            }
         }
-    }
+}
 
     func isCompleted() -> Bool? {
         if !filterMode {

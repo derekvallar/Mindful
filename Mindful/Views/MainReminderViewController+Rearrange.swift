@@ -18,9 +18,10 @@ extension MainReminderViewController {
               let cell = tableView.cellForRow(at: indexPath) else {
             return
         }
-        
         switch longPress.state {
         case .began:
+            print("Began")
+            
             let view = snapshot(cell: cell)
             view.center = cell.center
             view.alpha = 0.0
@@ -29,7 +30,9 @@ extension MainReminderViewController {
             UIView.animate(withDuration: 0.25, animations: {
                 view.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
                 view.alpha = 1.0
-            }, completion: { (finished) in
+            }, completion: { finished in
+                
+                print("Finished:", finished)
                 if finished {
                     cell.isHidden = true
                 }
@@ -40,13 +43,15 @@ extension MainReminderViewController {
             Rearrange.currentIndexPath = indexPath
 
         case .changed:
+            print("Changed:", location)
+            
             guard let snapshotView = Rearrange.snapshotView,
                   let currentIndexPath = Rearrange.currentIndexPath else {
                 return
             }
             
             if snapshotView.alpha == 1.0 {
-                snapshotView.alpha = 0.9
+                snapshotView.alpha = 0.8
             }
             
             snapshotView.center.y = location.y - Rearrange.snapshotOffset!
@@ -58,25 +63,26 @@ extension MainReminderViewController {
             }
 
         default:
+            print("Ended?")
             guard let snapshotView = Rearrange.snapshotView else {
                 return
             }
-            
-            cell.isHidden = false
-            cell.alpha = 0.0
+            print("no probs")
             
             UIView.animate(withDuration: 0.25, animations: {
                 snapshotView.transform = CGAffineTransform.identity
                 snapshotView.center = cell.center
                 snapshotView.alpha = 1.0
-            }, completion: { (finished) in
+            }, completion: { finished in
+                cell.isHidden = false
                 cell.alpha = 1.0
                 Rearrange.snapshotView?.removeFromSuperview()
                 Rearrange.snapshotView = nil
                 Rearrange.currentIndexPath = nil
                 Rearrange.snapshotOffset = nil
+                print("cell is hidden", cell.isHidden, ", alpha:", cell.alpha)
             })
-            
+
             viewModel.saveReminders()
         }
     }

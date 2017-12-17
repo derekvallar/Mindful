@@ -23,6 +23,8 @@ class SubreminderViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
 
+        navigationItem.title = "Subreminders"
+        
         tableView = UITableView()
         tableView.dataSource = self
         tableView.delegate = self
@@ -164,7 +166,14 @@ extension SubreminderViewController: UITableViewDataSource {
     }
 
 //    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let cell = ReminderCell(style: ., reuseIdentifier: <#T##String?#>)
+//        let view = ReminderCell(style: .default, reuseIdentifier: nil)
+//        
+//        let item = viewModel.getSectionViewModelItem()
+//        view.titleTextView.delegate = self
+//        view.buttonDelegate = self
+//        view.setup(item: item, hasSubreminders: false, filtering: filterMode)
+//        
+//        return view
 //    }
 }
 
