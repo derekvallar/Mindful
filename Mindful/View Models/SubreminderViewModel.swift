@@ -30,7 +30,7 @@ class SubreminderViewModel: ReminderViewModelProtocol {
 
         subreminder.setup(index: nextIndex, subreminder: true)
         reminders.insert(subreminder, at: 0)
-        reminder.addToSubReminders(subreminder)
+        reminder.addToSubreminders(subreminder)
 
         saveReminders()
     }
@@ -51,7 +51,7 @@ class SubreminderViewModel: ReminderViewModelProtocol {
     }
 
     private func initializeTableData() {
-        guard let subreminderSet = reminder.subReminders else {
+        guard let subreminderSet = reminder.subreminders else {
             return
         }
 

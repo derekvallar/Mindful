@@ -19,7 +19,8 @@ class ReminderCell: UITableViewCell {
     private var cardView = UIView()
     private var cardStackView = UIStackView()
     private var borderLayer: CAShapeLayer?
-    
+
+    private var reminderStackView = UIStackView()
     private var leftButton = UICellButton()
     private var rightButton = UICellButton()
     private var subreminderButton = UICellButton()
@@ -44,9 +45,12 @@ class ReminderCell: UITableViewCell {
         cardView.backgroundColor = UIColor.white
         cardView.layer.cornerRadius = 7.0
 
-        cardStackView.axis = .horizontal
+        cardStackView.axis = .vertical
         cardStackView.spacing = Constants.viewSpacing
-        cardStackView.alignment = .center
+
+        reminderStackView.axis = .horizontal
+        reminderStackView.spacing = Constants.viewSpacing
+        reminderStackView.alignment = .center
 
         leftButton.addTarget(self, action: #selector(leftButtonPressed), for: .touchUpInside)
         leftButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
@@ -82,32 +86,69 @@ class ReminderCell: UITableViewCell {
         subreminderButton.setType(.subreminder)
         subreminderButton.isHidden = true
 
-        // Setup Constraints
+
+        // Add Subviews
 
         contentView.addSubview(cardView)
+        cardView.addSubview(cardStackView)
 
-        let cellMargins = contentView.layoutMarginsGuide
+        cardStackView.addArrangedSubview(reminderStackView)
+
+        reminderStackView.addArrangedSubview(leftButton)
+        reminderStackView.addArrangedSubview(infoStackView)
+        reminderStackView.addArrangedSubview(subreminderButton)
+        reminderStackView.addArrangedSubview(rightButton)
+
+        infoStackView.addArrangedSubview(titleTextView)
+        infoStackView.addArrangedSubview(detailLabel)
+
+
+        // Setup Constraints
+
         NSLayoutConstraint.setupAndActivate(constraints: [
             cardView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.cellXSpacing),
             cardView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Constants.cellXSpacingInverse),
             cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.cellYSpacing),
             cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.cellYSpacingInverse)
-            ])
+        ])
 
-        cardView.addSubview(cardStackView)
         NSLayoutConstraint.setupAndActivate(constraints: [
             cardStackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: Constants.viewSpacing),
             cardStackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: Constants.viewSpacingInverse),
             cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: Constants.layoutSpacing),
             cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: Constants.layoutSpacingInverse)])
+    }
 
-        cardStackView.addArrangedSubview(leftButton)
-        cardStackView.addArrangedSubview(infoStackView)
-        cardStackView.addArrangedSubview(subreminderButton)
-        cardStackView.addArrangedSubview(rightButton)
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        UIView.animate(withDuration: 0.15) {
+            self.rightButton.alpha = selected ? 1.0 : 0.0
+            self.rightButton.isHidden = !selected
+        }
 
-        infoStackView.addArrangedSubview(titleTextView)
-        infoStackView.addArrangedSubview(detailLabel)
+        titleTextView.isUserInteractionEnabled = selected
+        if selected {
+            titleTextView.becomeFirstResponder()
+
+            if borderLayer != nil {
+                return
+            }
+
+            borderLayer = CAShapeLayer()
+            borderLayer?.frame = cardView.bounds
+            borderLayer?.path = UIBezierPath(roundedRect: cardView.bounds, cornerRadius: 7.0).cgPath
+            borderLayer?.fillColor = UIColor.clear.cgColor
+            borderLayer?.strokeColor = Constants.priorityColor.cgColor
+            borderLayer?.lineWidth = 4.0
+            cardView.layer.addSublayer(borderLayer!)
+
+        } else {
+            if borderLayer != nil {
+                borderLayer?.removeFromSuperlayer()
+                borderLayer = nil
+            }
+        }
+        print(titleTextView.text, "selected:", selected)
     }
 
     func setup(item: ReminderViewModelItem, hasSubreminders: Bool, filtering: Bool) {
@@ -161,36 +202,6 @@ class ReminderCell: UITableViewCell {
             })
         }
     }
-
-    func userSelected(_ selected: Bool) {
-        UIView.animate(withDuration: 0.15) {
-            self.rightButton.alpha = selected ? 1.0 : 0.0
-            self.rightButton.isHidden = !selected
-        }
-
-        titleTextView.isUserInteractionEnabled = selected
-        if selected {
-            titleTextView.becomeFirstResponder()
-            
-            if borderLayer != nil {
-                return
-            }
-
-            borderLayer = CAShapeLayer()
-            borderLayer?.frame = cardView.bounds
-            borderLayer?.path = UIBezierPath(roundedRect: cardView.bounds, cornerRadius: 7.0).cgPath
-            borderLayer?.fillColor = UIColor.clear.cgColor
-            borderLayer?.strokeColor = Constants.priorityColor.cgColor
-            borderLayer?.lineWidth = 5.0
-            cardView.layer.addSublayer(borderLayer!)
-            
-        } else {
-            if borderLayer != nil {
-                borderLayer?.removeFromSuperlayer()
-                borderLayer = nil
-            }
-        }
-}
 
     func isCompleted() -> Bool? {
         if !filterMode {

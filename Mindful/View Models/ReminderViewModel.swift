@@ -63,7 +63,7 @@ class ReminderViewModel: ReminderViewModelProtocol {
 
     func hasSubreminders(indexPath: IndexPath) -> Bool {
         let reminder = getReminder(forIndexPath: indexPath)
-        if let subreminders = reminder.subReminders {
+        if let subreminders = reminder.subreminders {
             if subreminders.count > 0 {
                 return true
             }

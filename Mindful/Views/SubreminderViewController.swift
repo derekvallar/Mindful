@@ -182,19 +182,11 @@ extension SubreminderViewController: UITableViewDelegate {
         guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
-
-        if !filterMode {
-            cell.userSelected(true)
-        }
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
-        }
-
-        if !filterMode {
-            cell.userSelected(false)
         }
     }
 }

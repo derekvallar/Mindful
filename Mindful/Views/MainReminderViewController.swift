@@ -47,7 +47,7 @@ class MainReminderViewController: UITableViewController {
 
         // Setup the nav bar
 
-        navigationItem.title = Constants.appName
+        navigationItem.title = Constants.mainTitle
 
         addButton = UIBarButtonItem(image: #imageLiteral(resourceName: "AddIcon"), style: .done, target: self, action: #selector(addButtonPressed))
         completedButton = UIBarButtonItem(image: #imageLiteral(resourceName: "CompletedIcon"), style: .done, target: self, action: #selector(completedButtonPressed))
@@ -74,6 +74,8 @@ class MainReminderViewController: UITableViewController {
         // Setup the table view
 
         tableView.register(ReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
+        tableView.register(ActionCell.self, forCellReuseIdentifier: Constants.actionCellIdentifier)
+
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .none
@@ -90,8 +92,8 @@ class MainReminderViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        tableView.backgroundView = UIView(frame: view.bounds)
-        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
+//        tableView.backgroundView = UIView(frame: view.bounds)
+//        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
 
     @objc func detailButtonPressed() {
@@ -105,7 +107,7 @@ class MainReminderViewController: UITableViewController {
             navigationItem.rightBarButtonItems = nil
         } else {
             if currentMode == .main {
-                navigationItem.title = Constants.appName
+                navigationItem.title = Constants.mainTitle
             } else if currentMode == .completed {
                 navigationItem.title = Constants.completedTitle
             }
@@ -120,8 +122,9 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func addButtonPressed() {
-        if let selectedIndex = tableView.indexPathForSelectedRow {
-            let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(selectedIndex)
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView(tableView, didDeselectRowAt: indexPath)
+            let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
             let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: true)
             navigationController?.pushViewController(subreminderViewController, animated: true)
         } else {
@@ -150,7 +153,7 @@ class MainReminderViewController: UITableViewController {
             currentMode = .completed
         } else if currentMode == .completed {
             navigationItem.rightBarButtonItems = [addButton, completedButton]
-            navigationItem.title = Constants.appName
+            navigationItem.title = Constants.mainTitle
             currentMode = .main
         }
         
@@ -198,23 +201,20 @@ extension MainReminderViewController {
             return
         }
 
-        if !filterMode {
-            cell.userSelected(true)
-        }
         addButton.image = #imageLiteral(resourceName: "AddSubreminderIcon")
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
             return
         }
-
-        view.endEditing(true)
-        if !filterMode {
-            cell.userSelected(false)
-        }
         
+        view.endEditing(true)
         addButton.image = #imageLiteral(resourceName: "AddIcon")
+        tableView.beginUpdates()
+        tableView.endUpdates()
     }
 }
 

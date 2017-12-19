@@ -2,7 +2,7 @@
 //  Reminder+CoreDataProperties.swift
 //  Mindful
 //
-//  Created by Derek Vitaliano Vallar on 12/1/17.
+//  Created by Derek Vitaliano Vallar on 12/18/17.
 //  Copyright © 2017 Derek Vallar. All rights reserved.
 //
 //
@@ -24,25 +24,25 @@ extension Reminder {
     @NSManaged public var detail: String?
     @NSManaged public var index: Int16
     @NSManaged public var priority: Int16
-    @NSManaged public var title: String?
     @NSManaged public var subreminder: Bool
-    @NSManaged public var subReminders: NSSet?
+    @NSManaged public var title: String?
+    @NSManaged public var subreminders: NSSet?
 
 }
 
-// MARK: Generated accessors for subReminders
+// MARK: Generated accessors for subreminders
 extension Reminder {
 
-    @objc(addSubRemindersObject:)
-    @NSManaged public func addToSubReminders(_ value: Reminder)
+    @objc(addSubremindersObject:)
+    @NSManaged public func addToSubreminders(_ value: Reminder)
 
-    @objc(removeSubRemindersObject:)
-    @NSManaged public func removeFromSubReminders(_ value: Reminder)
+    @objc(removeSubremindersObject:)
+    @NSManaged public func removeFromSubreminders(_ value: Reminder)
 
-    @objc(addSubReminders:)
-    @NSManaged public func addToSubReminders(_ values: NSSet)
+    @objc(addSubreminders:)
+    @NSManaged public func addToSubreminders(_ values: NSSet)
 
-    @objc(removeSubReminders:)
-    @NSManaged public func removeFromSubReminders(_ values: NSSet)
+    @objc(removeSubreminders:)
+    @NSManaged public func removeFromSubreminders(_ values: NSSet)
 
 }

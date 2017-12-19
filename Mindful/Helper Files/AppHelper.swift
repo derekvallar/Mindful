@@ -10,11 +10,14 @@ import UIKit
 
 enum Constants {
     static let appName = "Mindful"
+    static let mainTitle = "Reminders"
     static let filterTitle = "Filter Reminders"
     static let completedTitle = "Completed"
     static let subreminderTitle = "Subreminders"
+
     static let reminderCellIdentifier = "ReminderCell"
-    
+    static let actionCellIdentifier = "ActionCell"
+
     static let viewSpacing: CGFloat = 8.0
     static let viewSpacingInverse: CGFloat = -8.0
     static let layoutSpacing: CGFloat = 12.0
