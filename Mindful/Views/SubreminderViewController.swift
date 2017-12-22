@@ -159,7 +159,7 @@ extension SubreminderViewController: UITableViewDataSource {
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
-        cell.setup(item: item, hasSubreminders: false, filtering: filterMode)
+        cell.setup(item: item, filtering: filterMode)
 
         return cell
     }

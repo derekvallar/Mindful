@@ -34,21 +34,20 @@ class SubreminderViewModel: ReminderViewModelProtocol {
 
         saveReminders()
     }
-
-    func getSectionViewModelItem() -> ReminderViewModelItem {
-        let completed = reminder.completed
-        let title = reminder.title!
-        var detail: String?
-
-        if let creationDate = reminder.creationDate as Date? {
-            detail = creationString(creationDate)
-        }
-
-        let priority = Priority(rawValue: (reminder.priority))!
-        let subreminder = reminder.subreminder
-
-        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, subreminder: subreminder)
-    }
+//
+//    func getSectionViewModelItem() -> ReminderViewModelItem {
+//        let completed = reminder.completed
+//        let title = reminder.title!
+//        var detail: String?
+//
+//        if let creationDate = reminder.creationDate as Date? {
+//            detail = creationString(creationDate)
+//        }
+//
+//        let priority = Priority(rawValue: (reminder.priority))!
+//
+//        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, subreminders: subreminder)
+//    }
 
     private func initializeTableData() {
         guard let subreminderSet = reminder.subreminders else {

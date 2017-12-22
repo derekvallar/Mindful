@@ -9,15 +9,15 @@
 import Foundation
 
 enum Priority: Int16 {
-    case none, priority, highPriority
+    case low, medium, high
 
     var imageLocation: String {
         switch self {
-        case .none:
+        case .low:
             return Constants.emptyIconString
-        case .priority:
+        case .medium:
             return Constants.priorityIconString
-        case .highPriority:
+        case .high:
             return Constants.highPriorityIconString
         }
     }

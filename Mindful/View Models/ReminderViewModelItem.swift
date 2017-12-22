@@ -14,13 +14,13 @@ class ReminderViewModelItem {
     var title: String
     var detail: String?
     var priority: Priority
-    var subreminder: Bool
+    var hasSubreminders: Bool
 
-    init(completed: Bool, title: String, detail: String?, priority: Priority, subreminder: Bool) {
+    init(completed: Bool, title: String, detail: String?, priority: Priority, subreminders: Bool) {
         self.completed = completed
         self.title = title
         self.detail = detail
         self.priority = priority
-        self.subreminder = subreminder
+        self.hasSubreminders = subreminders
     }
 }

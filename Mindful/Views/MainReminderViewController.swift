@@ -21,9 +21,17 @@ class MainReminderViewController: UITableViewController {
     var currentMode: MindfulMode!
 
     struct Rearrange {
+        static var cell: UITableViewCell?
         static var snapshotView: UIView?
         static var snapshotOffset: CGFloat?
         static var currentIndexPath: IndexPath?
+
+        func clear() {
+            Rearrange.cell = nil
+            Rearrange.snapshotView = nil
+            Rearrange.snapshotOffset = nil
+            Rearrange.currentIndexPath = nil
+        }
     }
 
     convenience init() {
@@ -86,7 +94,7 @@ class MainReminderViewController: UITableViewController {
         tableView.addGestureRecognizer(tapGesture)
 
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(rearrangeLongPress(gestureRecognizer:)))
-        tableView.addGestureRecognizer(longPressGesture)
+        view.addGestureRecognizer(longPressGesture)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -97,11 +105,13 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func detailButtonPressed() {
+        print("OY")
         if let indexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
         }
 
+
+        print("Hey")
         filterMode = !filterMode
         if filterMode {
             navigationItem.title = Constants.filterTitle
@@ -124,7 +134,6 @@ class MainReminderViewController: UITableViewController {
 
     @objc func addButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
 
             let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
@@ -144,8 +153,9 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func completedButtonPressed() {
+print("Complete Pressed")
+
         if let indexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
         }
 
@@ -185,6 +195,8 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+print("Num Rows")
+
         var count = viewModel.getReminderCount()
         if tableView.indexPathForSelectedRow != nil {
             count += 1
@@ -193,6 +205,8 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("Cell for Rows")
+
         if let selectedIndexPath = tableView.indexPathForSelectedRow {
             if indexPath.row == selectedIndexPath.row + 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Constants.actionCellIdentifier) as! UIActionCell
@@ -210,12 +224,13 @@ extension MainReminderViewController {
         cell.buttonDelegate = self
         
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
-        let hasSubreminders = viewModel.hasSubreminders(indexPath: indexPath)
-        cell.setup(item: item, hasSubreminders: hasSubreminders, filtering: filterMode)
+        cell.setup(item: item, filtering: filterMode)
         return cell
     }
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        print("Will Select")
+
         // If nothing is currently selected, proceed as normal
         guard let currentSelection = tableView.indexPathForSelectedRow else {
             return indexPath
@@ -237,6 +252,8 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("Did Select")
+
         addButton.image = #imageLiteral(resourceName: "AddSubreminderIcon")
         var actionCellIndexPath = indexPath
         actionCellIndexPath.row = actionCellIndexPath.row + 1
@@ -247,6 +264,12 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        print("Did deselect:", indexPath)
+
+        if let selectedIndex = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndex, animated: true)
+        }
+
         view.endEditing(true)
         addButton.image = #imageLiteral(resourceName: "AddIcon")
         var actionCellIndexPath = indexPath
@@ -339,7 +362,6 @@ extension MainReminderViewController {
 
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if let indexPath = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
             view.endEditing(true)
         }

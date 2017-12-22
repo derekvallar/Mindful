@@ -15,15 +15,14 @@ public class Reminder: NSManagedObject {
 
     func setup(index: Int, subreminder: Bool) {
         self.completed = false
-        self.subreminder = false
 
         self.title = String()
         self.detail = String()
 
         self.index = Int16(index)
-        self.priority = Priority.none.rawValue
+        self.priority = Priority.low.rawValue
         self.creationDate = Date() as NSDate
-        self.subreminder = subreminder
+        self.isSubreminder = subreminder
     }
 
     static func sortedFetchRequest(withCompleted completed: Bool) -> NSFetchRequest<Reminder> {
@@ -37,7 +36,7 @@ public class Reminder: NSManagedObject {
         }
 
         let completedPredicate = NSPredicate(format: "completed == %@", NSNumber(value: completed))
-        let subreminderPredicate = NSPredicate(format: "subreminder == %@", NSNumber(value: false))
+        let subreminderPredicate = NSPredicate(format: "isSubreminder == %@", NSNumber(value: false))
         let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [completedPredicate, subreminderPredicate])
 
         request.sortDescriptors = [indexSort]

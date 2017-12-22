@@ -121,7 +121,7 @@ class UIActionCell: UITableViewCell {
 
         alarmPicker.datePickerMode = .dateAndTime
 
-        setup(detail: nil, priority: Priority.none)
+        setup(detail: nil, priority: Priority.low)
 
         // Setup Subviews
 

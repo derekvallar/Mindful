@@ -116,7 +116,8 @@ class UIReminderCell: UITableViewCell {
             cardStackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: Constants.viewSpacing),
             cardStackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: Constants.viewSpacingInverse),
             cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: Constants.layoutSpacing),
-            cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: Constants.layoutSpacingInverse)])
+            cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: Constants.layoutSpacingInverse)
+        ])
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -150,7 +151,7 @@ class UIReminderCell: UITableViewCell {
         }
     }
 
-    func setup(item: ReminderViewModelItem, hasSubreminders: Bool, filtering: Bool) {
+    func setup(item: ReminderViewModelItem, filtering: Bool) {
         leftButton.isSelected = item.completed
         titleTextView.text = item.title
         if let detailText = item.detail {
@@ -159,7 +160,7 @@ class UIReminderCell: UITableViewCell {
         }
         priorityImageView.image = UIImage(named: item.priority.imageLocation)
 
-        subreminderButton.isHidden = !hasSubreminders
+        subreminderButton.isHidden = !item.hasSubreminders
         filterMode = filtering
         synchronizeButtonImages()
         

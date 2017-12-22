@@ -41,9 +41,9 @@ extension ReminderViewModelProtocol {
         }
 
         let priority = Priority(rawValue: (reminder.priority))!
-        let subreminder = reminder.subreminder
+        let subreminders = hasSubreminders(indexPath: indexPath)
 
-        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, subreminder: subreminder)
+        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, subreminders: subreminders)
     }
 
     func getDetailedReminderViewModelForIndexPath(_ indexPath: IndexPath) -> DetailedReminderViewModel {
@@ -121,7 +121,17 @@ extension ReminderViewModelProtocol {
             print("Error:", error)
         }
     }
-    
+
+    func hasSubreminders(indexPath: IndexPath) -> Bool {
+        let reminder = getReminder(forIndexPath: indexPath)
+        if let subreminders = reminder.subreminders {
+            if subreminders.count > 0 {
+                return true
+            }
+        }
+        return false
+    }
+
     func creationString(_ date: Date) -> String {
         var result = "Created "
         let timeSince = date.timeIntervalSinceNow.rounded() * -1.0

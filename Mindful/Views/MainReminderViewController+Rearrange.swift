@@ -13,15 +13,24 @@ extension MainReminderViewController {
     @objc func rearrangeLongPress(gestureRecognizer: UIGestureRecognizer) {
         let longPress = gestureRecognizer as! UILongPressGestureRecognizer
         let location = longPress.location(in: tableView)
-        
-        guard let indexPath = tableView.indexPathForRow(at: location),
-              let cell = tableView.cellForRow(at: indexPath) else {
-            return
-        }
+
         switch longPress.state {
         case .began:
             print("Began")
-            
+
+            guard let indexPath = tableView.indexPathForRow(at: location),
+                let cell = tableView.cellForRow(at: indexPath) else {
+                    return
+            }
+
+            if type(of: cell) == UIActionCell.self {
+                return
+            }
+
+            if let selectedIndex = tableView.indexPathForSelectedRow {
+                tableView(tableView, didDeselectRowAt: selectedIndex)
+            }
+
             let view = snapshot(cell: cell)
             view.center = cell.center
             view.alpha = 0.0
@@ -38,13 +47,21 @@ extension MainReminderViewController {
                 }
             })
 
+            Rearrange.cell = cell
             Rearrange.snapshotView = view
             Rearrange.snapshotOffset = location.y - view.center.y
             Rearrange.currentIndexPath = indexPath
 
         case .changed:
             print("Changed:", location)
-            
+            var indexPath: IndexPath!
+
+            if let path = tableView.indexPathForRow(at: location) {
+                indexPath = path
+            } else {
+                return
+            }
+
             guard let snapshotView = Rearrange.snapshotView,
                   let currentIndexPath = Rearrange.currentIndexPath else {
                 return
@@ -64,7 +81,8 @@ extension MainReminderViewController {
 
         default:
             print("Ended?")
-            guard let snapshotView = Rearrange.snapshotView else {
+            guard let snapshotView = Rearrange.snapshotView,
+                  let cell = Rearrange.cell else {
                 return
             }
             print("no probs")

@@ -61,16 +61,6 @@ class ReminderViewModel: ReminderViewModelProtocol {
         return viewModel
     }
 
-    func hasSubreminders(indexPath: IndexPath) -> Bool {
-        let reminder = getReminder(forIndexPath: indexPath)
-        if let subreminders = reminder.subreminders {
-            if subreminders.count > 0 {
-                return true
-            }
-        }
-        return false
-    }
-
 //    func reminderDeselected(indexPath: IndexPath) -> [IndexPath] {
 //        var indices = getSubreminderIndices()
 //        subreminders.removeAll()
@@ -97,7 +87,7 @@ class ReminderViewModel: ReminderViewModelProtocol {
         do {
             fetchedReminders = try context.fetch(fetchRequest)
             for reminder in fetchedReminders {
-                print("Reminder:", reminder.title, "Completed:", reminder.completed, "Sub:", reminder.subreminder)
+                print("Reminder:", reminder.title, "Completed:", reminder.completed, "isSub:", reminder.isSubreminder)
             }
 
         } catch {
