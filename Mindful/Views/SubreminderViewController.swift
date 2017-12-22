@@ -66,7 +66,7 @@ class SubreminderViewController: UIViewController {
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
 
-        tableView.register(ReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
+        tableView.register(UIReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
 
@@ -121,7 +121,7 @@ class SubreminderViewController: UIViewController {
         }
 
         for cell in tableView.visibleCells {
-            let reminderCell = cell as? ReminderCell
+            let reminderCell = cell as? UIReminderCell
             reminderCell?.changeFilterMode(filterMode)
         }
     }
@@ -154,7 +154,7 @@ extension SubreminderViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! ReminderCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! UIReminderCell
 
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         cell.titleTextView.delegate = self
@@ -179,13 +179,13 @@ extension SubreminderViewController: UITableViewDataSource {
 extension SubreminderViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+        guard let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell else {
             return
         }
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+        guard let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell else {
             return
         }
     }
@@ -206,7 +206,7 @@ extension SubreminderViewController: UITextViewDelegate {
         let textViewPoint = textView.convert(textView.center, to: tableView)
         
         guard let indexPath = tableView.indexPathForRow(at: textViewPoint),
-              let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+              let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell else {
             return
         }
 
@@ -217,8 +217,8 @@ extension SubreminderViewController: UITextViewDelegate {
 
 // MARK: - CellButtonDelegate
 
-extension SubreminderViewController: CellButtonDelegate {
-    func didTapButton(_ cell: ReminderCell, button: UICellButtonType) {
+extension SubreminderViewController: UIReminderCellDelegate {
+    func didTapButton(_ cell: UIReminderCell, button: UIReminderButtonType) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
@@ -246,7 +246,7 @@ extension SubreminderViewController: CellButtonDelegate {
         case .subreminder:
             break
 
-        case .none:
+        default:
             break
         }
     }

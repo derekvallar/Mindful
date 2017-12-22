@@ -25,7 +25,7 @@ class ReminderViewModel: ReminderViewModelProtocol {
         reminders = [Reminder]()
 
         initializeTableData(withCompleted: false, completion: nil)
-        checkReminders()
+//        checkReminders()
     }
 
     func addReminder() {

@@ -18,6 +18,10 @@ enum Constants {
     static let reminderCellIdentifier = "ReminderCell"
     static let actionCellIdentifier = "ActionCell"
 
+    static let textSize: CGFloat = 14.5
+    static let textSecondarySize: CGFloat = 12.5
+
+    static let actionViewSpacing: CGFloat = 10.0
     static let viewSpacing: CGFloat = 8.0
     static let viewSpacingInverse: CGFloat = -8.0
     static let layoutSpacing: CGFloat = 12.0
@@ -32,15 +36,18 @@ enum Constants {
 
     static let backgroundColor: UIColor = #colorLiteral(red: 0.5198073602, green: 0.8550287484, blue: 0.9985881448, alpha: 1)
     static let gradientColor: UIColor = #colorLiteral(red: 0, green: 0.529114902, blue: 0.7376316786, alpha: 1)
-    static let backgroundCellColor: UIColor = #colorLiteral(red: 1, green: 1, blue: 0.9607843137, alpha: 1)
+    static let backgroundCellColor: UIColor = #colorLiteral(red: 0.9213975564, green: 0.9305203045, blue: 0.9305203045, alpha: 1)
+    static let backgroundTextFieldColor: UIColor = #colorLiteral(red: 0.9568303967, green: 0.9626983484, blue: 0.9322551536, alpha: 1)
 
     static let textColor: UIColor = #colorLiteral(red: 0.2068527919, green: 0.2068527919, blue: 0.2068527919, alpha: 1)
     static let textSecondaryColor: UIColor = #colorLiteral(red: 0.7597485179, green: 0.7672707804, blue: 0.7672707804, alpha: 1)
     static let textWrittenSecondaryColor: UIColor = #colorLiteral(red: 0.6094480939, green: 0.6154822334, blue: 0.6154822334, alpha: 1)
     static let textCompletedColor: UIColor = #colorLiteral(red: 1, green: 0.7485261518, blue: 0.3213167326, alpha: 1)
 
-    static let priorityColor: UIColor = #colorLiteral(red: 1, green: 0.7485261518, blue: 0.3213167326, alpha: 1)
-    
+    static let lowPriorityColor: UIColor = #colorLiteral(red: 0.8822176395, green: 0.8822176395, blue: 0.8822176395, alpha: 1)
+    static let mediumPriorityColor: UIColor = #colorLiteral(red: 1, green: 0.7485261518, blue: 0.3213167326, alpha: 1)
+    static let highPriorityColor: UIColor = #colorLiteral(red: 1, green: 0.4553463931, blue: 0.355917463, alpha: 1)
+
     static let emptyIconString: String = "EmptyIcon"
     static let priorityIconString: String = "PriorityIcon"
     static let highPriorityIconString: String = "HighPriorityIcon"

@@ -8,4 +8,6 @@
 
 enum MindfulMode: Int {
     case main, completed
+
+    case editReminder, editAlarm
 }

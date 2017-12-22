@@ -34,7 +34,9 @@ extension ReminderViewModelProtocol {
         let title = reminder.title!
         var detail: String?
 
-        if let creationDate = reminder.creationDate as Date? {
+        if let savedDetail = reminder.detail {
+            detail = savedDetail
+        } else if let creationDate = reminder.creationDate as Date? {
             detail = creationString(creationDate)
         }
 

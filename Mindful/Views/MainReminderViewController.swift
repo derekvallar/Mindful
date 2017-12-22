@@ -73,8 +73,8 @@ class MainReminderViewController: UITableViewController {
 
         // Setup the table view
 
-        tableView.register(ReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
-        tableView.register(ActionCell.self, forCellReuseIdentifier: Constants.actionCellIdentifier)
+        tableView.register(UIReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
+        tableView.register(UIActionCell.self, forCellReuseIdentifier: Constants.actionCellIdentifier)
 
         tableView.estimatedRowHeight = Constants.estimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
@@ -98,6 +98,7 @@ class MainReminderViewController: UITableViewController {
 
     @objc func detailButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
         }
 
@@ -116,14 +117,16 @@ class MainReminderViewController: UITableViewController {
         }
         
         for cell in tableView.visibleCells {
-            let reminderCell = cell as? ReminderCell
+            let reminderCell = cell as? UIReminderCell
             reminderCell?.changeFilterMode(filterMode)
         }
     }
 
     @objc func addButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
+
             let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
             let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: true)
             navigationController?.pushViewController(subreminderViewController, animated: true)
@@ -142,6 +145,7 @@ class MainReminderViewController: UITableViewController {
 
     @objc func completedButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
             tableView(tableView, didDeselectRowAt: indexPath)
         }
 
@@ -181,39 +185,75 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.getReminderCount()
+        var count = viewModel.getReminderCount()
+        if tableView.indexPathForSelectedRow != nil {
+            count += 1
+        }
+        return count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! ReminderCell
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            if indexPath.row == selectedIndexPath.row + 1 {
+                let cell = tableView.dequeueReusableCell(withIdentifier: Constants.actionCellIdentifier) as! UIActionCell
+                cell.delegate = self
+
+                let item = viewModel.getReminderTableViewModelItem(forIndexPath: selectedIndexPath)
+                cell.setup(detail: item.detail, priority: item.priority)
+
+                return cell
+            }
+        }
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! UIReminderCell
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
         
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
         let hasSubreminders = viewModel.hasSubreminders(indexPath: indexPath)
         cell.setup(item: item, hasSubreminders: hasSubreminders, filtering: filterMode)
-        
         return cell
     }
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
-            return
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        // If nothing is currently selected, proceed as normal
+        guard let currentSelection = tableView.indexPathForSelectedRow else {
+            return indexPath
         }
 
+        // If selecting an index above the current, proceed as normal
+        if currentSelection > indexPath {
+            return indexPath
+        }
+
+        // If selecting the action cell or same cell, do nothing
+        if currentSelection.row + 1 >= indexPath.row {
+            return nil
+        }
+
+        var intendedSelection = indexPath
+        intendedSelection.row = intendedSelection.row - 1
+        return intendedSelection
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         addButton.image = #imageLiteral(resourceName: "AddSubreminderIcon")
+        var actionCellIndexPath = indexPath
+        actionCellIndexPath.row = actionCellIndexPath.row + 1
+
         tableView.beginUpdates()
+        tableView.insertRows(at: [actionCellIndexPath], with: .none)
         tableView.endUpdates()
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
-            return
-        }
-        
         view.endEditing(true)
         addButton.image = #imageLiteral(resourceName: "AddIcon")
+        var actionCellIndexPath = indexPath
+        actionCellIndexPath.row = actionCellIndexPath.row + 1
+
         tableView.beginUpdates()
+        tableView.deleteRows(at: [actionCellIndexPath], with: .none)
         tableView.endUpdates()
     }
 }
@@ -236,7 +276,7 @@ extension MainReminderViewController: UITextViewDelegate {
         let textViewPoint = textView.convert(textView.center, to: tableView)
         
         guard let indexPath = tableView.indexPathForRow(at: textViewPoint),
-              let cell = tableView.cellForRow(at: indexPath) as? ReminderCell else {
+              let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell else {
             return
         }
 
@@ -247,8 +287,8 @@ extension MainReminderViewController: UITextViewDelegate {
 
 // MARK: - CellButtonDelegate
 
-extension MainReminderViewController: CellButtonDelegate {
-    func didTapButton(_ cell: ReminderCell, button: UICellButtonType) {
+extension MainReminderViewController: UIReminderCellDelegate {
+    func didTapButton(_ cell: UIReminderCell, button: UIReminderButtonType) {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
@@ -286,7 +326,7 @@ extension MainReminderViewController: CellButtonDelegate {
                 tableView(tableView, didDeselectRowAt: selectedIndex)
             }
 
-        case .none:
+        default:
             break
         }
     }

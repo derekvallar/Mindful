@@ -1,5 +1,5 @@
 //
-//  ReminderTableCell.swift
+//  UIReminderCell.swift
 //  Mindful
 //
 //  Created by Derek Vitaliano Vallar on 10/3/17.
@@ -8,13 +8,13 @@
 
 import UIKit
 
-protocol CellButtonDelegate: class {
-    func didTapButton(_ cell: ReminderCell, button: UICellButtonType)
+protocol UIReminderCellDelegate: class {
+    func didTapButton(_ cell: UIReminderCell, button: UIReminderButtonType)
 }
 
-class ReminderCell: UITableViewCell {
+class UIReminderCell: UITableViewCell {
 
-    weak var buttonDelegate: CellButtonDelegate?
+    weak var buttonDelegate: UIReminderCellDelegate?
 
     private var cardView = UIView()
     private var cardStackView = UIStackView()
@@ -69,7 +69,7 @@ class ReminderCell: UITableViewCell {
         titleTextView.textColor = Constants.textColor
         titleTextView.isScrollEnabled = false
         titleTextView.isUserInteractionEnabled = false
-        titleTextView.font = UIFont.systemFont(ofSize: 14.5)
+        titleTextView.font = UIFont.systemFont(ofSize: Constants.textSize)
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
         titleTextView.layer.masksToBounds = false
@@ -78,12 +78,12 @@ class ReminderCell: UITableViewCell {
         
         detailLabel.isHidden = true
         detailLabel.textColor = Constants.textSecondaryColor
-        detailLabel.font = UIFont.systemFont(ofSize: 12.5)
+        detailLabel.font = UIFont.systemFont(ofSize: Constants.textSecondarySize)
         
         rightButton.isHidden = true
 
+        subreminderButton.type = .subreminder
         subreminderButton.setImage(#imageLiteral(resourceName: "SubreminderIcon"), for: .normal)
-        subreminderButton.setType(.subreminder)
         subreminderButton.isHidden = true
 
 
@@ -138,7 +138,7 @@ class ReminderCell: UITableViewCell {
             borderLayer?.frame = cardView.bounds
             borderLayer?.path = UIBezierPath(roundedRect: cardView.bounds, cornerRadius: 7.0).cgPath
             borderLayer?.fillColor = UIColor.clear.cgColor
-            borderLayer?.strokeColor = Constants.priorityColor.cgColor
+            borderLayer?.strokeColor = Constants.mediumPriorityColor.cgColor
             borderLayer?.lineWidth = 4.0
             cardView.layer.addSublayer(borderLayer!)
 
@@ -148,7 +148,6 @@ class ReminderCell: UITableViewCell {
                 borderLayer = nil
             }
         }
-        print(titleTextView.text, "selected:", selected)
     }
 
     func setup(item: ReminderViewModelItem, hasSubreminders: Bool, filtering: Bool) {
@@ -203,6 +202,10 @@ class ReminderCell: UITableViewCell {
         }
     }
 
+    func getTitleText() -> String {
+        return titleTextView.text
+    }
+
     func isCompleted() -> Bool? {
         if !filterMode {
             return leftButton.isSelected
@@ -232,18 +235,18 @@ class ReminderCell: UITableViewCell {
 
     private func synchronizeButtonImages() {
         if filterMode {
-            leftButton.setType(.delete)
+            leftButton.type = .delete
             leftButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .normal)
             leftButton.setImage(nil, for: .selected)
 
-            rightButton.setType(.rearrange)
+            rightButton.type = .rearrange
             rightButton.setImage(#imageLiteral(resourceName: "RearrangeIcon"), for: .normal)
         } else {
-            leftButton.setType(.complete)
+            leftButton.type = .complete
             leftButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
             leftButton.setImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
 
-            rightButton.setType(.detail)
+            rightButton.type = .detail
             rightButton.setImage(#imageLiteral(resourceName: "DetailIcon"), for: .normal)
         }
     }
