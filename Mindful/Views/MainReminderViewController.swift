@@ -106,6 +106,14 @@ class MainReminderViewController: UITableViewController {
 //        tableView.backgroundView?.gradient(Constants.backgroundColor, secondColor: Constants.gradientColor)
     }
 
+    func getActionCellIndex() -> IndexPath? {
+        guard var actionIndex = selectedReminder else {
+            return nil
+        }
+        actionIndex.row = actionIndex.row + 1
+        return actionIndex
+    }
+
     @objc func detailButtonPressed() {
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView(tableView, didDeselectRowAt: indexPath)

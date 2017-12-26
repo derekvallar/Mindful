@@ -23,8 +23,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("Cell for Rows with selected:", tableView.indexPathForSelectedRow != nil)
-        print("Selected Index:", selectedReminder)
+        print("Cell for Rows:", indexPath)
 
         var reminderIndex = indexPath
 
@@ -52,8 +51,6 @@ extension MainReminderViewController {
 
         let item = viewModel.getReminderTableViewModelItem(forIndexPath: reminderIndex)
         cell.setup(item: item, filtering: filterMode)
-
-        print("Ok?")
         return cell
     }
 

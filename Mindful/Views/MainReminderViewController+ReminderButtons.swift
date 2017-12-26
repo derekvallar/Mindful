@@ -35,9 +35,6 @@ extension MainReminderViewController: UIReminderCellDelegate {
                 tableView(tableView, didDeselectRowAt: selectedIndex)
             }
 
-        case .rearrange:
-            break
-
         case .subreminder:
             let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
             let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: false)
