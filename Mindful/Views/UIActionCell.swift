@@ -25,8 +25,13 @@ class UIActionCell: UITableViewCell {
 
     private var editLabel = UILabel()
     private var editTextView = UITextView()
+
     private var priorityLabel = UILabel()
     private var priorityStackView = UIStackView()
+    private var lowPriorityButton = UICellButton()
+    private var mediumPriorityButton = UICellButton()
+    private var highPriorityButton = UICellButton()
+
     private var alarmLabel = UILabel()
     private var alarmDateTimeLabel = UILabel()
     private var alarmPicker = UIDatePicker()
@@ -69,12 +74,12 @@ class UIActionCell: UITableViewCell {
         returnButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
         returnButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
-        editLabel.text = "Detail:"
+        editLabel.text = "Notes:"
         editLabel.textColor = Constants.textColor
         editLabel.font = UIFont.systemFont(ofSize: Constants.textSize)
 
         editTextView.isScrollEnabled = false
-        editTextView.textColor = Constants.textSecondaryColor
+        editTextView.textColor = Constants.textColor
         editTextView.backgroundColor = Constants.backgroundTextFieldColor
         editTextView.font = UIFont.systemFont(ofSize: Constants.textSize)
 
@@ -86,30 +91,41 @@ class UIActionCell: UITableViewCell {
         priorityStackView.distribution = .fillEqually
         priorityStackView.spacing = 5.0
 
-        let lowPriorityButton = UICellButton()
         lowPriorityButton.type = .lowPriority
         lowPriorityButton.setTitle("Low", for: .normal)
-        lowPriorityButton.setTitleColor(UIColor.white, for: .normal)
+        lowPriorityButton.setTitleColor(Constants.lowPriorityColor, for: .normal)
+        lowPriorityButton.setTitleColor(UIColor.white, for: .selected)
         lowPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: Constants.textSize)
+
         lowPriorityButton.backgroundColor = Constants.lowPriorityColor
         lowPriorityButton.layer.cornerRadius = 15.0
+        lowPriorityButton.layer.borderColor = Constants.lowPriorityColor.cgColor
+        lowPriorityButton.layer.borderWidth = Constants.buttonBorderWidth
+        lowPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
 
-        let mediumPriorityButton = UICellButton()
         mediumPriorityButton.type = .mediumPriority
         mediumPriorityButton.setTitle("Medium", for: .normal)
-        mediumPriorityButton.setTitleColor(UIColor.white, for: .normal)
+        mediumPriorityButton.setTitleColor(Constants.mediumPriorityColor, for: .normal)
+        mediumPriorityButton.setTitleColor(UIColor.white, for: .selected)
         mediumPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: Constants.textSize)
+
         mediumPriorityButton.backgroundColor = Constants.mediumPriorityColor
         mediumPriorityButton.layer.cornerRadius = 15.0
+        mediumPriorityButton.layer.borderColor = Constants.mediumPriorityColor.cgColor
+        mediumPriorityButton.layer.borderWidth = Constants.buttonBorderWidth
+        mediumPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
 
-        let highPriorityButton = UICellButton()
         highPriorityButton.type = .highPriority
         highPriorityButton.setTitle("High", for: .normal)
-        highPriorityButton.setTitleColor(UIColor.white, for: .normal)
+        highPriorityButton.setTitleColor(Constants.highPriorityColor, for: .normal)
+        highPriorityButton.setTitleColor(UIColor.white, for: .selected)
         highPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: Constants.textSize)
+
         highPriorityButton.backgroundColor = Constants.highPriorityColor
         highPriorityButton.layer.cornerRadius = 15.0
-
+        highPriorityButton.layer.borderColor = Constants.highPriorityColor.cgColor
+        highPriorityButton.layer.borderWidth = Constants.buttonBorderWidth
+        highPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
 
         alarmLabel.text = "Alarm:"
         alarmLabel.textColor = Constants.textColor
@@ -154,6 +170,9 @@ class UIActionCell: UITableViewCell {
             actionCellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.cellYSpacing),
             actionCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.cellYSpacingInverse)
         ])
+
+        print("ContentviewHeightprior:", contentView.constraints)
+        contentView.heightAnchor
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -168,10 +187,22 @@ class UIActionCell: UITableViewCell {
     func setup(detail: String?, priority: Priority?) {
         if let detail = detail {
             editTextView.text = detail
+        } else {
+            editTextView.text = ""
         }
 
+        lowPriorityButton.isSelected = false
+        mediumPriorityButton.isSelected = false
+        highPriorityButton.isSelected = false
+
         if let priority = priority {
-            
+            if priority == Priority.high {
+                selectPriority(highPriorityButton)
+            } else if priority == Priority.medium {
+                selectPriority(mediumPriorityButton)
+            } else {
+                selectPriority(lowPriorityButton)
+            }
         }
 
         changeModeViews(.returnAction)
@@ -183,6 +214,36 @@ class UIActionCell: UITableViewCell {
 
     func getAlarmDate() -> Date {
         return alarmPicker.date
+    }
+
+    @objc private func selectPriority(_ selected: UICellButton) {
+        for view in priorityStackView.arrangedSubviews {
+            guard let button = view as? UICellButton else {
+                return
+            }
+
+            if button === selected {
+                button.isSelected = true
+
+                if button.type == .lowPriority {
+                    button.backgroundColor = Constants.lowPriorityColor
+                } else if button.type == .mediumPriority {
+                    button.backgroundColor = Constants.mediumPriorityColor
+                } else if button.type == .highPriority {
+                    button.backgroundColor = Constants.highPriorityColor
+                }
+            } else {
+                button.isSelected = false
+                button.backgroundColor = UIColor.clear
+            }
+        }
+
+//        button.isSelected = !button.isSelected
+//        if button.isSelected {
+
+//        } else {
+//            button.backgroundColor = UIColor.clear
+//        }
     }
 
     private func changeModeViews(_ type: UIReminderButtonType) {
@@ -199,6 +260,8 @@ class UIActionCell: UITableViewCell {
             alarmLabel.isHidden = false
             alarmDateTimeLabel.isHidden = false
             alarmPicker.isHidden = false
+            print("ContentviewHeightprior:", contentView.constraints)
+//            contentView.heightAnchor.
 
         case .returnAction:
             returnButton.isHidden = true

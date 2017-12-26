@@ -20,13 +20,16 @@ class MainReminderViewController: UITableViewController {
     var filterMode: Bool!
     var currentMode: MindfulMode!
 
+    var selectedReminder: IndexPath?
+
     struct Rearrange {
         static var cell: UITableViewCell?
         static var snapshotView: UIView?
         static var snapshotOffset: CGFloat?
         static var currentIndexPath: IndexPath?
 
-        func clear() {
+        static func clear() {
+            Rearrange.snapshotView?.removeFromSuperview()
             Rearrange.cell = nil
             Rearrange.snapshotView = nil
             Rearrange.snapshotOffset = nil
@@ -84,7 +87,7 @@ class MainReminderViewController: UITableViewController {
         tableView.register(UIReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
         tableView.register(UIActionCell.self, forCellReuseIdentifier: Constants.actionCellIdentifier)
 
-        tableView.estimatedRowHeight = Constants.estimatedRowHeight
+//        tableView.estimatedRowHeight = Constants.estimatedReminderRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
@@ -147,7 +150,6 @@ class MainReminderViewController: UITableViewController {
             tableView.insertRows(at: [firstRow], with: .top)
             tableView.endUpdates()
 
-            tableView.selectRow(at: firstRow, animated: true, scrollPosition: .none)
             tableView(tableView, didSelectRowAt: firstRow)
         }
     }
@@ -195,27 +197,34 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-print("Num Rows")
-
         var count = viewModel.getReminderCount()
-        if tableView.indexPathForSelectedRow != nil {
+        if selectedReminder != nil {
             count += 1
         }
         return count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("Cell for Rows")
+        print("Cell for Rows with selected:", tableView.indexPathForSelectedRow != nil)
+        print("Selected Index:", selectedReminder)
 
-        if let selectedIndexPath = tableView.indexPathForSelectedRow {
-            if indexPath.row == selectedIndexPath.row + 1 {
+        var reminderIndex = indexPath
+
+        if let selectedReminder = selectedReminder {
+            // If the action cell is requested
+            if indexPath.row == selectedReminder.row + 1 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Constants.actionCellIdentifier) as! UIActionCell
                 cell.delegate = self
 
-                let item = viewModel.getReminderTableViewModelItem(forIndexPath: selectedIndexPath)
+                let item = viewModel.getReminderTableViewModelItem(forIndexPath: selectedReminder)
                 cell.setup(detail: item.detail, priority: item.priority)
 
                 return cell
+            }
+
+            // If any cell after the action cell is requested
+            if indexPath.row > selectedReminder.row + 1 {
+                reminderIndex.row = reminderIndex.row - 1
             }
         }
 
@@ -223,16 +232,35 @@ print("Num Rows")
         cell.titleTextView.delegate = self
         cell.buttonDelegate = self
         
-        let item = viewModel.getReminderTableViewModelItem(forIndexPath: indexPath)
+        let item = viewModel.getReminderTableViewModelItem(forIndexPath: reminderIndex)
         cell.setup(item: item, filtering: filterMode)
+
+        print("Ok?")
         return cell
+    }
+
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        print("Checking row height estimate")
+
+        if currentMode == .editReminder || currentMode == .editPriority {
+            return Constants.estimatedSmallExpandedActionRowHeight
+        }
+
+        if currentMode == .editAlarm {
+            return Constants.estimatedLargeExpandedActionRowHeight
+        }
+
+        return Constants.estimatedReminderRowHeight
     }
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         print("Will Select")
 
+        let cell = tableView.cellForRow(at: indexPath)
+        print("Cellheight:", cell?.bounds.height)
+
         // If nothing is currently selected, proceed as normal
-        guard let currentSelection = tableView.indexPathForSelectedRow else {
+        guard let currentSelection = selectedReminder else {
             return indexPath
         }
 
@@ -254,6 +282,11 @@ print("Num Rows")
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Did Select")
 
+        if tableView.indexPathForSelectedRow == nil {
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        }
+        selectedReminder = indexPath
+
         addButton.image = #imageLiteral(resourceName: "AddSubreminderIcon")
         var actionCellIndexPath = indexPath
         actionCellIndexPath.row = actionCellIndexPath.row + 1
@@ -269,7 +302,9 @@ print("Num Rows")
         if let selectedIndex = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: selectedIndex, animated: true)
         }
+        selectedReminder = nil
 
+        currentMode = .main
         view.endEditing(true)
         addButton.image = #imageLiteral(resourceName: "AddIcon")
         var actionCellIndexPath = indexPath
@@ -304,54 +339,6 @@ extension MainReminderViewController: UITextViewDelegate {
         }
 
         viewModel.updateReminder(completed: nil, title: cell.titleTextView.text!, detail: nil, priority: nil, indexPath: indexPath)
-    }
-}
-
-
-// MARK: - CellButtonDelegate
-
-extension MainReminderViewController: UIReminderCellDelegate {
-    func didTapButton(_ cell: UIReminderCell, button: UIReminderButtonType) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
-            return
-        }
-
-        switch button {
-        case .complete:
-            if let completed = cell.isCompleted() {
-                viewModel.updateReminder(completed: completed, title: nil, detail: nil, priority: nil, indexPath: indexPath)
-            }
-
-        case .delete:
-            viewModel.deleteReminder(atIndexPath: indexPath)
-            tableView.beginUpdates()
-            tableView.deleteRows(at: [indexPath], with: .fade)
-            tableView.endUpdates()
-
-        case .detail:
-            let detailedViewModel = viewModel.getDetailedReminderViewModelForIndexPath(indexPath)
-            let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
-            navigationController?.pushViewController(detailedViewController, animated: true)
-
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                tableView(tableView, didDeselectRowAt: selectedIndex)
-            }
-            
-        case .rearrange:
-            break
-
-        case .subreminder:
-            let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
-            let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: false)
-            navigationController?.pushViewController(subreminderViewController, animated: true)
-
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                tableView(tableView, didDeselectRowAt: selectedIndex)
-            }
-
-        default:
-            break
-        }
     }
 }
 

@@ -16,8 +16,6 @@ extension MainReminderViewController {
 
         switch longPress.state {
         case .began:
-            print("Began")
-
             guard let indexPath = tableView.indexPathForRow(at: location),
                 let cell = tableView.cellForRow(at: indexPath) else {
                     return
@@ -53,7 +51,6 @@ extension MainReminderViewController {
             Rearrange.currentIndexPath = indexPath
 
         case .changed:
-            print("Changed:", location)
             var indexPath: IndexPath!
 
             if let path = tableView.indexPathForRow(at: location) {
@@ -80,12 +77,10 @@ extension MainReminderViewController {
             }
 
         default:
-            print("Ended?")
             guard let snapshotView = Rearrange.snapshotView,
                   let cell = Rearrange.cell else {
                 return
             }
-            print("no probs")
             
             UIView.animate(withDuration: 0.25, animations: {
                 snapshotView.transform = CGAffineTransform.identity
@@ -94,11 +89,7 @@ extension MainReminderViewController {
             }, completion: { finished in
                 cell.isHidden = false
                 cell.alpha = 1.0
-                Rearrange.snapshotView?.removeFromSuperview()
-                Rearrange.snapshotView = nil
-                Rearrange.currentIndexPath = nil
-                Rearrange.snapshotOffset = nil
-                print("cell is hidden", cell.isHidden, ", alpha:", cell.alpha)
+                Rearrange.clear()
             })
 
             viewModel.saveReminders()

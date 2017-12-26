@@ -67,7 +67,7 @@ class SubreminderViewController: UIViewController {
         navigationController?.navigationBar.shadowImage = UIImage()
 
         tableView.register(UIReminderCell.self, forCellReuseIdentifier: Constants.reminderCellIdentifier)
-        tableView.estimatedRowHeight = Constants.estimatedRowHeight
+        tableView.estimatedRowHeight = Constants.estimatedReminderRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
 
         tableView.separatorStyle = .none
@@ -134,7 +134,6 @@ class SubreminderViewController: UIViewController {
         tableView.insertRows(at: [firstRow], with: .top)
         tableView.endUpdates()
 
-        tableView.selectRow(at: firstRow, animated: true, scrollPosition: .none)
         tableView(tableView, didSelectRowAt: firstRow)
     }
 

@@ -44,6 +44,7 @@ class UIReminderCell: UITableViewCell {
 
         cardView.backgroundColor = UIColor.white
         cardView.layer.cornerRadius = 7.0
+        cardView.layer.borderColor = Constants.mediumPriorityColor.cgColor
 
         cardStackView.axis = .vertical
         cardStackView.spacing = Constants.viewSpacing
@@ -130,24 +131,9 @@ class UIReminderCell: UITableViewCell {
         titleTextView.isUserInteractionEnabled = selected
         if selected {
             titleTextView.becomeFirstResponder()
-
-            if borderLayer != nil {
-                return
-            }
-
-            borderLayer = CAShapeLayer()
-            borderLayer?.frame = cardView.bounds
-            borderLayer?.path = UIBezierPath(roundedRect: cardView.bounds, cornerRadius: 7.0).cgPath
-            borderLayer?.fillColor = UIColor.clear.cgColor
-            borderLayer?.strokeColor = Constants.mediumPriorityColor.cgColor
-            borderLayer?.lineWidth = 4.0
-            cardView.layer.addSublayer(borderLayer!)
-
+            cardView.layer.borderWidth = 5.0
         } else {
-            if borderLayer != nil {
-                borderLayer?.removeFromSuperlayer()
-                borderLayer = nil
-            }
+            cardView.layer.borderWidth = 0.0
         }
     }
 
