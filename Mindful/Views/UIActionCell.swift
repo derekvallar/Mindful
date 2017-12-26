@@ -164,15 +164,16 @@ class UIActionCell: UITableViewCell {
 
         // Setup Constraints
 
+        // Silences UIView-Encapsulated-Layout-Height constraint error
+        let bottomConstraint = actionCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.cellYSpacingInverse)
+        bottomConstraint.priority = UILayoutPriority(999)
+
         NSLayoutConstraint.setupAndActivate(constraints: [
             actionCellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.cellXSpacing),
             actionCellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Constants.cellXSpacingInverse),
             actionCellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.cellYSpacing),
-            actionCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.cellYSpacingInverse)
+            bottomConstraint
         ])
-
-        print("ContentviewHeightprior:", contentView.constraints)
-        contentView.heightAnchor
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -260,8 +261,6 @@ class UIActionCell: UITableViewCell {
             alarmLabel.isHidden = false
             alarmDateTimeLabel.isHidden = false
             alarmPicker.isHidden = false
-            print("ContentviewHeightprior:", contentView.constraints)
-//            contentView.heightAnchor.
 
         case .returnAction:
             returnButton.isHidden = true

@@ -131,7 +131,7 @@ class UIReminderCell: UITableViewCell {
         titleTextView.isUserInteractionEnabled = selected
         if selected {
             titleTextView.becomeFirstResponder()
-            cardView.layer.borderWidth = 5.0
+            cardView.layer.borderWidth = 3.0
         } else {
             cardView.layer.borderWidth = 0.0
         }
