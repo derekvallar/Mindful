@@ -70,17 +70,30 @@ extension MainReminderViewController {
         print("Will Select")
 
         // If nothing is currently selected, proceed as normal
-        guard let currentSelection = selectedReminder else {
+        guard let selectedReminder = selectedReminder else {
             return indexPath
         }
 
         // If selecting an index above the current, proceed as normal
-        if currentSelection > indexPath {
+        if selectedReminder > indexPath {
             return indexPath
         }
 
+        if selectedReminder == indexPath {
+            if currentMode == .editReminder {
+                guard let cell = tableView.cellForRow(at: selectedReminder) as? UIReminderCell else {
+                    return nil
+                }
+                cell.titleTextView.becomeFirstResponder()
+                return nil
+            }
+
+            self.tableView(tableView, didDeselectRowAt: selectedReminder)
+            return nil
+        }
+
         // If selecting the action cell or same cell, do nothing
-        if currentSelection.row + 1 >= indexPath.row {
+        if selectedReminder.row + 1 == indexPath.row {
             return nil
         }
 
@@ -104,6 +117,11 @@ extension MainReminderViewController {
         tableView.beginUpdates()
         tableView.insertRows(at: [actionCellIndexPath], with: .none)
         tableView.endUpdates()
+
+        let deadlineTime = DispatchTime.now() + .milliseconds(1)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
+        }
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

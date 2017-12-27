@@ -62,35 +62,28 @@ extension ReminderViewModelProtocol {
     }
 
     func updateReminder(completed: Bool?, title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
-        var updated = false
         let reminder = getReminder(forIndexPath: indexPath)
 
-        if completed != nil && reminder.completed != completed {
+        if completed != nil{
             reminder.completed = completed!
             if completed! {
                 reminder.completedDate = Date() as NSDate
             }
-            updated = true
         }
 
-        if title != nil && reminder.title != title {
+        if title != nil {
             reminder.title = title
-            updated = true
         }
 
-        if detail != nil && reminder.detail != detail {
+        if detail != nil {
             reminder.detail = detail
-            updated = true
         }
 
-        if priority != nil && reminder.priority != priority?.rawValue {
+        if priority != nil {
             reminder.priority = Int16(priority!.rawValue)
-            updated = true
         }
 
-        if updated {
-            saveReminders()
-        }
+        saveReminders()
     }
 
     func updateIndices() {

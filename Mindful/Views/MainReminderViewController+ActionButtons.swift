@@ -15,26 +15,35 @@ extension MainReminderViewController: UIActionCellDelegate {
         guard let selectedReminder = selectedReminder else {
             return
         }
-//        tableView.sc
 
         switch type {
         case .edit:
             let reminderCell = tableView.cellForRow(at: selectedReminder) as! UIReminderCell
             reminderCell.titleTextView.isUserInteractionEnabled = true
             currentMode = .editReminder
-            break
+
+            let deadlineTime = DispatchTime.now() + .milliseconds(1)
+            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
+            }
 
         case .priority:
             currentMode = .editPriority
-            break
+            let deadlineTime = DispatchTime.now() + .milliseconds(1)
+            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
+            }
 
         case .lowPriority:
+            print("low priority")
             viewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.low, indexPath: selectedReminder)
 
         case .mediumPriority:
+            print("Medium priority")
             viewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.medium, indexPath: selectedReminder)
 
         case .highPriority:
+            print("high priority")
             viewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.high, indexPath: selectedReminder)
 
         case .alarm:

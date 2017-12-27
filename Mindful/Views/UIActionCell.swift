@@ -218,6 +218,7 @@ class UIActionCell: UITableViewCell {
     }
 
     @objc private func selectPriority(_ selected: UICellButton) {
+        delegate?.didTapButton(cell: self, type: selected.type)
         for view in priorityStackView.arrangedSubviews {
             guard let button = view as? UICellButton else {
                 return
