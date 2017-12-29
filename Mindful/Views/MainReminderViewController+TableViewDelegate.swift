@@ -55,16 +55,16 @@ extension MainReminderViewController {
             endSub = true
         }
 
-        cell.setup(item: item, filtering: filterMode, endSub: endSub)
+        cell.setup(item: item, filtering: mindfulMode.filter, endSub: endSub)
         return cell
     }
 
     override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        if currentMode == .editReminder || currentMode == .editPriority {
+        if mindfulMode.action == .edit || mindfulMode.action == .priority {
             return Constants.estimatedSmallExpandedActionRowHeight
         }
 
-        if currentMode == .editAlarm {
+        if mindfulMode.action == .alarm {
             return Constants.estimatedLargeExpandedActionRowHeight
         }
 
@@ -89,11 +89,10 @@ extension MainReminderViewController {
         }
 
         if selectedReminder == indexPath {
-            if currentMode == .editReminder {
+            if mindfulMode.action == .edit {
                 guard let cell = tableView.cellForRow(at: selectedReminder) as? UIReminderCell else {
                     return nil
                 }
-                print("Current:", currentMode)
                 cell.titleViewBecomeFirstResponder()
                 return nil
             }
@@ -137,12 +136,12 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         print("Did deselect:", indexPath)
 
-        if let selectedIndex = tableView.indexPathForSelectedRow {
-            tableView.deselectRow(at: selectedIndex, animated: true)
+        if let selectedReminder = selectedReminder {
+            tableView.deselectRow(at: selectedReminder, animated: true)
         }
         selectedReminder = nil
 
-        currentMode = .main
+        mindfulMode.action = .none
         view.endEditing(true)
         addButton.image = #imageLiteral(resourceName: "AddIcon")
         var actionCellIndexPath = indexPath

@@ -13,29 +13,11 @@ class MainReminderViewController: UITableViewController {
 
     var reminderViewModel: ReminderViewModel!
 
-    var addButton: UIBarButtonItem!
-    var completedButton: UIBarButtonItem!
-    var detailButton: UIBarButtonItem!
-
-    var filterMode: Bool!
-    var currentMode: MindfulMode!
+    var addButton: UIBarButtonItem!, completedButton: UIBarButtonItem!, detailButton: UIBarButtonItem!
 
     var selectedReminder: IndexPath?
-
-    struct Rearrange {
-        static var cell: UITableViewCell?
-        static var snapshotView: UIView?
-        static var snapshotOffset: CGFloat?
-        static var currentIndexPath: IndexPath?
-
-        static func clear() {
-            Rearrange.snapshotView?.removeFromSuperview()
-            Rearrange.cell = nil
-            Rearrange.snapshotView = nil
-            Rearrange.snapshotOffset = nil
-            Rearrange.currentIndexPath = nil
-        }
-    }
+    var mindfulMode = MindfulMode()
+    var rearrange: Rearrange?
 
     init(viewModel: ReminderViewModel) {
         super.init(nibName: nil, bundle: nil)
@@ -48,9 +30,6 @@ class MainReminderViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        filterMode = false
-        currentMode = MindfulMode.main
 
         // Setup the nav bar
 
@@ -111,18 +90,18 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func detailButtonPressed() {
-        if let indexPath = tableView.indexPathForSelectedRow {
-            tableView(tableView, didDeselectRowAt: indexPath)
+        if let selectedReminder = selectedReminder {
+            tableView(tableView, didDeselectRowAt: selectedReminder)
         }
 
-        filterMode = !filterMode
-        if filterMode {
+        mindfulMode.filter = !mindfulMode.filter
+        if mindfulMode.filter {
             navigationItem.title = Constants.filterTitle
             navigationItem.rightBarButtonItems = nil
         } else {
-            if currentMode == .main {
+            if mindfulMode.reminder == .main {
                 navigationItem.title = Constants.mainTitle
-            } else if currentMode == .completed {
+            } else if mindfulMode.reminder == .completed {
                 navigationItem.title = Constants.completedTitle
             }
             
@@ -131,46 +110,42 @@ class MainReminderViewController: UITableViewController {
         
         for cell in tableView.visibleCells {
             let reminderCell = cell as? UIReminderCell
-            reminderCell?.changeFilterMode(filterMode)
+            reminderCell?.changeFilterMode(mindfulMode.filter)
         }
     }
 
     @objc func addButtonPressed() {
-        if let indexPath = tableView.indexPathForSelectedRow {
-            tableView(tableView, didDeselectRowAt: indexPath)
-
-            let subreminderViewModel = reminderViewModel.getSubreminderViewModelForIndexPath(indexPath)
-            let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: true)
-            navigationController?.pushViewController(subreminderViewController, animated: true)
-        } else {
-            let firstRow = IndexPath.init(row: 0, section: 0)
-
-            reminderViewModel.addReminder()
-            tableView.beginUpdates()
-            tableView.insertRows(at: [firstRow], with: .top)
-            tableView.endUpdates()
-
-            tableView(tableView, didSelectRowAt: firstRow)
+        if let selectedReminder = selectedReminder {
+            tableView(tableView, didDeselectRowAt: selectedReminder)
         }
+
+        let firstRow = IndexPath.init(row: 0, section: 0)
+
+        reminderViewModel.addReminder()
+        tableView.beginUpdates()
+        tableView.insertRows(at: [firstRow], with: .top)
+        tableView.endUpdates()
+
+        tableView(tableView, didSelectRowAt: firstRow)
     }
 
     @objc func completedButtonPressed() {
 print("Complete Pressed")
 
-        if let indexPath = tableView.indexPathForSelectedRow {
-            tableView(tableView, didDeselectRowAt: indexPath)
+        if let selectedReminder = selectedReminder {
+            tableView(tableView, didDeselectRowAt: selectedReminder)
         }
 
         var completed = false
-        if currentMode == .main {
+        if mindfulMode.reminder == .main {
             completed = true
             navigationItem.rightBarButtonItems = [completedButton]
             navigationItem.title = Constants.completedTitle
-            currentMode = .completed
-        } else if currentMode == .completed {
+            mindfulMode.reminder = .completed
+        } else if mindfulMode.reminder == .completed {
             navigationItem.rightBarButtonItems = [addButton, completedButton]
             navigationItem.title = Constants.mainTitle
-            currentMode = .main
+            mindfulMode.reminder = .main
         }
         
         reminderViewModel.initializeTableData(withCompleted: completed) { result in
@@ -196,39 +171,13 @@ print("Complete Pressed")
 }
 
 
-// MARK: - UITextFieldDelegate
-
-extension MainReminderViewController: UITextViewDelegate {
-
-    func textViewDidChange(_ textView: UITextView) {
-        let currentOffset = tableView.contentOffset
-        UIView.setAnimationsEnabled(false)
-        tableView.beginUpdates()
-        tableView.endUpdates()
-        UIView.setAnimationsEnabled(true)
-        tableView.setContentOffset(currentOffset, animated: false)
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        let textViewPoint = textView.convert(textView.center, to: tableView)
-        
-        guard let indexPath = tableView.indexPathForRow(at: textViewPoint),
-              let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell else {
-            return
-        }
-
-        reminderViewModel.updateReminder(completed: nil, title: cell.getTitleText(), detail: nil, priority: nil, indexPath: indexPath)
-    }
-}
-
-
 // MARK: - Scrolling functions for new reminders
 
 extension MainReminderViewController {
 
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        if let indexPath = tableView.indexPathForSelectedRow {
-            tableView(tableView, didDeselectRowAt: indexPath)
+        if let selectedReminder = selectedReminder {
+            tableView(tableView, didDeselectRowAt: selectedReminder)
             view.endEditing(true)
         }
     }

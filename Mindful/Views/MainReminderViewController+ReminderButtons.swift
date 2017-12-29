@@ -24,24 +24,6 @@ extension MainReminderViewController: UIReminderCellDelegate {
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()
 
-        case .detail:
-            let detailedViewModel = reminderViewModel.getDetailedReminderViewModelForIndexPath(indexPath)
-            let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
-            navigationController?.pushViewController(detailedViewController, animated: true)
-
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                tableView(tableView, didDeselectRowAt: selectedIndex)
-            }
-
-        case .subreminder:
-            let subreminderViewModel = reminderViewModel.getSubreminderViewModelForIndexPath(indexPath)
-            let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: false)
-            navigationController?.pushViewController(subreminderViewController, animated: true)
-
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                tableView(tableView, didDeselectRowAt: selectedIndex)
-            }
-
         default:
             break
         }

@@ -21,11 +21,11 @@ extension MainReminderViewController: UIActionCellDelegate {
         case .edit:
             let reminderCell = tableView.cellForRow(at: selectedReminder) as! UIReminderCell
             reminderCell.setUserInteraction(true)
-            currentMode = .editReminder
+            mindfulMode.action = .edit
             scrollActionCellToMiddle()
 
         case .priority:
-            currentMode = .editPriority
+            mindfulMode.action = .priority
             scrollActionCellToMiddle()
 
         case .lowPriority:
@@ -41,14 +41,15 @@ extension MainReminderViewController: UIActionCellDelegate {
             reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.high, indexPath: selectedReminder)
 
         case .alarm:
-            currentMode = .editAlarm
+            mindfulMode.action = .alarm
             break
 
         case .alarmLabel:
             scrollActionCellToMiddle()
 
         case .manageSubreminders:
-            currentMode = .managingSubreminders
+            mindfulMode.reminder = .subreminders
+            mindfulMode.action = .none
             reminderViewModel.initializeSubreminders(ofIndexPath: selectedReminder, completion: { (completed) in
 
                 if completed {
@@ -59,7 +60,7 @@ extension MainReminderViewController: UIActionCellDelegate {
             break
 
         case .returnAction:
-            if currentMode == .editReminder {
+            if mindfulMode.action == .edit {
                 guard let selectedCell = tableView.cellForRow(at: selectedReminder) as? UIReminderCell else {
                     return
                 }
@@ -67,11 +68,11 @@ extension MainReminderViewController: UIActionCellDelegate {
                 selectedCell.setUserInteraction(false)
 print("yaknow?")
                 reminderViewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedReminder)
-            } else if currentMode == .editAlarm {
+            } else if mindfulMode.action == .alarm {
                 print("Date:", cell.getAlarmDate())
                 reminderViewModel.updateReminder(completed: nil, title: nil, detail: nil, priority: nil, indexPath: selectedReminder)
             }
-            currentMode = .main
+            mindfulMode.action = .none
 
         default:
             break

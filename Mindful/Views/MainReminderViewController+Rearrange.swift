@@ -25,8 +25,8 @@ extension MainReminderViewController {
                 return
             }
 
-            if let selectedIndex = tableView.indexPathForSelectedRow {
-                tableView(tableView, didDeselectRowAt: selectedIndex)
+            if let selectedReminder = selectedReminder {
+                tableView(tableView, didDeselectRowAt: selectedReminder)
             }
 
             let view = snapshot(cell: cell)
@@ -45,10 +45,7 @@ extension MainReminderViewController {
                 }
             })
 
-            Rearrange.cell = cell
-            Rearrange.snapshotView = view
-            Rearrange.snapshotOffset = location.y - view.center.y
-            Rearrange.currentIndexPath = indexPath
+            rearrange = Rearrange(cell: cell, snapshotView: view, snapshotOffset: location.y - view.center.y, currentIndexPath: indexPath)
 
         case .changed:
             var indexPath: IndexPath!
@@ -59,8 +56,9 @@ extension MainReminderViewController {
                 return
             }
 
-            guard let snapshotView = Rearrange.snapshotView,
-                  let currentIndexPath = Rearrange.currentIndexPath else {
+            guard var rearrange = rearrange,
+                  let snapshotView = rearrange.snapshotView,
+                  let currentIndexPath = rearrange.currentIndexPath else {
                 return
             }
             
@@ -68,17 +66,18 @@ extension MainReminderViewController {
                 snapshotView.alpha = 0.8
             }
             
-            snapshotView.center.y = location.y - Rearrange.snapshotOffset!
+            snapshotView.center.y = location.y - rearrange.snapshotOffset!
             
             if currentIndexPath != indexPath {
                 tableView.moveRow(at: currentIndexPath, to: indexPath)
                 reminderViewModel.swapReminders(fromIndexPath: currentIndexPath, to: indexPath)
-                Rearrange.currentIndexPath = indexPath
+                rearrange.currentIndexPath = indexPath
             }
 
         default:
-            guard let snapshotView = Rearrange.snapshotView,
-                  let cell = Rearrange.cell else {
+            guard var rearrange = rearrange,
+                  let snapshotView = rearrange.snapshotView,
+                  let cell = rearrange.cell else {
                 return
             }
             
@@ -89,7 +88,7 @@ extension MainReminderViewController {
             }, completion: { finished in
                 cell.isHidden = false
                 cell.alpha = 1.0
-                Rearrange.clear()
+                rearrange.clear()
             })
 
             reminderViewModel.saveReminders()

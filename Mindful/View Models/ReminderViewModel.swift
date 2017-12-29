@@ -59,7 +59,7 @@ class ReminderViewModel: ReminderViewModelProtocol {
     func initializeSubreminders(ofIndexPath index: IndexPath, completion: ((_ result: Bool) -> Void)?) {
         self.parentReminder = getReminder(forIndexPath: index)
 
-        guard let subreminderSet = reminder.subreminders else {
+        guard let subreminderSet = parentReminder!.subreminders else {
             completion?(false)
             return
         }
