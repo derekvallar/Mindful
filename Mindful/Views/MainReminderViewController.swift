@@ -15,7 +15,9 @@ class MainReminderViewController: UITableViewController {
 
     var addButton: UIBarButtonItem!, completedButton: UIBarButtonItem!, detailButton: UIBarButtonItem!
 
+    // SelectedReminder exists because UITableview has uncontrollable deselects that causes crashes
     var selectedReminder: IndexPath?
+
     var mindfulMode = MindfulMode()
     var rearrange: Rearrange?
 
@@ -121,7 +123,12 @@ class MainReminderViewController: UITableViewController {
 
         let firstRow = IndexPath.init(row: 0, section: 0)
 
-        reminderViewModel.addReminder()
+//        if mindfulMode.reminder == .main {
+            reminderViewModel.addReminder()
+//        } else if mindfulMode.reminder == .subreminders {
+//            reminderViewModel.add
+//        }
+
         tableView.beginUpdates()
         tableView.insertRows(at: [firstRow], with: .top)
         tableView.endUpdates()

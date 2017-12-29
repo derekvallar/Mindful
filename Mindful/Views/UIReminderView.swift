@@ -21,7 +21,7 @@ class UIReminderView: UIView {
 
     private var reminderStackView = UIStackView()
     private var leftButton = UICellButton()
-    private var rightButton = UICellButton()
+    private var rearrangeImage = UIImageView()
     private var subreminderButton = UICellButton()
 
     private var infoStackView = UIStackView()
@@ -53,8 +53,7 @@ class UIReminderView: UIView {
         leftButton.addTarget(self, action: #selector(leftButtonPressed), for: .touchUpInside)
         leftButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
         
-        rightButton.addTarget(self, action: #selector(rightButtonPressed), for: .touchUpInside)
-        rightButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
+        rearrangeImage.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
         
         subreminderButton.addTarget(self, action: #selector(subreminderButtonPressed), for: .touchUpInside)
         subreminderButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
@@ -78,7 +77,8 @@ class UIReminderView: UIView {
         detailLabel.textColor = Constants.textSecondaryColor
         detailLabel.font = UIFont.systemFont(ofSize: Constants.textSecondarySize)
         
-        rightButton.isHidden = true
+        rearrangeImage.image = #imageLiteral(resourceName: "RearrangeIcon")
+        rearrangeImage.isHidden = true
         
         subreminderButton.type = .subreminder
         subreminderButton.setImage(#imageLiteral(resourceName: "SubreminderIcon"), for: .normal)
@@ -95,7 +95,7 @@ class UIReminderView: UIView {
         reminderStackView.addArrangedSubview(leftButton)
         reminderStackView.addArrangedSubview(infoStackView)
         reminderStackView.addArrangedSubview(subreminderButton)
-        reminderStackView.addArrangedSubview(rightButton)
+        reminderStackView.addArrangedSubview(rearrangeImage)
         
         infoStackView.addArrangedSubview(titleTextView)
         infoStackView.addArrangedSubview(detailLabel)
@@ -132,10 +132,6 @@ class UIReminderView: UIView {
         buttonDelegate?.didTapButton(button: leftButton.type)
     }
 
-    @objc func rightButtonPressed() {
-        buttonDelegate?.didTapButton(button: rightButton.type)
-    }
-
     @objc func subreminderButtonPressed() {
         if !filterMode {
             buttonDelegate?.didTapButton(button: subreminderButton.type)
@@ -156,9 +152,9 @@ class UIReminderView: UIView {
         synchronizeButtonImages()
 
         if filterMode {
-            rightButton.isHidden = false
+            rearrangeImage.isHidden = false
         } else {
-            rightButton.isHidden = true
+            rearrangeImage.isHidden = true
         }
     }
 
@@ -168,28 +164,28 @@ class UIReminderView: UIView {
             leftButton.isSelected = false
             subreminderButton.isEnabled = false
 
-            if rightButton.isHidden {
+            if rearrangeImage.isHidden {
                 UIView.animate(withDuration: 0.15, animations: {
-                    self.rightButton.isHidden = false
+                    self.rearrangeImage.isHidden = false
                 })
             }
         } else {
             subreminderButton.isEnabled = true
-            if !rightButton.isHidden {
+            if !rearrangeImage.isHidden {
                 UIView.animate(withDuration: 0.15, animations: {
-                    self.rightButton.isHidden = true
+                    self.rearrangeImage.isHidden = true
                 })
             }
         }
 
         UIView.animate(withDuration: 0.075, animations: {
             self.leftButton.alpha = 0.0
-            self.rightButton.alpha = 0.0
+            self.rearrangeImage.alpha = 0.0
         }) { (_) in
             self.synchronizeButtonImages()
             UIView.animate(withDuration: 0.075, animations: {
                 self.leftButton.alpha = 1.0
-                self.rightButton.alpha = 1.0
+                self.rearrangeImage.alpha = 1.0
             })
         }
     }
@@ -210,16 +206,10 @@ class UIReminderView: UIView {
             leftButton.type = .delete
             leftButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .normal)
             leftButton.setImage(nil, for: .selected)
-
-            rightButton.type = .rearrange
-            rightButton.setImage(#imageLiteral(resourceName: "RearrangeIcon"), for: .normal)
         } else {
             leftButton.type = .complete
             leftButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
             leftButton.setImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
-
-            rightButton.type = .detail
-            rightButton.setImage(#imageLiteral(resourceName: "DetailIcon"), for: .normal)
         }
     }
 }

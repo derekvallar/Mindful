@@ -30,6 +30,7 @@ class UIReminderCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = UIColor.clear
 
+        branchImage.isHidden = true
 //        branchImage.backgroundColor = UIColor.blue
 //        reminderView.backgroundColor = UIColor.cyan
 
@@ -108,13 +109,11 @@ class UIReminderCell: UITableViewCell {
 
     func setup(item: ReminderViewModelItem, filtering: Bool, endSub: Bool) {
         print("Item:", item.title)
-//        if item.
         reminderView.setup(item: item, filtering: filtering)
 
-        if endSub {
-            branchImage.image = #imageLiteral(resourceName: "SubreminderEndIcon")
-        } else {
-            branchImage.image = #imageLiteral(resourceName: "SubreminderBranchIcon")
+        if item.isSubreminder {
+            branchImage.isHidden = false
+            branchImage.image = endSub ? #imageLiteral(resourceName: "SubreminderEndIcon") : #imageLiteral(resourceName: "SubreminderBranchIcon")
         }
     }
 }
