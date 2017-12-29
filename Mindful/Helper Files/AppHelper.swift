@@ -45,7 +45,7 @@ enum Constants {
     static let cellYSpacing: CGFloat = 5.0
     static let cellYSpacingInverse: CGFloat = -5.0
 
-    static let buttonBorderWidth: CGFloat = 3.0
+    static let buttonBorderWidth: CGFloat = 2.0
 
     static let estimatedReminderRowHeight: CGFloat = 60.5
     static let estimatedActionRowHeight: CGFloat = 36.5

@@ -12,5 +12,5 @@ enum UIReminderButtonType {
     case complete, delete, subreminder, rearrange, detail, none
 
     // ActionCell Buttons
-    case edit, priority, alarm, addSubreminder, lowPriority, mediumPriority, highPriority, returnAction
+    case edit, priority, alarm, alarmLabel, manageSubreminders, lowPriority, mediumPriority, highPriority, returnAction
 }

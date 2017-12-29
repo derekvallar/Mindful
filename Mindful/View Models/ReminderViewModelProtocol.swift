@@ -41,9 +41,10 @@ extension ReminderViewModelProtocol {
         }
 
         let priority = Priority(rawValue: (reminder.priority))!
-        let subreminders = hasSubreminders(indexPath: indexPath)
+        let isSubreminder = reminder.isSubreminder
+        let isParent = hasSubreminders(indexPath: indexPath)
 
-        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, subreminders: subreminders)
+        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, isSubreminder: isSubreminder, hasSubreminders: isParent)
     }
 
     func getDetailedReminderViewModelForIndexPath(_ indexPath: IndexPath) -> DetailedReminderViewModel {

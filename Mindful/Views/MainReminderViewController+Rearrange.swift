@@ -72,7 +72,7 @@ extension MainReminderViewController {
             
             if currentIndexPath != indexPath {
                 tableView.moveRow(at: currentIndexPath, to: indexPath)
-                viewModel.swapReminders(fromIndexPath: currentIndexPath, to: indexPath)
+                reminderViewModel.swapReminders(fromIndexPath: currentIndexPath, to: indexPath)
                 Rearrange.currentIndexPath = indexPath
             }
 
@@ -92,7 +92,7 @@ extension MainReminderViewController {
                 Rearrange.clear()
             })
 
-            viewModel.saveReminders()
+            reminderViewModel.saveReminders()
         }
     }
     

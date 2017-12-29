@@ -15,7 +15,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var count = viewModel.getReminderCount()
+        var count = reminderViewModel.getReminderCount()
         if selectedReminder != nil {
             count += 1
         }
@@ -33,7 +33,7 @@ extension MainReminderViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Constants.actionCellIdentifier) as! UIActionCell
                 cell.delegate = self
 
-                let item = viewModel.getReminderTableViewModelItem(forIndexPath: selectedReminder)
+                let item = reminderViewModel.getReminderTableViewModelItem(forIndexPath: selectedReminder)
                 cell.setup(detail: item.detail, priority: item.priority)
 
                 return cell
@@ -46,11 +46,16 @@ extension MainReminderViewController {
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.reminderCellIdentifier, for: indexPath) as! UIReminderCell
-        cell.titleTextView.delegate = self
+        cell.setTitleDelegate(controller: self)
         cell.buttonDelegate = self
 
-        let item = viewModel.getReminderTableViewModelItem(forIndexPath: reminderIndex)
-        cell.setup(item: item, filtering: filterMode)
+        let item = reminderViewModel.getReminderTableViewModelItem(forIndexPath: reminderIndex)
+        var endSub = false
+        if indexPath.row == self.tableView(tableView, numberOfRowsInSection: 0) - 1 {
+            endSub = true
+        }
+
+        cell.setup(item: item, filtering: filterMode, endSub: endSub)
         return cell
     }
 
@@ -69,6 +74,10 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         print("Will Select")
 
+        if let cell = tableView.cellForRow(at: indexPath) {
+            print("size:", cell.bounds.height)
+        }
+
         // If nothing is currently selected, proceed as normal
         guard let selectedReminder = selectedReminder else {
             return indexPath
@@ -84,7 +93,8 @@ extension MainReminderViewController {
                 guard let cell = tableView.cellForRow(at: selectedReminder) as? UIReminderCell else {
                     return nil
                 }
-                cell.titleTextView.becomeFirstResponder()
+                print("Current:", currentMode)
+                cell.titleViewBecomeFirstResponder()
                 return nil
             }
 
@@ -115,7 +125,7 @@ extension MainReminderViewController {
         actionCellIndexPath.row = actionCellIndexPath.row + 1
 
         tableView.beginUpdates()
-        tableView.insertRows(at: [actionCellIndexPath], with: .none)
+        tableView.insertRows(at: [actionCellIndexPath], with: .automatic)
         tableView.endUpdates()
 
         let deadlineTime = DispatchTime.now() + .milliseconds(1)
@@ -142,4 +152,27 @@ extension MainReminderViewController {
         tableView.deleteRows(at: [actionCellIndexPath], with: .none)
         tableView.endUpdates()
     }
+
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let containerView = UIView()
+        let cell = UIReminderView()
+
+        let item = reminderViewModel.getReminderTableViewModelItem(forIndexPath: IndexPath.init(row: 0, section: 0))
+        cell.setup(item: item, filtering: false)
+
+        containerView.addSubview(cell)
+        NSLayoutConstraint.setupAndActivate(constraints: [
+            cell.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            cell.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            cell.topAnchor.constraint(equalTo: containerView.topAnchor),
+            cell.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+            ])
+        return containerView
+    }
+//
+//    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+//
+//
+//        return nil
+//    }
 }

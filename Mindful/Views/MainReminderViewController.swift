@@ -11,7 +11,7 @@ import MapKit
 
 class MainReminderViewController: UITableViewController {
 
-    var viewModel: ReminderViewModel!
+    var reminderViewModel: ReminderViewModel!
 
     var addButton: UIBarButtonItem!
     var completedButton: UIBarButtonItem!
@@ -37,13 +37,9 @@ class MainReminderViewController: UITableViewController {
         }
     }
 
-    convenience init() {
-        self.init(nibName: nil, bundle: nil)
-        viewModel = ReminderViewModel.standard
-    }
-
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    init(viewModel: ReminderViewModel) {
+        super.init(nibName: nil, bundle: nil)
+        reminderViewModel = viewModel
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -143,13 +139,13 @@ class MainReminderViewController: UITableViewController {
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView(tableView, didDeselectRowAt: indexPath)
 
-            let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
+            let subreminderViewModel = reminderViewModel.getSubreminderViewModelForIndexPath(indexPath)
             let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: true)
             navigationController?.pushViewController(subreminderViewController, animated: true)
         } else {
             let firstRow = IndexPath.init(row: 0, section: 0)
 
-            viewModel.addReminder()
+            reminderViewModel.addReminder()
             tableView.beginUpdates()
             tableView.insertRows(at: [firstRow], with: .top)
             tableView.endUpdates()
@@ -177,7 +173,7 @@ print("Complete Pressed")
             currentMode = .main
         }
         
-        viewModel.initializeTableData(withCompleted: completed) { result in
+        reminderViewModel.initializeTableData(withCompleted: completed) { result in
             if result {
                 self.tableView.reloadData()
             } else {
@@ -188,6 +184,14 @@ print("Complete Pressed")
 
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+
+    // TODO: Currently scrolltoRow doesn't work w/o a delay. Find a fix in future iOS updates.
+    func scrollActionCellToMiddle() {
+        let deadlineTime = DispatchTime.now() + .milliseconds(1)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
+        }
     }
 }
 
@@ -213,7 +217,7 @@ extension MainReminderViewController: UITextViewDelegate {
             return
         }
 
-        viewModel.updateReminder(completed: nil, title: cell.titleTextView.text!, detail: nil, priority: nil, indexPath: indexPath)
+        reminderViewModel.updateReminder(completed: nil, title: cell.getTitleText(), detail: nil, priority: nil, indexPath: indexPath)
     }
 }
 

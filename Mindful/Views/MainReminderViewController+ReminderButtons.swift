@@ -16,18 +16,16 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
         switch button {
         case .complete:
-            if let completed = cell.isCompleted() {
-                viewModel.updateReminder(completed: completed, title: nil, detail: nil, priority: nil, indexPath: indexPath)
-            }
+            reminderViewModel.updateReminder(completed: cell.isCompleted(), title: nil, detail: nil, priority: nil, indexPath: indexPath)
 
         case .delete:
-            viewModel.deleteReminder(atIndexPath: indexPath)
+            reminderViewModel.deleteReminder(atIndexPath: indexPath)
             tableView.beginUpdates()
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()
 
         case .detail:
-            let detailedViewModel = viewModel.getDetailedReminderViewModelForIndexPath(indexPath)
+            let detailedViewModel = reminderViewModel.getDetailedReminderViewModelForIndexPath(indexPath)
             let detailedViewController = DetailedReminderViewController(viewModel: detailedViewModel)
             navigationController?.pushViewController(detailedViewController, animated: true)
 
@@ -36,7 +34,7 @@ extension MainReminderViewController: UIReminderCellDelegate {
             }
 
         case .subreminder:
-            let subreminderViewModel = viewModel.getSubreminderViewModelForIndexPath(indexPath)
+            let subreminderViewModel = reminderViewModel.getSubreminderViewModelForIndexPath(indexPath)
             let subreminderViewController = SubreminderViewController(viewModel: subreminderViewModel, startWithNewReminder: false)
             navigationController?.pushViewController(subreminderViewController, animated: true)
 

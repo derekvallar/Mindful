@@ -35,6 +35,7 @@ class UIActionCell: UITableViewCell {
     private var alarmLabel = UILabel()
     private var alarmDateTimeLabel = UILabel()
     private var alarmPicker = UIDatePicker()
+    private var alarmIsExpanded = false
 
     weak var delegate: UIActionCellDelegate?
 
@@ -66,7 +67,7 @@ class UIActionCell: UITableViewCell {
         setAlarmButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
         setAlarmButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
-        addSubreminderButton.type = .addSubreminder
+        addSubreminderButton.type = .manageSubreminders
         addSubreminderButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
         addSubreminderButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
@@ -134,6 +135,10 @@ class UIActionCell: UITableViewCell {
         alarmDateTimeLabel.text = "Test Date at Test Time"
         alarmDateTimeLabel.textColor = Constants.textSecondaryColor
         alarmDateTimeLabel.font = UIFont.systemFont(ofSize: Constants.textSize)
+        alarmDateTimeLabel.isUserInteractionEnabled = true
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(alarmLabelTapped))
+        alarmDateTimeLabel.addGestureRecognizer(tap)
 
         alarmPicker.datePickerMode = .dateAndTime
 
@@ -206,6 +211,7 @@ class UIActionCell: UITableViewCell {
             }
         }
 
+        alarmIsExpanded = false
         changeModeViews(.returnAction)
     }
 
@@ -239,13 +245,13 @@ class UIActionCell: UITableViewCell {
                 button.backgroundColor = UIColor.clear
             }
         }
+    }
 
-//        button.isSelected = !button.isSelected
-//        if button.isSelected {
-
-//        } else {
-//            button.backgroundColor = UIColor.clear
-//        }
+    @objc private func alarmLabelTapped() {
+        print("Tapped")
+        alarmIsExpanded = !alarmIsExpanded
+        self.alarmPicker.isHidden = !self.alarmIsExpanded
+        delegate?.didTapButton(cell: self, type: .alarmLabel)
     }
 
     private func changeModeViews(_ type: UIReminderButtonType) {
@@ -261,7 +267,6 @@ class UIActionCell: UITableViewCell {
         case .alarm:
             alarmLabel.isHidden = false
             alarmDateTimeLabel.isHidden = false
-            alarmPicker.isHidden = false
 
         case .returnAction:
             returnButton.isHidden = true

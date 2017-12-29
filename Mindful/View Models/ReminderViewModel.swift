@@ -13,13 +13,9 @@ class ReminderViewModel: ReminderViewModelProtocol {
 
     var context: NSManagedObjectContext
     var reminders: [Reminder]
+    var parentReminder: Reminder?
 
-    static let standard = ReminderViewModel()
-
-//    var selectedIndexPath: IndexPath!
-//    var parentIndexPath: IndexPath!
-
-    private init() {
+    init() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         context = appDelegate.persistentContainer.viewContext
         reminders = [Reminder]()
@@ -29,12 +25,17 @@ class ReminderViewModel: ReminderViewModelProtocol {
     }
 
     func addReminder() {
-        let reminder = Reminder(context: context)
+        let newReminder = Reminder(context: context)
         let nextIndex = reminders.count
 
-        reminder.setup(index: nextIndex, subreminder: false)
-        reminders.insert(reminder, at: 0)
+        if let parentReminder = parentReminder {
+            newReminder.setup(index: nextIndex, subreminder: true)
+            parentReminder.addToSubreminders(newReminder)
+        } else {
+            newReminder.setup(index: nextIndex, subreminder: false)
+        }
 
+        reminders.insert(newReminder, at: 0)
         saveReminders()
     }
 
@@ -55,28 +56,36 @@ class ReminderViewModel: ReminderViewModelProtocol {
         completion?(true)
     }
 
-    func getSubreminderViewModelForIndexPath(_ indexPath: IndexPath) -> SubreminderViewModel {
-        let reminder = getReminder(forIndexPath: indexPath)
-        let viewModel = SubreminderViewModel(reminder)
-        return viewModel
+    func initializeSubreminders(ofIndexPath index: IndexPath, completion: ((_ result: Bool) -> Void)?) {
+        self.parentReminder = getReminder(forIndexPath: index)
+
+        guard let subreminderSet = reminder.subreminders else {
+            completion?(false)
+            return
+        }
+
+        for item in subreminderSet {
+            let subreminder = item as! Reminder
+            reminders.append(subreminder)
+        }
+
+        reminders.sort {
+            if $0.completed == $1.completed {
+                if $0.completed {
+                    return $0.completedDate! as Date > $1.completedDate! as Date
+                }
+                return $0.index > $1.index
+            }
+            return !$0.completed && $1.completed
+        }
+
+        updateIndices()
+        completion?(true)
+
+        for item in reminders {
+            print("Sub", item.index, ", completed:", item.completed, ", title:", item.title)
+        }
     }
-
-//    func reminderDeselected(indexPath: IndexPath) -> [IndexPath] {
-//        var indices = getSubreminderIndices()
-//        subreminders.removeAll()
-//        return indices
-//    }
-
-//    func moveReminder(fromIndex start: IndexPath, toIndex end: IndexPath) {
-//        let reminder = getReminder(forIndexPath: start)
-//
-//        guard let index = reminders.index(of: reminder) else {
-//            return
-//        }
-//
-//        reminders.remove(at: index)
-//        reminders.insert(reminder, at: end.row)
-//    }
 
     // TODO: Remove this test function
     func checkReminders() {

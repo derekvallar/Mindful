@@ -16,48 +16,46 @@ extension MainReminderViewController: UIActionCellDelegate {
             return
         }
 
+
         switch type {
         case .edit:
             let reminderCell = tableView.cellForRow(at: selectedReminder) as! UIReminderCell
-            reminderCell.titleTextView.isUserInteractionEnabled = true
+            reminderCell.setUserInteraction(true)
             currentMode = .editReminder
-
-            let deadlineTime = DispatchTime.now() + .milliseconds(1)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
-            }
+            scrollActionCellToMiddle()
 
         case .priority:
             currentMode = .editPriority
-            let deadlineTime = DispatchTime.now() + .milliseconds(1)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
-            }
+            scrollActionCellToMiddle()
 
         case .lowPriority:
             print("low priority")
-            viewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.low, indexPath: selectedReminder)
+            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.low, indexPath: selectedReminder)
 
         case .mediumPriority:
             print("Medium priority")
-            viewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.medium, indexPath: selectedReminder)
+            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.medium, indexPath: selectedReminder)
 
         case .highPriority:
             print("high priority")
-            viewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.high, indexPath: selectedReminder)
+            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.high, indexPath: selectedReminder)
 
         case .alarm:
             currentMode = .editAlarm
-            print("ActionCellIndex:", getActionCellIndex())
-
-            // TODO: Currently scrolltoRow doesn't work w/o a delay. Find a fix in future iOS updates.
-            let deadlineTime = DispatchTime.now() + .milliseconds(1)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
-            }
             break
 
-        case .addSubreminder:
+        case .alarmLabel:
+            scrollActionCellToMiddle()
+
+        case .manageSubreminders:
+            currentMode = .managingSubreminders
+            reminderViewModel.initializeSubreminders(ofIndexPath: selectedReminder, completion: { (completed) in
+
+                if completed {
+                    self.tableView.reloadData()
+                }
+            })
+
             break
 
         case .returnAction:
@@ -66,17 +64,14 @@ extension MainReminderViewController: UIActionCellDelegate {
                     return
                 }
 
-                selectedCell.titleTextView.isUserInteractionEnabled = false
-
-                viewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedReminder)
+                selectedCell.setUserInteraction(false)
+print("yaknow?")
+                reminderViewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedReminder)
             } else if currentMode == .editAlarm {
                 print("Date:", cell.getAlarmDate())
-                viewModel.updateReminder(completed: nil, title: nil, detail: nil, priority: nil, indexPath: selectedReminder)
+                reminderViewModel.updateReminder(completed: nil, title: nil, detail: nil, priority: nil, indexPath: selectedReminder)
             }
-
-            print("Returning with selected:", selectedReminder != nil)
-            tableView.reloadRows(at: [selectedReminder], with: .none)
-            tableView.selectRow(at: selectedReminder, animated: true, scrollPosition: .none)
+            currentMode = .main
 
         default:
             break
@@ -84,5 +79,6 @@ extension MainReminderViewController: UIActionCellDelegate {
 
         tableView.beginUpdates()
         tableView.endUpdates()
+
     }
 }
