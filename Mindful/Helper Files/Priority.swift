@@ -14,11 +14,11 @@ enum Priority: Int16 {
     var imageLocation: String {
         switch self {
         case .low:
-            return Constants.emptyIconString
+            return .emptyIconString
         case .medium:
-            return Constants.priorityIconString
+            return .priorityIconString
         case .high:
-            return Constants.highPriorityIconString
+            return .highPriorityIconString
         }
     }
 }

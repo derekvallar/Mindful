@@ -25,7 +25,7 @@ extension MainReminderViewController {
                 return
             }
 
-            if let selectedReminder = selectedReminder {
+            if let selectedReminder = selectedIndex {
                 tableView(tableView, didDeselectRowAt: selectedReminder)
             }
 

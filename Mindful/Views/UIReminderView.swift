@@ -41,13 +41,13 @@ class UIReminderView: UIView {
         
         cardView.backgroundColor = UIColor.white
         cardView.layer.cornerRadius = 7.0
-        cardView.layer.borderColor = Constants.mediumPriorityColor.cgColor
+        cardView.layer.borderColor = UIColor.mediumPriorityColor.cgColor
         
         cardStackView.axis = .vertical
-        cardStackView.spacing = Constants.viewSpacing
+        cardStackView.spacing = .viewSpacing
         
         reminderStackView.axis = .horizontal
-        reminderStackView.spacing = Constants.viewSpacing
+        reminderStackView.spacing = .viewSpacing
         reminderStackView.alignment = .center
         
         leftButton.addTarget(self, action: #selector(leftButtonPressed), for: .touchUpInside)
@@ -63,10 +63,10 @@ class UIReminderView: UIView {
         infoStackView.distribution = .fill
         infoStackView.setContentHuggingPriority(UILayoutPriority.defaultLow, for: UILayoutConstraintAxis.horizontal)
         
-        titleTextView.textColor = Constants.textColor
+        titleTextView.textColor = .textColor
         titleTextView.isScrollEnabled = false
         titleTextView.isUserInteractionEnabled = false
-        titleTextView.font = UIFont.systemFont(ofSize: Constants.textSize)
+        titleTextView.font = UIFont.systemFont(ofSize: .textSize)
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
         titleTextView.layer.masksToBounds = false
@@ -74,8 +74,8 @@ class UIReminderView: UIView {
         alarmLabel.isHidden = true
         
         detailLabel.isHidden = true
-        detailLabel.textColor = Constants.textSecondaryColor
-        detailLabel.font = UIFont.systemFont(ofSize: Constants.textSecondarySize)
+        detailLabel.textColor = .textSecondaryColor
+        detailLabel.font = UIFont.systemFont(ofSize: .textSecondarySize)
         
         rearrangeImage.image = #imageLiteral(resourceName: "RearrangeIcon")
         rearrangeImage.isHidden = true
@@ -104,17 +104,17 @@ class UIReminderView: UIView {
         // Setup Constraints
         
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cardView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.cellXSpacing),
-            cardView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: Constants.cellXSpacingInverse),
-            cardView.topAnchor.constraint(equalTo: self.topAnchor, constant: Constants.cellYSpacing),
-            cardView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: Constants.cellYSpacingInverse)
+            cardView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: .cellXSpacing),
+            cardView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: .cellXSpacingInverse),
+            cardView.topAnchor.constraint(equalTo: self.topAnchor, constant: .cellYSpacing),
+            cardView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: .cellYSpacingInverse)
             ])
         
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cardStackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: Constants.viewSpacing),
-            cardStackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: Constants.viewSpacingInverse),
-            cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: Constants.layoutSpacing),
-            cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: Constants.layoutSpacingInverse)
+            cardStackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: .viewSpacing),
+            cardStackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: .viewSpacingInverse),
+            cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: .layoutSpacing),
+            cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: .layoutSpacingInverse)
             ])
     }
 

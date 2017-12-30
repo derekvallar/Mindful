@@ -11,15 +11,13 @@ import UIKit
 extension MainReminderViewController: UIActionCellDelegate {
     func didTapButton(cell: UIActionCell, type: UIReminderButtonType) {
 
-        print("Switching to:", type)
-        guard let selectedReminder = selectedReminder else {
+        guard let selectedIndex = selectedIndex else {
             return
         }
 
-
         switch type {
         case .edit:
-            let reminderCell = tableView.cellForRow(at: selectedReminder) as! UIReminderCell
+            let reminderCell = tableView.cellForRow(at: selectedIndex) as! UIReminderCell
             reminderCell.setUserInteraction(true)
             mindfulMode.action = .edit
             scrollActionCellToMiddle()
@@ -29,16 +27,13 @@ extension MainReminderViewController: UIActionCellDelegate {
             scrollActionCellToMiddle()
 
         case .lowPriority:
-            print("low priority")
-            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.low, indexPath: selectedReminder)
+            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.low, indexPath: selectedIndex)
 
         case .mediumPriority:
-            print("Medium priority")
-            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.medium, indexPath: selectedReminder)
+            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.medium, indexPath: selectedIndex)
 
         case .highPriority:
-            print("high priority")
-            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.high, indexPath: selectedReminder)
+            reminderViewModel.updateReminder(completed: nil, title: nil, detail: cell.getDetailText(), priority: Priority.high, indexPath: selectedIndex)
 
         case .alarm:
             mindfulMode.action = .alarm
@@ -50,27 +45,28 @@ extension MainReminderViewController: UIActionCellDelegate {
         case .manageSubreminders:
             mindfulMode.reminder = .subreminders
             mindfulMode.action = .none
-            reminderViewModel.initializeSubreminders(ofIndexPath: selectedReminder, completion: { (completed) in
 
+            returnIndex = selectedIndex
+            tableView(tableView, didDeselectRowAt: selectedIndex)
+            reminderViewModel.initializeSubreminders(ofIndexPath: selectedIndex, completion: { (completed) in
                 if completed {
+                    print("subreminder reloading")
                     self.tableView.reloadData()
                 }
             })
 
-            break
-
         case .returnAction:
             if mindfulMode.action == .edit {
-                guard let selectedCell = tableView.cellForRow(at: selectedReminder) as? UIReminderCell else {
+                guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
                     return
                 }
 
                 selectedCell.setUserInteraction(false)
 print("yaknow?")
-                reminderViewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedReminder)
+                reminderViewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedIndex)
             } else if mindfulMode.action == .alarm {
                 print("Date:", cell.getAlarmDate())
-                reminderViewModel.updateReminder(completed: nil, title: nil, detail: nil, priority: nil, indexPath: selectedReminder)
+                reminderViewModel.updateReminder(completed: nil, title: nil, detail: nil, priority: nil, indexPath: selectedIndex)
             }
             mindfulMode.action = .none
 

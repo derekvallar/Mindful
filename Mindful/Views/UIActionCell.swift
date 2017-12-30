@@ -49,7 +49,7 @@ class UIActionCell: UITableViewCell {
         actionCellStackView.axis = .vertical
         actionCellStackView.distribution = .fill
         actionCellStackView.alignment = .fill
-        actionCellStackView.spacing = Constants.actionViewSpacing
+        actionCellStackView.spacing = .actionViewSpacing
 
         actionButtonStackView.axis = .horizontal
         actionButtonStackView.distribution = .fillEqually
@@ -76,17 +76,17 @@ class UIActionCell: UITableViewCell {
         returnButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
         editLabel.text = "Notes:"
-        editLabel.textColor = Constants.textColor
-        editLabel.font = UIFont.systemFont(ofSize: Constants.textSize)
+        editLabel.textColor = .textColor
+        editLabel.font = UIFont.systemFont(ofSize: .textSize)
 
         editTextView.isScrollEnabled = false
-        editTextView.textColor = Constants.textColor
-        editTextView.backgroundColor = Constants.backgroundTextFieldColor
-        editTextView.font = UIFont.systemFont(ofSize: Constants.textSize)
+        editTextView.textColor = .textColor
+        editTextView.backgroundColor = .backgroundTextFieldColor
+        editTextView.font = UIFont.systemFont(ofSize: .textSize)
 
         priorityLabel.text = "Priority:"
-        priorityLabel.textColor = Constants.textColor
-        priorityLabel.font = UIFont.systemFont(ofSize: Constants.textSize)
+        priorityLabel.textColor = .textColor
+        priorityLabel.font = UIFont.systemFont(ofSize: .textSize)
 
         priorityStackView.axis = .horizontal
         priorityStackView.distribution = .fillEqually
@@ -94,47 +94,47 @@ class UIActionCell: UITableViewCell {
 
         lowPriorityButton.type = .lowPriority
         lowPriorityButton.setTitle("Low", for: .normal)
-        lowPriorityButton.setTitleColor(Constants.lowPriorityColor, for: .normal)
+        lowPriorityButton.setTitleColor(.lowPriorityColor, for: .normal)
         lowPriorityButton.setTitleColor(UIColor.white, for: .selected)
-        lowPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: Constants.textSize)
+        lowPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .textSize)
 
-        lowPriorityButton.backgroundColor = Constants.lowPriorityColor
+        lowPriorityButton.backgroundColor = .lowPriorityColor
         lowPriorityButton.layer.cornerRadius = 15.0
-        lowPriorityButton.layer.borderColor = Constants.lowPriorityColor.cgColor
-        lowPriorityButton.layer.borderWidth = Constants.buttonBorderWidth
+        lowPriorityButton.layer.borderColor = UIColor.lowPriorityColor.cgColor
+        lowPriorityButton.layer.borderWidth = .buttonBorderWidth
         lowPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
 
         mediumPriorityButton.type = .mediumPriority
         mediumPriorityButton.setTitle("Medium", for: .normal)
-        mediumPriorityButton.setTitleColor(Constants.mediumPriorityColor, for: .normal)
+        mediumPriorityButton.setTitleColor(.mediumPriorityColor, for: .normal)
         mediumPriorityButton.setTitleColor(UIColor.white, for: .selected)
-        mediumPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: Constants.textSize)
+        mediumPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .textSize)
 
-        mediumPriorityButton.backgroundColor = Constants.mediumPriorityColor
+        mediumPriorityButton.backgroundColor = .mediumPriorityColor
         mediumPriorityButton.layer.cornerRadius = 15.0
-        mediumPriorityButton.layer.borderColor = Constants.mediumPriorityColor.cgColor
-        mediumPriorityButton.layer.borderWidth = Constants.buttonBorderWidth
+        mediumPriorityButton.layer.borderColor = UIColor.mediumPriorityColor.cgColor
+        mediumPriorityButton.layer.borderWidth = .buttonBorderWidth
         mediumPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
 
         highPriorityButton.type = .highPriority
         highPriorityButton.setTitle("High", for: .normal)
-        highPriorityButton.setTitleColor(Constants.highPriorityColor, for: .normal)
+        highPriorityButton.setTitleColor(.highPriorityColor, for: .normal)
         highPriorityButton.setTitleColor(UIColor.white, for: .selected)
-        highPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: Constants.textSize)
+        highPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .textSize)
 
-        highPriorityButton.backgroundColor = Constants.highPriorityColor
+        highPriorityButton.backgroundColor = .highPriorityColor
         highPriorityButton.layer.cornerRadius = 15.0
-        highPriorityButton.layer.borderColor = Constants.highPriorityColor.cgColor
-        highPriorityButton.layer.borderWidth = Constants.buttonBorderWidth
+        highPriorityButton.layer.borderColor = UIColor.highPriorityColor.cgColor
+        highPriorityButton.layer.borderWidth = .buttonBorderWidth
         highPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
 
         alarmLabel.text = "Alarm:"
-        alarmLabel.textColor = Constants.textColor
-        alarmLabel.font = UIFont.systemFont(ofSize: Constants.textSize)
+        alarmLabel.textColor = .textColor
+        alarmLabel.font = UIFont.systemFont(ofSize: .textSize)
 
         alarmDateTimeLabel.text = "Test Date at Test Time"
-        alarmDateTimeLabel.textColor = Constants.textSecondaryColor
-        alarmDateTimeLabel.font = UIFont.systemFont(ofSize: Constants.textSize)
+        alarmDateTimeLabel.textColor = .textSecondaryColor
+        alarmDateTimeLabel.font = UIFont.systemFont(ofSize: .textSize)
         alarmDateTimeLabel.isUserInteractionEnabled = true
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(alarmLabelTapped))
@@ -170,13 +170,13 @@ class UIActionCell: UITableViewCell {
         // Setup Constraints
 
         // Silences UIView-Encapsulated-Layout-Height constraint error
-        let bottomConstraint = actionCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.cellYSpacingInverse)
+        let bottomConstraint = actionCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
         bottomConstraint.priority = UILayoutPriority(999)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            actionCellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.cellXSpacing),
-            actionCellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Constants.cellXSpacingInverse),
-            actionCellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.cellYSpacing),
+            actionCellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
+            actionCellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
+            actionCellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
             bottomConstraint
         ])
     }
@@ -234,11 +234,11 @@ class UIActionCell: UITableViewCell {
                 button.isSelected = true
 
                 if button.type == .lowPriority {
-                    button.backgroundColor = Constants.lowPriorityColor
+                    button.backgroundColor = .lowPriorityColor
                 } else if button.type == .mediumPriority {
-                    button.backgroundColor = Constants.mediumPriorityColor
+                    button.backgroundColor = .mediumPriorityColor
                 } else if button.type == .highPriority {
-                    button.backgroundColor = Constants.highPriorityColor
+                    button.backgroundColor = .highPriorityColor
                 }
             } else {
                 button.isSelected = false

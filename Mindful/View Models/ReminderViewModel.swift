@@ -32,9 +32,16 @@ class ReminderViewModel {
         return reminders[indexPath.row]
     }
 
-    func getReminderTableViewModelItem(forIndexPath indexPath: IndexPath) -> ReminderViewModelItem {
+    func getReminderItem(forIndexPath indexPath: IndexPath) -> ReminderViewModelItem {
         let reminder = getReminder(forIndexPath: indexPath)
+        return getItem(forReminder: reminder)
+    }
 
+    func getHeaderReminderItem() -> ReminderViewModelItem {
+        return getItem(forReminder: parentReminder!)
+    }
+
+    private func getItem(forReminder reminder: Reminder) -> ReminderViewModelItem {
         let completed = reminder.completed
         let title = reminder.title!
         var detail: String?
@@ -45,7 +52,14 @@ class ReminderViewModel {
 
         let priority = Priority(rawValue: (reminder.priority))!
         let isSubreminder = reminder.isSubreminder
-        let isParent = hasSubreminders(indexPath: indexPath)
+
+        var isParent: Bool
+        if let subreminders = reminder.subreminders {
+            if subreminders.count > 0 {
+                isParent = true
+            }
+        }
+        isParent = false
 
         return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, isSubreminder: isSubreminder, hasSubreminders: isParent)
     }
@@ -117,12 +131,12 @@ class ReminderViewModel {
 
     func initializeSubreminders(ofIndexPath index: IndexPath, completion: ((_ result: Bool) -> Void)?) {
         self.parentReminder = getReminder(forIndexPath: index)
-
         guard let subreminderSet = parentReminder!.subreminders else {
             completion?(false)
             return
         }
 
+        reminders.removeAll()
         for item in subreminderSet {
             let subreminder = item as! Reminder
             reminders.append(subreminder)
@@ -143,14 +157,6 @@ class ReminderViewModel {
 
         for item in reminders {
             print("Sub", item.index, ", completed:", item.completed, ", title:", item.title)
-        }
-    }
-
-    func updateIndices() {
-        var count = reminders.count
-        for reminder in reminders {
-            count -= 1
-            reminder.index = Int16(count)
         }
     }
 
@@ -175,16 +181,14 @@ class ReminderViewModel {
         }
     }
 
-    func hasSubreminders(indexPath: IndexPath) -> Bool {
-        let reminder = getReminder(forIndexPath: indexPath)
-        if let subreminders = reminder.subreminders {
-            if subreminders.count > 0 {
-                return true
-            }
+    private func updateIndices() {
+        var count = reminders.count
+        for reminder in reminders {
+            count -= 1
+            reminder.index = Int16(count)
         }
-        return false
     }
-    
+
     // TODO: Remove this test function
     func checkReminders() {
 
