@@ -1,5 +1,5 @@
 //
-//  MainReminderViewController+ActionButtons.swift
+//  MainReminderViewController+ActionDelegates.swift
 //  Mindful
 //
 //  Created by Derek Vitaliano Vallar on 12/20/17.
@@ -51,7 +51,10 @@ extension MainReminderViewController: UIActionCellDelegate {
             reminderViewModel.initializeSubreminders(ofIndexPath: selectedIndex, completion: { (completed) in
                 if completed {
                     print("subreminder reloading")
-                    self.tableView.reloadData()
+                    let indexSet: IndexSet = [0]
+                    self.tableView.beginUpdates()
+                    self.tableView.reloadSections(indexSet, with: .automatic)
+                    self.tableView.endUpdates()
                 }
             })
 
@@ -77,5 +80,22 @@ print("yaknow?")
         tableView.beginUpdates()
         tableView.endUpdates()
 
+    }
+}
+
+extension MainReminderViewController: UIReminderFooterViewDelegate {
+    func didTapReturn() {
+        mindfulMode.reminder = .main
+        mindfulMode.action = .none
+
+        reminderViewModel.initializeTableData(withCompleted: false, completion: { (completed) in
+            let indexSet: IndexSet = [0]
+            self.tableView.beginUpdates()
+            self.tableView.reloadSections(indexSet, with: .automatic)
+            self.tableView.endUpdates()
+
+            self.tableView(self.tableView, didSelectRowAt: self.returnIndex!)
+            self.returnIndex = nil
+        })
     }
 }

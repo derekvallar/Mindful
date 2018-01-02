@@ -8,20 +8,24 @@
 
 import UIKit
 
+protocol UIReminderHeaderViewDelegate: class {
+    func didTapButton(type: UIReminderButtonType)
+}
+
 class UIReminderHeaderView: UITableViewHeaderFooterView {
 
-    let reminderView = UIReminderView()
-//    containerView.backgroundColor = UIColor.cyan
+    weak var delegate: UIReminderHeaderViewDelegate?
 
+    let reminderView = UIReminderView()
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    init(reuseIdentifier: String?, item: ReminderViewModelItem) {
+    override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
-        reminderView.setup(item: item, filtering: false)
+        reminderView.buttonDelegate = self
 
         contentView.addSubview(reminderView)
         NSLayoutConstraint.setupAndActivate(constraints: [
@@ -29,7 +33,20 @@ class UIReminderHeaderView: UITableViewHeaderFooterView {
             reminderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             reminderView.topAnchor.constraint(equalTo: contentView.topAnchor),
             reminderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
+            ])
     }
 
+    func setup(item: ReminderViewModelItem) {
+        reminderView.setup(item: item, filtering: false)
+    }
+
+    func isCompleted() -> Bool {
+        return reminderView.isCompleted()
+    }
+}
+
+extension UIReminderHeaderView: UIReminderViewDelegate {
+    func didTapButton(button: UIReminderButtonType) {
+        delegate?.didTapButton(type: button)
+    }
 }

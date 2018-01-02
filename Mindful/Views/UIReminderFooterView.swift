@@ -8,7 +8,13 @@
 
 import UIKit
 
+protocol UIReminderFooterViewDelegate: class {
+    func didTapReturn()
+}
+
 class UIReminderFooterView: UITableViewHeaderFooterView {
+
+    weak var delegate: UIReminderFooterViewDelegate?
 
     let containerView = UICellButton()
     let returnImage = UIImageView()
@@ -21,8 +27,7 @@ class UIReminderFooterView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
 
         containerView.type = .returnAction
-//        containerView.addTarget(self, action: #selector(returnButtonPressed), for: .touchUpInside)
-        containerView.backgroundColor = UIColor.blue
+        containerView.addTarget(self, action: #selector(returnTapped), for: .touchUpInside)
 
         returnImage.image = #imageLiteral(resourceName: "TestIcon")
 
@@ -34,12 +39,16 @@ class UIReminderFooterView: UITableViewHeaderFooterView {
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 40.0)
             ])
 
-//        NSLayoutConstraint.setupAndActivate(constraints: [
-//            returnImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-//            returnImage.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5.0),
-//            returnImage.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 5.0)
-//        ])
+        NSLayoutConstraint.setupAndActivate(constraints: [
+            returnImage.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            returnImage.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+        ])
+    }
+
+    @objc func returnTapped() {
+        delegate?.didTapReturn()
     }
 }

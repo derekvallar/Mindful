@@ -21,7 +21,6 @@ class ReminderViewModel {
         reminders = [Reminder]()
 
         initializeTableData(withCompleted: false, completion: nil)
-//        checkReminders()
     }
 
     func getReminderCount() -> Int {
@@ -39,29 +38,6 @@ class ReminderViewModel {
 
     func getHeaderReminderItem() -> ReminderViewModelItem {
         return getItem(forReminder: parentReminder!)
-    }
-
-    private func getItem(forReminder reminder: Reminder) -> ReminderViewModelItem {
-        let completed = reminder.completed
-        let title = reminder.title!
-        var detail: String?
-
-        if let savedDetail = reminder.detail {
-            detail = savedDetail
-        }
-
-        let priority = Priority(rawValue: (reminder.priority))!
-        let isSubreminder = reminder.isSubreminder
-
-        var isParent: Bool
-        if let subreminders = reminder.subreminders {
-            if subreminders.count > 0 {
-                isParent = true
-            }
-        }
-        isParent = false
-
-        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, isSubreminder: isSubreminder, hasSubreminders: isParent)
     }
 
     func addReminder() {
@@ -91,26 +67,56 @@ class ReminderViewModel {
     func updateReminder(completed: Bool?, title: String?, detail: String?, priority: Priority?, indexPath: IndexPath) {
         let reminder = getReminder(forIndexPath: indexPath)
 
-        if completed != nil{
-            reminder.completed = completed!
-            if completed! {
+        if let completed = completed {
+            reminder.completed = completed
+            if completed {
                 reminder.completedDate = Date() as NSDate
             }
         }
 
-        if title != nil {
+        if let title = title {
             reminder.title = title
         }
 
-        if detail != nil {
+        if let detail = detail {
             reminder.detail = detail
         }
 
-        if priority != nil {
-            reminder.priority = Int16(priority!.rawValue)
+        if let priority = priority {
+            reminder.priority = Int16(priority.rawValue)
         }
 
         saveReminders()
+    }
+
+    func updateParentReminder(completed: Bool) {
+        guard let parentReminder = parentReminder else {
+            return
+        }
+
+        parentReminder.completed = completed
+        saveReminders()
+    }
+
+    func swapReminders(fromIndexPath: IndexPath, to: IndexPath) {
+        let fromReminder = getReminder(forIndexPath: fromIndexPath)
+        let toReminder = getReminder(forIndexPath: to)
+        let fromReminderIndex = fromReminder.index
+
+        print("Swapping:", fromReminder.index, ",", toReminder.index)
+
+        fromReminder.index = toReminder.index
+        toReminder.index = fromReminderIndex
+
+        reminders.swapAt(fromIndexPath.row, to.row)
+    }
+
+    func saveReminders() {
+        do {
+            try context.save()
+        } catch {
+            print("Error:", error)
+        }
     }
 
     func initializeTableData(withCompleted completed: Bool, completion: ((_ result: Bool) -> Void)?) {
@@ -160,25 +166,26 @@ class ReminderViewModel {
         }
     }
 
-    func swapReminders(fromIndexPath: IndexPath, to: IndexPath) {
-        let fromReminder = getReminder(forIndexPath: fromIndexPath)
-        let toReminder = getReminder(forIndexPath: to)
-        let fromReminderIndex = fromReminder.index
+    private func getItem(forReminder reminder: Reminder) -> ReminderViewModelItem {
+        let completed = reminder.completed
+        let title = reminder.title!
+        var detail: String?
 
-        print("Swapping:", fromReminder.index, ",", toReminder.index)
-
-        fromReminder.index = toReminder.index
-        toReminder.index = fromReminderIndex
-
-        reminders.swapAt(fromIndexPath.row, to.row)
-    }
-
-    func saveReminders() {
-        do {
-            try context.save()
-        } catch {
-            print("Error:", error)
+        if let savedDetail = reminder.detail {
+            detail = savedDetail
         }
+
+        let priority = Priority(rawValue: (reminder.priority))!
+        let isSubreminder = reminder.isSubreminder
+
+        var isParent = false
+        if let subreminders = reminder.subreminders {
+            if subreminders.count > 0 {
+                isParent = true
+            }
+        }
+
+        return ReminderViewModelItem(completed: completed, title: title, detail: detail, priority: priority, isSubreminder: isSubreminder, hasSubreminders: isParent)
     }
 
     private func updateIndices() {

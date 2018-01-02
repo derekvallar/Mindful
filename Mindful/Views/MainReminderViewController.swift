@@ -15,7 +15,7 @@ class MainReminderViewController: UITableViewController {
 
     var addButton: UIBarButtonItem!, completedButton: UIBarButtonItem!, detailButton: UIBarButtonItem!
 
-    // SelectedReminder exists because UITableview has uncontrollable deselects that causes crashes
+    // selectedIndex exists because UITableview has uncontrollable deselects that causes crashes
     var selectedIndex: IndexPath?
     var returnIndex: IndexPath?
 
@@ -99,14 +99,14 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func detailButtonPressed() {
-        if let selectedReminder = selectedIndex {
-            tableView(tableView, didDeselectRowAt: selectedReminder)
+        if let selectedIndex = selectedIndex {
+            tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
         mindfulMode.filter = !mindfulMode.filter
         if mindfulMode.filter {
             navigationItem.title = .filterTitle
-            navigationItem.rightBarButtonItems = nil
+            navigationItem.setRightBarButtonItems(nil, animated: true)
         } else {
             if mindfulMode.reminder == .main {
                 navigationItem.title = .mainTitle
@@ -114,7 +114,7 @@ class MainReminderViewController: UITableViewController {
                 navigationItem.title = .completedTitle
             }
             
-            navigationItem.rightBarButtonItems = [addButton, completedButton]
+            navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
         }
         
         for cell in tableView.visibleCells {
@@ -124,8 +124,8 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func addButtonPressed() {
-        if let selectedReminder = selectedIndex {
-            tableView(tableView, didDeselectRowAt: selectedReminder)
+        if let selectedIndex = selectedIndex {
+            tableView(tableView, didDeselectRowAt: selectedIndex)
         }
         reminderViewModel.addReminder()
 
@@ -140,25 +140,28 @@ class MainReminderViewController: UITableViewController {
     @objc func completedButtonPressed() {
 print("Complete Pressed")
 
-        if let selectedReminder = selectedIndex {
-            tableView(tableView, didDeselectRowAt: selectedReminder)
+        if let selectedIndex = selectedIndex {
+            tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
         var completed = false
         if mindfulMode.reminder == .main {
             completed = true
-            navigationItem.rightBarButtonItems = [completedButton]
+            navigationItem.setRightBarButtonItems([completedButton], animated: true)
             navigationItem.title = .completedTitle
             mindfulMode.reminder = .completed
         } else if mindfulMode.reminder == .completed {
-            navigationItem.rightBarButtonItems = [addButton, completedButton]
+            navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
             navigationItem.title = .mainTitle
             mindfulMode.reminder = .main
         }
         
         reminderViewModel.initializeTableData(withCompleted: completed) { result in
             if result {
-                self.tableView.reloadData()
+                let indexSet: IndexSet = [0]
+                self.tableView.beginUpdates()
+                self.tableView.reloadSections(indexSet, with: .automatic)
+                self.tableView.endUpdates()
             } else {
                 print("Could not fetch reminders")
             }
@@ -184,8 +187,8 @@ print("Complete Pressed")
 extension MainReminderViewController {
 
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        if let selectedReminder = selectedIndex {
-            tableView(tableView, didDeselectRowAt: selectedReminder)
+        if let selectedIndex = selectedIndex {
+            tableView(tableView, didDeselectRowAt: selectedIndex)
             view.endEditing(true)
         }
     }

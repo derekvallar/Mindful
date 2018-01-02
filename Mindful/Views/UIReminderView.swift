@@ -139,6 +139,9 @@ class UIReminderView: UIView {
     }
 
     func setup(item: ReminderViewModelItem, filtering: Bool) {
+
+        print(item.title, "has subs:", item.hasSubreminders)
+
         leftButton.isSelected = item.completed
         titleTextView.text = item.title
         if let detailText = item.detail {
@@ -194,11 +197,8 @@ class UIReminderView: UIView {
         return titleTextView.text
     }
 
-    func isCompleted() -> Bool? {
-        if !filterMode {
-            return leftButton.isSelected
-        }
-        return nil
+    func isCompleted() -> Bool {
+        return leftButton.isSelected
     }
 
     private func synchronizeButtonImages() {

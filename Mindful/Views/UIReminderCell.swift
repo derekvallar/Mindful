@@ -58,10 +58,7 @@ class UIReminderCell: UITableViewCell {
     }
 
     func isCompleted() -> Bool {
-        if let completed = reminderView.isCompleted() {
-            return completed
-        }
-        return false
+        return reminderView.isCompleted()
     }
 
     func setUserInteraction(_ bool: Bool) {
@@ -89,6 +86,8 @@ class UIReminderCell: UITableViewCell {
         if item.isSubreminder {
             branchImage.isHidden = false
             branchImage.image = endSub ? #imageLiteral(resourceName: "SubreminderEndIcon") : #imageLiteral(resourceName: "SubreminderBranchIcon")
+        } else {
+            branchImage.isHidden = true
         }
     }
 }

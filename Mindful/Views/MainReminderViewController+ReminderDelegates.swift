@@ -1,5 +1,5 @@
 //
-//  MainReminderViewController+ReminderButtons.swift
+//  MainReminderViewController+ReminderDelegates.swift
 //  Mindful
 //
 //  Created by Derek Vitaliano Vallar on 12/26/17.
@@ -26,6 +26,17 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
         default:
             break
+        }
+    }
+}
+
+extension MainReminderViewController: UIReminderHeaderViewDelegate {
+    func didTapButton(type: UIReminderButtonType) {
+        if type == .complete {
+            guard let headerView = tableView.headerView(forSection: 0) as? UIReminderHeaderView else {
+                return
+            }
+            reminderViewModel.updateParentReminder(completed: headerView.isCompleted())
         }
     }
 }

@@ -25,8 +25,8 @@ extension MainReminderViewController {
                 return
             }
 
-            if let selectedReminder = selectedIndex {
-                tableView(tableView, didDeselectRowAt: selectedReminder)
+            if let selectedIndex = selectedIndex {
+                tableView(tableView, didDeselectRowAt: selectedIndex)
             }
 
             let view = snapshot(cell: cell)
