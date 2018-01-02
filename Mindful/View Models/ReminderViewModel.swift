@@ -132,6 +132,7 @@ class ReminderViewModel {
         }
 
         reminders = fetchedReminders
+        parentReminder = nil
         completion?(true)
     }
 

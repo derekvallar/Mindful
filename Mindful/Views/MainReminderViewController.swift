@@ -85,9 +85,6 @@ class MainReminderViewController: UITableViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-//        tableView.backgroundView = UIView(frame: view.bounds)
-//        tableView.backgroundView?.gradient(.backgroundColor, secondColor: .gradientColor)
     }
 
     func getActionCellIndex() -> IndexPath? {

@@ -80,12 +80,12 @@ class UIReminderCell: UITableViewCell {
         reminderView.changeFilterMode(filtering)
     }
 
-    func setup(item: ReminderViewModelItem, filtering: Bool, endSub: Bool) {
+    func setup(item: ReminderViewModelItem, filtering: Bool, lastSubreminder: Bool) {
         reminderView.setup(item: item, filtering: filtering)
 
         if item.isSubreminder {
             branchImage.isHidden = false
-            branchImage.image = endSub ? #imageLiteral(resourceName: "SubreminderEndIcon") : #imageLiteral(resourceName: "SubreminderBranchIcon")
+            branchImage.image = lastSubreminder ? #imageLiteral(resourceName: "SubreminderEndIcon") : #imageLiteral(resourceName: "SubreminderBranchIcon")
         } else {
             branchImage.isHidden = true
         }

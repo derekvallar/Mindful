@@ -14,13 +14,15 @@ protocol UIActionCellDelegate: class {
 
 class UIActionCell: UITableViewCell {
 
+    weak var delegate: UIActionCellDelegate?
+
     private var actionCellStackView = UIStackView()
 
     private var actionButtonStackView = UIStackView()
     private var editTextButton = UICellButton()
     private var changePriorityButton = UICellButton()
     private var setAlarmButton = UICellButton()
-    private var addSubreminderButton = UICellButton()
+    private var subreminderButton = UICellButton()
     private var returnButton = UICellButton()
 
     private var editLabel = UILabel()
@@ -37,7 +39,7 @@ class UIActionCell: UITableViewCell {
     private var alarmPicker = UIDatePicker()
     private var alarmIsExpanded = false
 
-    weak var delegate: UIActionCellDelegate?
+    private var isSubreminder = false
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -67,9 +69,9 @@ class UIActionCell: UITableViewCell {
         setAlarmButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
         setAlarmButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
-        addSubreminderButton.type = .manageSubreminders
-        addSubreminderButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
-        addSubreminderButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
+        subreminderButton.type = .manageSubreminders
+        subreminderButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
+        subreminderButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
         returnButton.type = .returnAction
         returnButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
@@ -142,7 +144,7 @@ class UIActionCell: UITableViewCell {
 
         alarmPicker.datePickerMode = .dateAndTime
 
-        setup(detail: nil, priority: Priority.low)
+        setup(detail: nil, priority: Priority.low, isSubreminder: false)
 
         // Setup Subviews
 
@@ -163,7 +165,7 @@ class UIActionCell: UITableViewCell {
         actionButtonStackView.addArrangedSubview(editTextButton)
         actionButtonStackView.addArrangedSubview(changePriorityButton)
         actionButtonStackView.addArrangedSubview(setAlarmButton)
-        actionButtonStackView.addArrangedSubview(addSubreminderButton)
+        actionButtonStackView.addArrangedSubview(subreminderButton)
         actionButtonStackView.addArrangedSubview(returnButton)
 
 
@@ -190,14 +192,10 @@ class UIActionCell: UITableViewCell {
         delegate?.didTapButton(cell: self, type: button.type)
     }
 
-    func setup(detail: String?, priority: Priority?) {
-        if let detail = detail {
-            editTextView.text = detail
-        } else {
-            editTextView.text = ""
-        }
+    func setup(detail: String?, priority: Priority?, isSubreminder: Bool) {
+        editTextView.text = detail ?? ""
 
-        lowPriorityButton.isSelected = false
+        lowPriorityButton.isSelected = true
         mediumPriorityButton.isSelected = false
         highPriorityButton.isSelected = false
 
@@ -211,6 +209,7 @@ class UIActionCell: UITableViewCell {
             }
         }
 
+        self.isSubreminder = isSubreminder
         alarmIsExpanded = false
         changeModeViews(.returnAction)
     }
@@ -281,7 +280,8 @@ class UIActionCell: UITableViewCell {
             editTextButton.isHidden = false
             changePriorityButton.isHidden = false
             setAlarmButton.isHidden = false
-            addSubreminderButton.isHidden = false
+
+            subreminderButton.isHidden = isSubreminder ? true : false
 
         default:
             break
@@ -292,7 +292,7 @@ class UIActionCell: UITableViewCell {
             editTextButton.isHidden = true
             changePriorityButton.isHidden = true
             setAlarmButton.isHidden = true
-            addSubreminderButton.isHidden = true
+            subreminderButton.isHidden = true
         }
     }
 }

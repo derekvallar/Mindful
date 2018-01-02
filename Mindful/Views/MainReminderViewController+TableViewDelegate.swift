@@ -30,13 +30,14 @@ extension MainReminderViewController {
         if let selectedIndex = selectedIndex {
             // If the action cell is requested
             if indexPath.row == selectedIndex.row + 1 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: .actionCellIdentifier) as! UIActionCell
-                cell.delegate = self
+
+                let actionCell = tableView.dequeueReusableCell(withIdentifier: .actionCellIdentifier) as! UIActionCell
+                actionCell.delegate = self
 
                 let item = reminderViewModel.getReminderItem(forIndexPath: selectedIndex)
-                cell.setup(detail: item.detail, priority: item.priority)
+                actionCell.setup(detail: item.detail, priority: item.priority, isSubreminder: item.isSubreminder)
 
-                return cell
+                return actionCell
             }
 
             // If any cell after the action cell is requested
@@ -45,18 +46,18 @@ extension MainReminderViewController {
             }
         }
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: .reminderCellIdentifier, for: indexPath) as! UIReminderCell
-        cell.setTitleDelegate(controller: self)
-        cell.buttonDelegate = self
+        let reminderCell = tableView.dequeueReusableCell(withIdentifier: .reminderCellIdentifier, for: indexPath) as! UIReminderCell
+        reminderCell.setTitleDelegate(controller: self)
+        reminderCell.buttonDelegate = self
 
         let item = reminderViewModel.getReminderItem(forIndexPath: reminderIndex)
-        var endSub = false
+        var lastSubreminder = false
         if indexPath.row == self.tableView(tableView, numberOfRowsInSection: 0) - 1 {
-            endSub = true
+            lastSubreminder = true
         }
 
-        cell.setup(item: item, filtering: mindfulMode.filter, endSub: endSub)
-        return cell
+        reminderCell.setup(item: item, filtering: mindfulMode.filter, lastSubreminder: lastSubreminder)
+        return reminderCell
     }
 
     override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {

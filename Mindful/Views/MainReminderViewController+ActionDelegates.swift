@@ -65,7 +65,6 @@ extension MainReminderViewController: UIActionCellDelegate {
                 }
 
                 selectedCell.setUserInteraction(false)
-print("yaknow?")
                 reminderViewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedIndex)
             } else if mindfulMode.action == .alarm {
                 print("Date:", cell.getAlarmDate())
@@ -87,6 +86,10 @@ extension MainReminderViewController: UIReminderFooterViewDelegate {
     func didTapReturn() {
         mindfulMode.reminder = .main
         mindfulMode.action = .none
+
+        if let selectedIndex = selectedIndex {
+            tableView(tableView, didDeselectRowAt: selectedIndex)
+        }
 
         reminderViewModel.initializeTableData(withCompleted: false, completion: { (completed) in
             let indexSet: IndexSet = [0]
