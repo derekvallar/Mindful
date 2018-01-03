@@ -9,7 +9,7 @@
 import UIKit
 
 protocol UIReminderCellDelegate: class {
-    func didTapButton(_ cell: UIReminderCell, button: UIReminderButtonType)
+    func didTapReminderButton(_ cell: UIReminderCell, type: UIReminderButtonType)
 }
 
 class UIReminderCell: UITableViewCell {
@@ -94,7 +94,7 @@ class UIReminderCell: UITableViewCell {
 
 extension UIReminderCell: UIReminderViewDelegate {
 
-    func didTapButton(button: UIReminderButtonType) {
-        buttonDelegate?.didTapButton(self, button: button)
+    func didTapButton(type: UIReminderButtonType) {
+        buttonDelegate?.didTapReminderButton(self, type: type)
     }
 }

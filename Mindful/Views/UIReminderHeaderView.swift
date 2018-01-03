@@ -9,7 +9,7 @@
 import UIKit
 
 protocol UIReminderHeaderViewDelegate: class {
-    func didTapButton(type: UIReminderButtonType)
+    func didTapHeaderButton(type: UIReminderButtonType)
 }
 
 class UIReminderHeaderView: UITableViewHeaderFooterView {
@@ -46,7 +46,7 @@ class UIReminderHeaderView: UITableViewHeaderFooterView {
 }
 
 extension UIReminderHeaderView: UIReminderViewDelegate {
-    func didTapButton(button: UIReminderButtonType) {
-        delegate?.didTapButton(type: button)
+    func didTapButton(type: UIReminderButtonType) {
+        delegate?.didTapHeaderButton(type: type)
     }
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import UserNotifications
 
 class MainReminderViewController: UITableViewController {
 
@@ -15,11 +16,13 @@ class MainReminderViewController: UITableViewController {
 
     var addButton: UIBarButtonItem!, completedButton: UIBarButtonItem!, detailButton: UIBarButtonItem!
 
-    // selectedIndex exists because UITableview has uncontrollable deselects that causes crashes
-    var selectedIndex: IndexPath?
+    var selectedCellIndex: IndexPath?
+    var categoryCellIndex: IndexPath?
+    var actionCellIndex: IndexPath?
     var returnIndex: IndexPath?
 
     var mindfulMode = MindfulMode()
+    let userNotificationCenter = UNUserNotificationCenter.current()
     var rearrange: Rearrange?
 
     init(viewModel: ReminderViewModel) {
@@ -63,7 +66,10 @@ class MainReminderViewController: UITableViewController {
         // Setup the table view
 
         tableView.register(UIReminderCell.self, forCellReuseIdentifier: .reminderCellIdentifier)
-        tableView.register(UIActionCell.self, forCellReuseIdentifier: .actionCellIdentifier)
+        tableView.register(UICategoryCell.self, forCellReuseIdentifier: .actionCellIdentifier)
+        tableView.register(UIEditCell.self, forCellReuseIdentifier: .editCellIdentifier)
+        tableView.register(UIPriorityCell.self, forCellReuseIdentifier: .priorityCellIdentifier)
+        tableView.register(UIAlarmCell.self, forCellReuseIdentifier: .alarmCellIdentifier)
 
         tableView.register(UIReminderHeaderView.self, forHeaderFooterViewReuseIdentifier: .reminderHeaderViewIdentitfier)
         tableView.register(UIReminderFooterView.self, forHeaderFooterViewReuseIdentifier: .reminderFooterViewIdentitfier)
@@ -88,7 +94,7 @@ class MainReminderViewController: UITableViewController {
     }
 
     func getActionCellIndex() -> IndexPath? {
-        guard var actionIndex = selectedIndex else {
+        guard var actionIndex = selectedCellIndex else {
             return nil
         }
         actionIndex.row = actionIndex.row + 1
@@ -96,7 +102,7 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func detailButtonPressed() {
-        if let selectedIndex = selectedIndex {
+        if let selectedIndex = selectedCellIndex {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
@@ -121,7 +127,7 @@ class MainReminderViewController: UITableViewController {
     }
 
     @objc func addButtonPressed() {
-        if let selectedIndex = selectedIndex {
+        if let selectedIndex = selectedCellIndex {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
         reminderViewModel.addReminder()
@@ -137,7 +143,7 @@ class MainReminderViewController: UITableViewController {
     @objc func completedButtonPressed() {
 print("Complete Pressed")
 
-        if let selectedIndex = selectedIndex {
+        if let selectedIndex = selectedCellIndex {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
@@ -184,7 +190,7 @@ print("Complete Pressed")
 extension MainReminderViewController {
 
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        if let selectedIndex = selectedIndex {
+        if let selectedIndex = selectedCellIndex {
             tableView(tableView, didDeselectRowAt: selectedIndex)
             view.endEditing(true)
         }

@@ -9,7 +9,7 @@
 import UIKit
 
 protocol UIReminderViewDelegate: class {
-    func didTapButton(button: UIReminderButtonType)
+    func didTapButton(type: UIReminderButtonType)
 }
 
 class UIReminderView: UIView {
@@ -25,7 +25,6 @@ class UIReminderView: UIView {
     private var subreminderIcon = UIImageView()
 
     private var infoStackView = UIStackView()
-    private var priorityImageView = UIImageView()
     private var alarmLabel = UILabel()
     private var detailLabel = UILabel()
 
@@ -125,7 +124,7 @@ class UIReminderView: UIView {
             completeDeleteButton.isSelected = !completeDeleteButton.isSelected
         }
 
-        buttonDelegate?.didTapButton(button: completeDeleteButton.type)
+        buttonDelegate?.didTapButton(type: completeDeleteButton.type)
     }
 
     func setup(item: ReminderViewModelItem, filtering: Bool) {
@@ -136,7 +135,6 @@ class UIReminderView: UIView {
         titleTextView.text = item.title
         detailLabel.text = item.detail
         detailLabel.isHidden = item.detail != nil ? false : true
-        priorityImageView.image = UIImage(named: item.priority.imageLocation)
 
         subreminderIcon.isHidden = !item.hasSubreminders
         filterMode = filtering
@@ -184,11 +182,11 @@ class UIReminderView: UIView {
 
     private func synchronizeButtonImages() {
         if filterMode {
-            completeDeleteButton.type = .delete
+            completeDeleteButton.type = .reminder(type: .delete)
             completeDeleteButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .normal)
             completeDeleteButton.setImage(nil, for: .selected)
         } else {
-            completeDeleteButton.type = .complete
+            completeDeleteButton.type = .reminder(type: .complete)
             completeDeleteButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)
             completeDeleteButton.setImage(#imageLiteral(resourceName: "CheckedCompleteIndicator"), for: .selected)
         }

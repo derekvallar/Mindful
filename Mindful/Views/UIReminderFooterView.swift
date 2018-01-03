@@ -9,14 +9,14 @@
 import UIKit
 
 protocol UIReminderFooterViewDelegate: class {
-    func didTapReturn()
+    func didTapFooterReturn()
 }
 
 class UIReminderFooterView: UITableViewHeaderFooterView {
 
     weak var delegate: UIReminderFooterViewDelegate?
 
-    let containerView = UICellButton()
+    let containerView = UIButton()
     let returnImage = UIImageView()
 
     required init?(coder aDecoder: NSCoder) {
@@ -26,20 +26,21 @@ class UIReminderFooterView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
-        containerView.type = .returnAction
         containerView.addTarget(self, action: #selector(returnTapped), for: .touchUpInside)
-
         returnImage.image = #imageLiteral(resourceName: "TestIcon")
 
         contentView.addSubview(containerView)
         containerView.addSubview(returnImage)
+
+        let containerHeightConstraint = containerView.heightAnchor.constraint(equalToConstant: .footerRowHeight)
+        containerHeightConstraint.priority = .defaultHigh
 
         NSLayoutConstraint.setupAndActivate(constraints: [
             containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            containerView.heightAnchor.constraint(equalToConstant: 40.0)
+            containerHeightConstraint
             ])
 
         NSLayoutConstraint.setupAndActivate(constraints: [
@@ -49,6 +50,6 @@ class UIReminderFooterView: UITableViewHeaderFooterView {
     }
 
     @objc func returnTapped() {
-        delegate?.didTapReturn()
+        delegate?.didTapFooterReturn()
     }
 }

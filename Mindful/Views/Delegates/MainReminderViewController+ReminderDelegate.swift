@@ -1,5 +1,5 @@
 //
-//  MainReminderViewController+ReminderDelegates.swift
+//  MainReminderViewController+ReminderDelegate.swift
 //  Mindful
 //
 //  Created by Derek Vitaliano Vallar on 12/26/17.
@@ -9,12 +9,14 @@
 import UIKit
 
 extension MainReminderViewController: UIReminderCellDelegate {
-    func didTapButton(_ cell: UIReminderCell, button: UIReminderButtonType) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
+    
+    func didTapReminderButton(_ cell: UIReminderCell, type: UIReminderButtonType) {
+        guard let indexPath = tableView.indexPath(for: cell),
+              case let .reminder(type) = type else {
             return
         }
 
-        switch button {
+        switch type {
         case .complete:
             reminderViewModel.updateReminder(completed: cell.isCompleted(), title: nil, detail: nil, priority: nil, indexPath: indexPath)
 
@@ -26,17 +28,6 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
         default:
             break
-        }
-    }
-}
-
-extension MainReminderViewController: UIReminderHeaderViewDelegate {
-    func didTapButton(type: UIReminderButtonType) {
-        if type == .complete {
-            guard let headerView = tableView.headerView(forSection: 0) as? UIReminderHeaderView else {
-                return
-            }
-            reminderViewModel.updateParentReminder(completed: headerView.isCompleted())
         }
     }
 }

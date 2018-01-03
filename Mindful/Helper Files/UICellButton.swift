@@ -9,5 +9,5 @@
 import UIKit
 
 class UICellButton: UIButton {
-    var type = UIReminderButtonType.none
+    var type: UIReminderButtonType = .none
 }

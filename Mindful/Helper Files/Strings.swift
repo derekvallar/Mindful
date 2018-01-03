@@ -14,14 +14,18 @@ extension String {
     static let subreminderTitle = "Subreminders"
 
     static let reminderCellIdentifier = "ReminderCell"
+    static let actionCellIdentifier = "ActionCell"
+    static let editCellIdentifier = "EditCell"
+    static let priorityCellIdentifier = "PriorityCell"
+    static let alarmCellIdentifier = "AlarmCell"
+
     static let reminderHeaderViewIdentitfier = "ReminderHeaderView"
     static let reminderFooterViewIdentitfier = "ReminderFooterView"
-    static let actionCellIdentifier = "ActionCell"
 
-    static let emptyIconString: String = "EmptyIcon"
-    static let priorityIconString: String = "PriorityIcon"
-    static let highPriorityIconString: String = "HighPriorityIcon"
+    static let emptyIconString = "EmptyIcon"
+    static let priorityIconString = "PriorityIcon"
+    static let highPriorityIconString = "HighPriorityIcon"
 
-    static let completeDeleteButtonString: String = "completeDeleteButtonString"
-    static let detailRearrangeButtonString: String = "detailRearrangeButtonString"
+    static let completeDeleteButtonString = "CompleteDeleteButtonString"
+    static let detailRearrangeButtonString = "DetailRearrangeButtonString"
 }

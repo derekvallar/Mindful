@@ -21,11 +21,11 @@ extension MainReminderViewController {
                     return
             }
 
-            if type(of: cell) == UIActionCell.self {
+            if type(of: cell) == UICategoryCell.self {
                 return
             }
 
-            if let selectedIndex = selectedIndex {
+            if let selectedIndex = selectedCellIndex {
                 tableView(tableView, didDeselectRowAt: selectedIndex)
             }
 

@@ -16,7 +16,7 @@ extension MainReminderViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count = reminderViewModel.getReminderCount()
-        if selectedIndex != nil {
+        if selectedCellIndex != nil {
             count += 1
         }
         return count
@@ -27,21 +27,20 @@ extension MainReminderViewController {
 
         var reminderIndex = indexPath
 
-        if let selectedIndex = selectedIndex {
+        if let selectedCellIndex = selectedCellIndex {
             // If the action cell is requested
-            if indexPath.row == selectedIndex.row + 1 {
+            if indexPath.row == selectedCellIndex.row + 1 {
 
-                let actionCell = tableView.dequeueReusableCell(withIdentifier: .actionCellIdentifier) as! UIActionCell
+                let actionCell = tableView.dequeueReusableCell(withIdentifier: .actionCellIdentifier) as! UICategoryCell
                 actionCell.delegate = self
-
-                let item = reminderViewModel.getReminderItem(forIndexPath: selectedIndex)
-                actionCell.setup(detail: item.detail, priority: item.priority, isSubreminder: item.isSubreminder)
+                let item = reminderViewModel.getReminderItem(forIndexPath: selectedCellIndex)
+                actionCell.setup(isSubreminder: item.isSubreminder)
 
                 return actionCell
             }
 
             // If any cell after the action cell is requested
-            if indexPath.row > selectedIndex.row + 1 {
+            if indexPath.row > selectedCellIndex.row + 1 {
                 reminderIndex.row = reminderIndex.row - 1
             }
         }
@@ -79,8 +78,12 @@ extension MainReminderViewController {
 //            print("size:", cell.bounds.height)
 //        }
 
+        if mindfulMode.filter == true {
+            return nil
+        }
+
         // If nothing is currently selected, proceed as normal
-        guard let selectedIndex = selectedIndex else {
+        guard let selectedIndex = selectedCellIndex else {
             return indexPath
         }
 
@@ -115,16 +118,16 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Did Select")
 
-        if selectedIndex == nil {
+        if selectedCellIndex == nil {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         }
-        selectedIndex = indexPath
 
-        var actionCellIndexPath = indexPath
-        actionCellIndexPath.row = actionCellIndexPath.row + 1
+        selectedCellIndex = indexPath
+        categoryCellIndex = indexPath
+        categoryCellIndex!.row = categoryCellIndex!.row + 1
 
         tableView.beginUpdates()
-        tableView.insertRows(at: [actionCellIndexPath], with: .automatic)
+        tableView.insertRows(at: [categoryCellIndex!], with: .automatic)
         tableView.endUpdates()
 
         let deadlineTime = DispatchTime.now() + .milliseconds(1)
@@ -136,20 +139,24 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         print("Did deselect:", indexPath)
 
-        if let selectedIndex = selectedIndex {
+        view.endEditing(true)
+        if let selectedIndex = selectedCellIndex {
             tableView.deselectRow(at: selectedIndex, animated: true)
         }
-        selectedIndex = nil
 
-        mindfulMode.action = .none
-        view.endEditing(true)
-        addButton.image = #imageLiteral(resourceName: "AddIcon")
-        var actionCellIndexPath = indexPath
-        actionCellIndexPath.row = actionCellIndexPath.row + 1
+        var deleteRows = [categoryCellIndex!]
+        if let actionCellIndex = actionCellIndex {
+            deleteRows.append(actionCellIndex)
+        }
 
         tableView.beginUpdates()
-        tableView.deleteRows(at: [actionCellIndexPath], with: .automatic)
+        tableView.deleteRows(at: deleteRows, with: .automatic)
         tableView.endUpdates()
+
+        selectedCellIndex = nil
+        categoryCellIndex = nil
+        actionCellIndex = nil
+        mindfulMode.action = .none
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -175,5 +182,19 @@ extension MainReminderViewController {
         footerView.delegate = self
 
         return footerView
+    }
+
+    override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+        if mindfulMode.reminder == .subreminders {
+            return .estimatedReminderRowHeight
+        }
+        return 0
+    }
+
+    override func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+        if mindfulMode.reminder == .subreminders {
+            return .footerRowHeight
+        }
+        return 0
     }
 }

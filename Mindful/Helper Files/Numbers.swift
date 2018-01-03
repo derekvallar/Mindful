@@ -25,6 +25,8 @@ extension CGFloat {
 
     static let buttonBorderWidth: CGFloat = 2.0
 
+    static let footerRowHeight: CGFloat = 50.0
+
     static let estimatedReminderRowHeight: CGFloat = 60.5
     static let estimatedActionRowHeight: CGFloat = 36.5
     static let estimatedSmallExpandedActionRowHeight: CGFloat = 105.0
