@@ -29,6 +29,10 @@ class UIPriorityCell: UITableViewCell {
 
         // Setup Variables
 
+        priorityStackView.axis = .vertical
+        priorityStackView.distribution = .fill
+        priorityStackView.spacing = 5.0
+
         priorityLabel.text = "Priority:"
         priorityLabel.textColor = .textColor
         priorityLabel.font = UIFont.systemFont(ofSize: .textSize)
@@ -47,7 +51,7 @@ class UIPriorityCell: UITableViewCell {
         lowPriorityButton.layer.cornerRadius = 15.0
         lowPriorityButton.layer.borderColor = UIColor.lowPriorityColor.cgColor
         lowPriorityButton.layer.borderWidth = .buttonBorderWidth
-        lowPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
+        lowPriorityButton.addTarget(self, action: #selector(priorityButtonPressed), for: .touchUpInside)
 
         mediumPriorityButton.type = UIReminderButtonType.action(type: .mediumPriority)
         mediumPriorityButton.setTitle("Medium", for: .normal)
@@ -59,9 +63,9 @@ class UIPriorityCell: UITableViewCell {
         mediumPriorityButton.layer.cornerRadius = 15.0
         mediumPriorityButton.layer.borderColor = UIColor.mediumPriorityColor.cgColor
         mediumPriorityButton.layer.borderWidth = .buttonBorderWidth
-        mediumPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
+        mediumPriorityButton.addTarget(self, action: #selector(priorityButtonPressed), for: .touchUpInside)
 
-        mediumPriorityButton.type = UIReminderButtonType.action(type: .highPriority)
+        highPriorityButton.type = UIReminderButtonType.action(type: .highPriority)
         highPriorityButton.setTitle("High", for: .normal)
         highPriorityButton.setTitleColor(.highPriorityColor, for: .normal)
         highPriorityButton.setTitleColor(UIColor.white, for: .selected)
@@ -71,15 +75,23 @@ class UIPriorityCell: UITableViewCell {
         highPriorityButton.layer.cornerRadius = 15.0
         highPriorityButton.layer.borderColor = UIColor.highPriorityColor.cgColor
         highPriorityButton.layer.borderWidth = .buttonBorderWidth
-        highPriorityButton.addTarget(self, action: #selector(selectPriority), for: .touchUpInside)
+        highPriorityButton.addTarget(self, action: #selector(priorityButtonPressed), for: .touchUpInside)
 
 
+        contentView.addSubview(priorityStackView)
         priorityStackView.addArrangedSubview(priorityLabel)
-        priorityStackView.addArrangedSubview(priorityStackView)
+        priorityStackView.addArrangedSubview(buttonStackView)
         
         buttonStackView.addArrangedSubview(lowPriorityButton)
         buttonStackView.addArrangedSubview(mediumPriorityButton)
         buttonStackView.addArrangedSubview(highPriorityButton)
+
+        NSLayoutConstraint.setupAndActivate(constraints: [
+            priorityStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
+            priorityStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
+            priorityStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
+            priorityStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+        ])
     }
 
     func setup(priority: Priority) {
@@ -88,21 +100,19 @@ class UIPriorityCell: UITableViewCell {
         highPriorityButton.isSelected = false
 
         if priority == Priority.high {
-            highPriorityButton.isSelected = true
+            selectPriority(highPriorityButton)
         } else if priority == Priority.medium {
-            mediumPriorityButton.isSelected = true
+            selectPriority(mediumPriorityButton)
         } else {
-            lowPriorityButton.isSelected = true
+            selectPriority(lowPriorityButton)
         }
     }
 
-    @objc private func selectPriority(selected: UICellButton) {
-
-        delegate?.didTapActionButton(type: selected.type)
+    private func selectPriority(_ selected: UICellButton) {
         for view in buttonStackView.arrangedSubviews {
             guard let button = view as? UICellButton,
                 case let .action(priority) = button.type else {
-                return
+                    return
             }
 
             if button === selected {
@@ -122,6 +132,11 @@ class UIPriorityCell: UITableViewCell {
                 button.backgroundColor = UIColor.clear
             }
         }
+    }
+
+    @objc private func priorityButtonPressed(selected: UICellButton) {
+        delegate?.didTapActionButton(type: selected.type)
+        selectPriority(selected)
     }
 
 }

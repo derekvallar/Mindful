@@ -18,7 +18,7 @@ enum ReminderType {
 }
 
 enum CategoryType {
-    case edit, priority, alarm, subreminders, back
+    case edit, priority, alarm, subreminders, back, none
 }
 
 enum ActionType {

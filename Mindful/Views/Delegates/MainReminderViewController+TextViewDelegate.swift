@@ -27,6 +27,6 @@ extension MainReminderViewController: UITextViewDelegate {
                 return
         }
 
-        reminderViewModel.updateReminder(completed: nil, title: cell.getTitleText(), detail: nil, priority: nil, indexPath: indexPath)
+        viewmodel.updateReminder(completed: nil, title: cell.getTitleText(), detail: nil, priority: nil, indexPath: indexPath)
     }
 }

@@ -23,6 +23,9 @@ class UIEditCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        editStackView.axis = .vertical
+        editStackView.distribution = .fill
+
         editLabel.text = "Notes:"
         editLabel.textColor = .textColor
         editLabel.font = UIFont.systemFont(ofSize: .textSize)
@@ -32,14 +35,15 @@ class UIEditCell: UITableViewCell {
         editTextView.backgroundColor = .backgroundTextFieldColor
         editTextView.font = UIFont.systemFont(ofSize: .textSize)
 
+        contentView.addSubview(editStackView)
         editStackView.addArrangedSubview(editLabel)
         editStackView.addArrangedSubview(editTextView)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            editStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            editStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            editStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            editStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            editStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
+            editStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
+            editStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
+            editStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse),
         ])
     }
 

@@ -25,7 +25,7 @@ extension MainReminderViewController {
                 return
             }
 
-            if let selectedIndex = selectedCellIndex {
+            if let selectedIndex = indices.getSelected() {
                 tableView(tableView, didDeselectRowAt: selectedIndex)
             }
 
@@ -70,7 +70,7 @@ extension MainReminderViewController {
             
             if currentIndexPath != indexPath {
                 tableView.moveRow(at: currentIndexPath, to: indexPath)
-                reminderViewModel.swapReminders(fromIndexPath: currentIndexPath, to: indexPath)
+                viewmodel.swapReminders(fromIndexPath: currentIndexPath, to: indexPath)
                 rearrange.currentIndexPath = indexPath
             }
 
@@ -91,7 +91,7 @@ extension MainReminderViewController {
                 rearrange.clear()
             })
 
-            reminderViewModel.saveReminders()
+            viewmodel.saveReminders()
         }
     }
     

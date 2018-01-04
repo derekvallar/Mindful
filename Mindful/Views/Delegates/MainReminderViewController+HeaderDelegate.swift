@@ -18,7 +18,7 @@ extension MainReminderViewController: UIReminderHeaderViewDelegate {
             guard let headerView = tableView.headerView(forSection: 0) as? UIReminderHeaderView else {
                 return
             }
-            reminderViewModel.updateParentReminder(completed: headerView.isCompleted())
+            viewmodel.updateParentReminder(completed: headerView.isCompleted())
         }
     }
 }

@@ -99,18 +99,18 @@ class UIReminderView: UIView {
         // Setup Constraints
         
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cardView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: .cellXSpacing),
-            cardView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: .cellXSpacingInverse),
-            cardView.topAnchor.constraint(equalTo: self.topAnchor, constant: .cellYSpacing),
-            cardView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: .cellYSpacingInverse)
-            ])
+            cardView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            cardView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            cardView.topAnchor.constraint(equalTo: self.topAnchor),
+            cardView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+        ])
         
         NSLayoutConstraint.setupAndActivate(constraints: [
             cardStackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: .viewSpacing),
             cardStackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: .viewSpacingInverse),
             cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: .layoutSpacing),
             cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: .layoutSpacingInverse)
-            ])
+        ])
     }
 
     required init?(coder aDecoder: NSCoder) {

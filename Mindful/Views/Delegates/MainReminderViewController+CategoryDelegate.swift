@@ -11,7 +11,7 @@ import Foundation
 extension MainReminderViewController: UICategoryCellDelegate {
 
     func didTapCategoryButton(type: UIReminderButtonType) {
-        guard let selectedIndex = selectedCellIndex,
+        guard let selectedIndex = indices.getSelected(),
             case let .category(type) = type else {
                 return
         }
@@ -20,25 +20,22 @@ extension MainReminderViewController: UICategoryCellDelegate {
         case .edit:
             let reminderCell = tableView.cellForRow(at: selectedIndex) as! UIReminderCell
             reminderCell.setUserInteraction(true)
-            mindfulMode.action = .edit
-            scrollActionCellToMiddle()
+            mode.action = .edit
 
         case .priority:
-            mindfulMode.action = .priority
-            scrollActionCellToMiddle()
+            mode.action = .priority
 
         case .alarm:
-            mindfulMode.action = .alarm
-            break
+            mode.action = .alarm
 
         case .subreminders:
+            indices.setReturn()
             tableView(tableView, didDeselectRowAt: selectedIndex)
-            mindfulMode.reminder = .subreminders
-            mindfulMode.action = .none
-            returnIndex = selectedIndex
+            mode.reminder = .subreminders
+            mode.action = .none
 
             navigationItem.setRightBarButtonItems([addButton], animated: true)
-            reminderViewModel.initializeSubreminders(ofIndexPath: selectedIndex, completion: { (completed) in
+            viewmodel.initializeSubreminders(ofIndexPath: selectedIndex, completion: { (completed) in
                 if completed {
                     print("subreminder reloading")
                     let indexSet: IndexSet = [0]
@@ -47,25 +44,37 @@ extension MainReminderViewController: UICategoryCellDelegate {
                     self.tableView.endUpdates()
                 }
             })
+            return
 
         case .back:
-            if mindfulMode.action == .edit {
+            if mode.action == .edit {
                 guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
                     return
                 }
                 selectedCell.setUserInteraction(false)
-//                reminderViewModel.updateReminder(completed: nil, title: selectedCell.getTitleText(), detail: cell.getDetailText(), priority: nil, indexPath: selectedIndex)
-            } else if mindfulMode.action == .alarm {
-//                print("Date:", cell.getAlarmDate())
-//                reminderViewModel.updateReminder(completed: nil, title: nil, detail: nil, priority: nil, indexPath: selectedIndex)
+            } else if mode.action == .alarm {
             }
-            mindfulMode.action = .none
+            mode.action = .none
 
         default:
             break
         }
 
         tableView.beginUpdates()
+        if mode.action == .none {
+            if let actionIndex = indices.getAction() {
+                tableView.deleteRows(at: [actionIndex], with: .automatic)
+                indices.clearAction()
+            }
+        } else {
+            indices.setAction()
+            guard let actionIndex = indices.getAction() else {
+                return
+            }
+            tableView.insertRows(at: [actionIndex], with: .automatic)
+            print("Scrolling")
+        }
         tableView.endUpdates()
+        scrollIndexToMiddleIfNeeded(indices.getAction())
     }
 }

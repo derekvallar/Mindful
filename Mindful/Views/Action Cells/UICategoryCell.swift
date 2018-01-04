@@ -12,9 +12,7 @@ class UICategoryCell: UITableViewCell {
 
     weak var delegate: UICategoryCellDelegate?
 
-    private var actionCellStackView = UIStackView()
-
-    private var actionButtonStackView = UIStackView()
+    private var categoryStackView = UIStackView()
     private var editTextButton = UICellButton()
     private var changePriorityButton = UICellButton()
     private var setAlarmButton = UICellButton()
@@ -30,18 +28,11 @@ class UICategoryCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        print("Initing action cell")
-
         // Setup Variables
 
-        actionCellStackView.axis = .vertical
-        actionCellStackView.distribution = .fill
-        actionCellStackView.alignment = .fill
-        actionCellStackView.spacing = .actionViewSpacing
-
-        actionButtonStackView.axis = .horizontal
-        actionButtonStackView.distribution = .fillEqually
-        actionButtonStackView.alignment = .center
+        categoryStackView.axis = .horizontal
+        categoryStackView.distribution = .fillEqually
+        categoryStackView.alignment = .center
 
         editTextButton.type = .category(type: .edit)
         editTextButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
@@ -63,28 +54,28 @@ class UICategoryCell: UITableViewCell {
         returnButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
         returnButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
-        setup(isSubreminder: false)
+        setup(isSubreminder: false, showCategories: true)
 
         // Setup Subviews
 
-        contentView.addSubview(actionCellStackView)
-        actionButtonStackView.addArrangedSubview(editTextButton)
-        actionButtonStackView.addArrangedSubview(changePriorityButton)
-        actionButtonStackView.addArrangedSubview(setAlarmButton)
-        actionButtonStackView.addArrangedSubview(subreminderButton)
-        actionButtonStackView.addArrangedSubview(returnButton)
+        contentView.addSubview(categoryStackView)
+        categoryStackView.addArrangedSubview(editTextButton)
+        categoryStackView.addArrangedSubview(changePriorityButton)
+        categoryStackView.addArrangedSubview(setAlarmButton)
+        categoryStackView.addArrangedSubview(subreminderButton)
+        categoryStackView.addArrangedSubview(returnButton)
 
 
         // Setup Constraints
 
         // Silences UIView-Encapsulated-Layout-Height constraint error
-        let bottomConstraint = actionCellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+        let bottomConstraint = categoryStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
         bottomConstraint.priority = UILayoutPriority(999)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            actionCellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
-            actionCellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
-            actionCellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
+            categoryStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
+            categoryStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
+            categoryStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
             bottomConstraint
         ])
     }
@@ -93,17 +84,21 @@ class UICategoryCell: UITableViewCell {
         guard case let .category(type) = button.type else {
             return
         }
-        self.changeModeViews(type)
+        if type == .back {
+            showCategories(true)
+        } else {
+            showCategories(false)
+        }
         delegate?.didTapCategoryButton(type: button.type)
     }
 
-    func setup(isSubreminder: Bool) {
+    func setup(isSubreminder: Bool, showCategories show: Bool) {
         self.isSubreminder = isSubreminder
-        changeModeViews(.back)
+        showCategories(show)
     }
 
-    private func changeModeViews(_ type: CategoryType) {
-        if type == .back {
+    private func showCategories(_ show: Bool) {
+        if show {
             returnButton.isHidden = true
             editTextButton.isHidden = false
             changePriorityButton.isHidden = false

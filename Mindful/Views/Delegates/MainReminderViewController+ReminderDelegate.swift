@@ -18,10 +18,10 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
         switch type {
         case .complete:
-            reminderViewModel.updateReminder(completed: cell.isCompleted(), title: nil, detail: nil, priority: nil, indexPath: indexPath)
+            viewmodel.updateReminder(completed: cell.isCompleted(), title: nil, detail: nil, priority: nil, indexPath: indexPath)
 
         case .delete:
-            reminderViewModel.deleteReminder(atIndexPath: indexPath)
+            viewmodel.deleteReminder(atIndexPath: indexPath)
             tableView.beginUpdates()
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()

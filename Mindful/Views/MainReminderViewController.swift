@@ -12,22 +12,17 @@ import UserNotifications
 
 class MainReminderViewController: UITableViewController {
 
-    var reminderViewModel: ReminderViewModel!
+    var viewmodel: ReminderViewModel!
+    var mode = MindfulMode()
+    var indices = ActionIndices()
+    var rearrange: Rearrange?
+    let userNotificationCenter = UNUserNotificationCenter.current()
 
     var addButton: UIBarButtonItem!, completedButton: UIBarButtonItem!, detailButton: UIBarButtonItem!
 
-    var selectedCellIndex: IndexPath?
-    var categoryCellIndex: IndexPath?
-    var actionCellIndex: IndexPath?
-    var returnIndex: IndexPath?
-
-    var mindfulMode = MindfulMode()
-    let userNotificationCenter = UNUserNotificationCenter.current()
-    var rearrange: Rearrange?
-
     init(viewModel: ReminderViewModel) {
         super.init(nibName: nil, bundle: nil)
-        reminderViewModel = viewModel
+        viewmodel = viewModel
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -66,7 +61,7 @@ class MainReminderViewController: UITableViewController {
         // Setup the table view
 
         tableView.register(UIReminderCell.self, forCellReuseIdentifier: .reminderCellIdentifier)
-        tableView.register(UICategoryCell.self, forCellReuseIdentifier: .actionCellIdentifier)
+        tableView.register(UICategoryCell.self, forCellReuseIdentifier: .categoryCellIdentifier)
         tableView.register(UIEditCell.self, forCellReuseIdentifier: .editCellIdentifier)
         tableView.register(UIPriorityCell.self, forCellReuseIdentifier: .priorityCellIdentifier)
         tableView.register(UIAlarmCell.self, forCellReuseIdentifier: .alarmCellIdentifier)
@@ -93,27 +88,19 @@ class MainReminderViewController: UITableViewController {
         super.viewDidAppear(animated)
     }
 
-    func getActionCellIndex() -> IndexPath? {
-        guard var actionIndex = selectedCellIndex else {
-            return nil
-        }
-        actionIndex.row = actionIndex.row + 1
-        return actionIndex
-    }
-
     @objc func detailButtonPressed() {
-        if let selectedIndex = selectedCellIndex {
+        if let selectedIndex = indices.getSelected() {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
-        mindfulMode.filter = !mindfulMode.filter
-        if mindfulMode.filter {
+        mode.filter = !mode.filter
+        if mode.filter {
             navigationItem.title = .filterTitle
             navigationItem.setRightBarButtonItems(nil, animated: true)
         } else {
-            if mindfulMode.reminder == .main {
+            if mode.reminder == .main {
                 navigationItem.title = .mainTitle
-            } else if mindfulMode.reminder == .completed {
+            } else if mode.reminder == .completed {
                 navigationItem.title = .completedTitle
             }
             
@@ -122,15 +109,15 @@ class MainReminderViewController: UITableViewController {
         
         for cell in tableView.visibleCells {
             let reminderCell = cell as? UIReminderCell
-            reminderCell?.changeFilterMode(mindfulMode.filter)
+            reminderCell?.changeFilterMode(mode.filter)
         }
     }
 
     @objc func addButtonPressed() {
-        if let selectedIndex = selectedCellIndex {
+        if let selectedIndex = indices.getSelected() {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
-        reminderViewModel.addReminder()
+        viewmodel.addReminder()
 
         let firstRow = IndexPath.init(row: 0, section: 0)
         tableView.beginUpdates()
@@ -143,23 +130,23 @@ class MainReminderViewController: UITableViewController {
     @objc func completedButtonPressed() {
 print("Complete Pressed")
 
-        if let selectedIndex = selectedCellIndex {
+        if let selectedIndex = indices.getSelected() {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
         var completed = false
-        if mindfulMode.reminder == .main {
+        if mode.reminder == .main {
             completed = true
             navigationItem.setRightBarButtonItems([completedButton], animated: true)
             navigationItem.title = .completedTitle
-            mindfulMode.reminder = .completed
-        } else if mindfulMode.reminder == .completed {
+            mode.reminder = .completed
+        } else if mode.reminder == .completed {
             navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
             navigationItem.title = .mainTitle
-            mindfulMode.reminder = .main
+            mode.reminder = .main
         }
         
-        reminderViewModel.initializeTableData(withCompleted: completed) { result in
+        viewmodel.initializeTableData(withCompleted: completed) { result in
             if result {
                 let indexSet: IndexSet = [0]
                 self.tableView.beginUpdates()
@@ -176,10 +163,19 @@ print("Complete Pressed")
     }
 
     // TODO: Currently scrolltoRow doesn't work w/o a delay. Find a fix in future iOS updates.
-    func scrollActionCellToMiddle() {
-        let deadlineTime = DispatchTime.now() + .milliseconds(1)
-        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-            self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
+    func scrollIndexToMiddleIfNeeded(_ index: IndexPath?) {
+        guard let index = index,
+              let category = indices.getCategory() else {
+            return
+        }
+
+        let rowRect = tableView.rectForRow(at: category)
+        print("IndexRect:", rowRect)
+        if !tableView.bounds.contains(rowRect) {
+            let deadlineTime = DispatchTime.now() + .milliseconds(1)
+            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+                self.tableView.scrollToRow(at: index, at: .middle, animated: true)
+            }
         }
     }
 }
@@ -190,7 +186,7 @@ print("Complete Pressed")
 extension MainReminderViewController {
 
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        if let selectedIndex = selectedCellIndex {
+        if let selectedIndex = indices.getSelected() {
             tableView(tableView, didDeselectRowAt: selectedIndex)
             view.endEditing(true)
         }

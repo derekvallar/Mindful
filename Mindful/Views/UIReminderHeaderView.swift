@@ -25,14 +25,15 @@ class UIReminderHeaderView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
+        contentView.backgroundColor = UIColor.white
         reminderView.buttonDelegate = self
 
         contentView.addSubview(reminderView)
         NSLayoutConstraint.setupAndActivate(constraints: [
-            reminderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            reminderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            reminderView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            reminderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            reminderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
+            reminderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
+            reminderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
+            reminderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
             ])
     }
 

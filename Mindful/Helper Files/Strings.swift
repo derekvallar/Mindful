@@ -13,18 +13,18 @@ extension String {
     static let completedTitle = "Completed"
     static let subreminderTitle = "Subreminders"
 
-    static let reminderCellIdentifier = "ReminderCell"
-    static let actionCellIdentifier = "ActionCell"
-    static let editCellIdentifier = "EditCell"
-    static let priorityCellIdentifier = "PriorityCell"
-    static let alarmCellIdentifier = "AlarmCell"
+    static let reminderCellIdentifier = "ReminderCellIdentifier"
+    static let categoryCellIdentifier = "CategoryCellIdentifier"
+    static let editCellIdentifier = "EditCellIdentifier"
+    static let priorityCellIdentifier = "PriorityCellIdentifier"
+    static let alarmCellIdentifier = "AlarmCellIdentifier"
 
-    static let reminderHeaderViewIdentitfier = "ReminderHeaderView"
-    static let reminderFooterViewIdentitfier = "ReminderFooterView"
+    static let reminderHeaderViewIdentitfier = "ReminderHeaderViewIdentitfier"
+    static let reminderFooterViewIdentitfier = "ReminderFooterViewIdentitfier"
 
-    static let emptyIconString = "EmptyIcon"
-    static let priorityIconString = "PriorityIcon"
-    static let highPriorityIconString = "HighPriorityIcon"
+    static let emptyIconString = "EmptyIconString"
+    static let priorityIconString = "PriorityIconString"
+    static let highPriorityIconString = "HighPriorityIconString"
 
     static let completeDeleteButtonString = "CompleteDeleteButtonString"
     static let detailRearrangeButtonString = "DetailRearrangeButtonString"

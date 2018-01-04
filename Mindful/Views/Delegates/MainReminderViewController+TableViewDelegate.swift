@@ -15,10 +15,10 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var count = reminderViewModel.getReminderCount()
-        if selectedCellIndex != nil {
-            count += 1
-        }
+        var count = viewmodel.getReminderCount()
+        count += indices.getExpandedCellCount()
+
+        print("Count:", count)
         return count
     }
 
@@ -27,73 +27,103 @@ extension MainReminderViewController {
 
         var reminderIndex = indexPath
 
-        if let selectedCellIndex = selectedCellIndex {
-            // If the action cell is requested
-            if indexPath.row == selectedCellIndex.row + 1 {
+        if let selectedIndex = indices.getSelected(),
+           indexPath > selectedIndex {
 
-                let actionCell = tableView.dequeueReusableCell(withIdentifier: .actionCellIdentifier) as! UICategoryCell
-                actionCell.delegate = self
-                let item = reminderViewModel.getReminderItem(forIndexPath: selectedCellIndex)
-                actionCell.setup(isSubreminder: item.isSubreminder)
+            if let categoryIndex = indices.getCategory(), categoryIndex == indexPath {
 
-                return actionCell
+                print("Category Cell")
+
+                let categoryCell = tableView.dequeueReusableCell(withIdentifier: .categoryCellIdentifier) as! UICategoryCell
+                categoryCell.delegate = self
+                let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                var show = true
+                if mode.action != .none {
+                    show = false
+                }
+                categoryCell.setup(isSubreminder: item.isSubreminder, showCategories: show)
+
+                return categoryCell
+            }
+
+            if let actionIndex = indices.getAction(), actionIndex == indexPath {
+
+                print("Action Cell")
+
+                switch mode.action {
+                case .edit:
+                    let editCell = tableView.dequeueReusableCell(withIdentifier: .editCellIdentifier) as! UIEditCell
+                    editCell.delegate = self
+                    let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    editCell.setup(detail: item.detail)
+
+                    return editCell
+
+                case .priority:
+                    let priorityCell = tableView.dequeueReusableCell(withIdentifier: .priorityCellIdentifier) as! UIPriorityCell
+                    priorityCell.delegate = self
+                    let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    priorityCell.setup(priority: item.priority)
+
+                    return priorityCell
+
+                case .alarm:
+                    let alarmCell = tableView.dequeueReusableCell(withIdentifier: .alarmCellIdentifier) as! UIAlarmCell
+                    alarmCell.delegate = self
+                    alarmCell.setup()
+
+                    return alarmCell
+
+                default:
+                    break
+                }
             }
 
             // If any cell after the action cell is requested
-            if indexPath.row > selectedCellIndex.row + 1 {
-                reminderIndex.row = reminderIndex.row - 1
-            }
+            reminderIndex.row -= indices.getExpandedCellCount()
         }
+
+        print("Reminder Cell")
 
         let reminderCell = tableView.dequeueReusableCell(withIdentifier: .reminderCellIdentifier, for: indexPath) as! UIReminderCell
         reminderCell.setTitleDelegate(controller: self)
         reminderCell.buttonDelegate = self
 
-        let item = reminderViewModel.getReminderItem(forIndexPath: reminderIndex)
+        let item = viewmodel.getReminderItem(forIndexPath: reminderIndex)
         var lastSubreminder = false
         if indexPath.row == self.tableView(tableView, numberOfRowsInSection: 0) - 1 {
             lastSubreminder = true
         }
 
-        reminderCell.setup(item: item, filtering: mindfulMode.filter, lastSubreminder: lastSubreminder)
+        reminderCell.setup(item: item, filtering: mode.filter, lastSubreminder: lastSubreminder)
         return reminderCell
     }
 
-    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        if mindfulMode.action == .edit || mindfulMode.action == .priority {
-            return .estimatedSmallExpandedActionRowHeight
-        }
-
-        if mindfulMode.action == .alarm {
-            return .estimatedLargeExpandedActionRowHeight
-        }
-
-        return .estimatedReminderRowHeight
-    }
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        print("Will Select")
+        print("Will Select:", indexPath)
 
 //        if let cell = tableView.cellForRow(at: indexPath) {
 //            print("size:", cell.bounds.height)
 //        }
 
-        if mindfulMode.filter == true {
+        if mode.filter == true {
             return nil
         }
 
         // If nothing is currently selected, proceed as normal
-        guard let selectedIndex = selectedCellIndex else {
+        guard let selectedIndex = indices.getSelected(),
+              let categoryIndex = indices.getCategory() else {
             return indexPath
         }
 
         // If selecting an index above the current, proceed as normal
-        if selectedIndex > indexPath {
+        if indexPath < selectedIndex {
             return indexPath
         }
 
-        if selectedIndex == indexPath {
-            if mindfulMode.action == .edit {
+        if indexPath == selectedIndex {
+            if mode.action == .edit {
                 guard let cell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
                     return nil
                 }
@@ -105,68 +135,61 @@ extension MainReminderViewController {
             return nil
         }
 
-        // If selecting the action cell or same cell, do nothing
-        if selectedIndex.row + 1 == indexPath.row {
+        if indexPath == categoryIndex {
             return nil
         }
 
         var intendedSelection = indexPath
-        intendedSelection.row = intendedSelection.row - 1
+        intendedSelection.row -= indices.getExpandedCellCount()
         return intendedSelection
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Did Select")
+        print("Did Select:", indexPath)
 
-        if selectedCellIndex == nil {
+        if indices.getSelected() == nil {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         }
 
-        selectedCellIndex = indexPath
-        categoryCellIndex = indexPath
-        categoryCellIndex!.row = categoryCellIndex!.row + 1
-
+        indices.setSelected(to: indexPath)
+        guard let categoryIndex = indices.getCategory() else {
+            return
+        }
         tableView.beginUpdates()
-        tableView.insertRows(at: [categoryCellIndex!], with: .automatic)
+        tableView.insertRows(at: [categoryIndex], with: .automatic)
         tableView.endUpdates()
 
-        let deadlineTime = DispatchTime.now() + .milliseconds(1)
-        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-            self.tableView.scrollToRow(at: self.getActionCellIndex()!, at: .middle, animated: true)
-        }
+        scrollIndexToMiddleIfNeeded(categoryIndex)
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         print("Did deselect:", indexPath)
 
         view.endEditing(true)
-        if let selectedIndex = selectedCellIndex {
+        if let selectedIndex = indices.getSelected() {
             tableView.deselectRow(at: selectedIndex, animated: true)
         }
-
-        var deleteRows = [categoryCellIndex!]
-        if let actionCellIndex = actionCellIndex {
-            deleteRows.append(actionCellIndex)
+        var deleteRows = [IndexPath]()
+        deleteRows.append(indices.getCategory()!)
+        if let actionIndex = indices.getAction() {
+            deleteRows.append(actionIndex)
         }
+        indices.clearSelected()
+        mode.action = .none
 
         tableView.beginUpdates()
         tableView.deleteRows(at: deleteRows, with: .automatic)
         tableView.endUpdates()
-
-        selectedCellIndex = nil
-        categoryCellIndex = nil
-        actionCellIndex = nil
-        mindfulMode.action = .none
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         print("CheckingHeader")
-        if mindfulMode.reminder != .subreminders {
+        if mode.reminder != .subreminders {
             return nil
         }
 
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: .reminderHeaderViewIdentitfier) as! UIReminderHeaderView
-        headerView.setup(item: reminderViewModel.getHeaderReminderItem())
+        headerView.setup(item: viewmodel.getHeaderReminderItem())
         headerView.delegate = self
 
         return headerView
@@ -174,7 +197,7 @@ extension MainReminderViewController {
 
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         print("CheckingFooter")
-        if mindfulMode.reminder != .subreminders {
+        if mode.reminder != .subreminders {
             return nil
         }
 
@@ -184,15 +207,28 @@ extension MainReminderViewController {
         return footerView
     }
 
+
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        if mode.action == .edit || mode.action == .priority {
+            return .estimatedSmallExpandedActionRowHeight
+        }
+
+        if mode.action == .alarm {
+            return .estimatedLargeExpandedActionRowHeight
+        }
+
+        return .estimatedReminderRowHeight
+    }
+
     override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
-        if mindfulMode.reminder == .subreminders {
+        if mode.reminder == .subreminders {
             return .estimatedReminderRowHeight
         }
         return 0
     }
 
     override func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
-        if mindfulMode.reminder == .subreminders {
+        if mode.reminder == .subreminders {
             return .footerRowHeight
         }
         return 0

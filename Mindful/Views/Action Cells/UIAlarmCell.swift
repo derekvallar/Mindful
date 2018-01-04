@@ -13,10 +13,12 @@ class UIAlarmCell: UITableViewCell {
     weak var delegate: UIActionCellDelegate?
 
     private var alarmStackView = UIStackView()
+
     private var onOffStackView = UIStackView()
     private var alarmLabel = UILabel()
     private var alarmOffButton = UICellButton()
     private var alarmOnButton = UICellButton()
+
     private var alarmDateTimeLabel = UILabel()
     private var alarmPicker = UIDatePicker()
 
@@ -30,6 +32,9 @@ class UIAlarmCell: UITableViewCell {
         print("Initing action cell")
 
         // Setup Variables
+
+        alarmStackView.axis = .vertical
+        alarmStackView.distribution = .fill
 
         alarmLabel.text = "Alarm:"
         alarmLabel.textColor = .textColor
@@ -45,6 +50,7 @@ class UIAlarmCell: UITableViewCell {
 
         alarmPicker.datePickerMode = .dateAndTime
 
+        contentView.addSubview(alarmStackView)
         alarmStackView.addArrangedSubview(onOffStackView)
         alarmStackView.addArrangedSubview(alarmDateTimeLabel)
         alarmStackView.addArrangedSubview(alarmPicker)
@@ -52,6 +58,13 @@ class UIAlarmCell: UITableViewCell {
         onOffStackView.addArrangedSubview(alarmLabel)
         onOffStackView.addArrangedSubview(alarmOffButton)
         onOffStackView.addArrangedSubview(alarmOnButton)
+
+        NSLayoutConstraint.setupAndActivate(constraints: [
+            alarmStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
+            alarmStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
+            alarmStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
+            alarmStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+        ])
     }
 
     func setup() {
