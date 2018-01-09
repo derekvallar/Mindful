@@ -21,8 +21,14 @@ public class Reminder: NSManagedObject {
 
         self.index = Int16(index)
         self.priority = Priority.low.rawValue
-        self.creationDate = Date() as NSDate
         self.isSubreminder = subreminder
+    }
+
+    func hasSubreminders() -> Bool {
+        if let count = subreminders?.count, count > 0 {
+            return true
+        }
+        return false
     }
 
     static func sortedFetchRequest(withCompleted completed: Bool) -> NSFetchRequest<Reminder> {

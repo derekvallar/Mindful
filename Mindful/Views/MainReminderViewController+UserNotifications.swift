@@ -16,18 +16,18 @@ extension MainReminderViewController {
             return
         }
 
-        let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+        let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
         let content = UNMutableNotificationContent()
         let userdefaults = UserDefaults.standard
         var badgeCount = userdefaults.integer(forKey: .alarmBadgeCountString)
         badgeCount += 1
 
-        content.title = item.title
-        content.body = item.detail
+        content.title = reminder.title
+        content.body = reminder.detail
         content.sound = UNNotificationSound.default()
         content.badge = badgeCount as NSNumber
 
-        guard let alarmDate = item.alarm else {
+        guard let alarmDate = reminder.alarmDate as Date? else {
             return
         }
         let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: alarmDate)
@@ -43,9 +43,9 @@ extension MainReminderViewController {
             }
 
             print("Notification Set~!")
-            let saveItem = ReminderViewModelSaveItem()
-            saveItem.alarmString = uniqueIDString
-            self.viewmodel.updateReminder(item: saveItem, indexPath: selectedIndex)
+            let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
+            reminder.alarmString = uniqueIDString
+            self.viewmodel.saveReminders()
         }
     }
 
@@ -54,16 +54,13 @@ extension MainReminderViewController {
             return
         }
 
-        let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
-        if let alarmString = item.alarmString {
+        let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+        if let alarmString = reminder.alarmString {
             let center = UNUserNotificationCenter.current()
             center.removePendingNotificationRequests(withIdentifiers: [alarmString])
         }
-
-        let item = ReminderViewModelSaveItem()
-        item.alarm = nil
-        ite
-        viewmodel.updateReminder(item: item, indexPath: selectedIndex)
+        reminder.alarmDate = nil
+        viewmodel.saveReminders()
     }
 
     func recreateNotificationOfSelectedReminder() {

@@ -18,9 +18,9 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
         switch type {
         case .complete:
-            let item = ReminderViewModelSaveItem()
-            item.completed = cell.isCompleted()
-            viewmodel.updateReminder(item: item, indexPath: indexPath)
+            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+            reminder.completed = cell.isCompleted()
+            viewmodel.saveReminders()
 
         case .delete:
             viewmodel.deleteReminder(atIndexPath: indexPath)

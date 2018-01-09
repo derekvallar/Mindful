@@ -17,19 +17,19 @@ extension MainReminderViewController: UIActionCellDelegate {
 
         switch type {
         case .lowPriority:
-            let item = ReminderViewModelSaveItem()
-            item.priority = Priority.low
-            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
+            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            reminder.priority = Priority.low.rawValue
+            viewmodel.saveReminders()
 
         case .mediumPriority:
-            let item = ReminderViewModelSaveItem()
-            item.priority = Priority.medium
-            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
+            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            reminder.priority = Priority.medium.rawValue
+            viewmodel.saveReminders()
 
         case .highPriority:
-            let item = ReminderViewModelSaveItem()
-            item.priority = Priority.high
-            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
+            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            reminder.priority = Priority.high.rawValue
+            viewmodel.saveReminders()
 
         case .alarmButton:
             scrollIndexToMiddleIfNeeded(indices.getAction())
@@ -38,13 +38,13 @@ extension MainReminderViewController: UIActionCellDelegate {
             deleteNotifictionOfSelectedReminder()
 
         case .alarmOn:
-            let item = ReminderViewModelSaveItem()
+            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
             guard let actionIndex = indices.getAction(),
                 let cell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
                     return
             }
-            item.alarm = cell.getAlarmDate()
-            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
+            reminder.alarmDate = cell.getAlarmDate() as NSDate
+            viewmodel.saveReminders()
             createNotificationFromSelectedReminder()
 
         default:

@@ -34,12 +34,12 @@ extension MainReminderViewController {
 
                 let categoryCell = tableView.dequeueReusableCell(withIdentifier: .categoryCellIdentifier) as! UICategoryCell
                 categoryCell.delegate = self
-                let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
                 var show = true
                 if mode.action != .none {
                     show = false
                 }
-                categoryCell.setup(isSubreminder: item.isSubreminder, showCategories: show)
+                categoryCell.setup(isSubreminder: reminder.isSubreminder, showCategories: show)
 
                 return categoryCell
             }
@@ -51,24 +51,25 @@ extension MainReminderViewController {
                 switch mode.action {
                 case .edit:
                     let editCell = tableView.dequeueReusableCell(withIdentifier: .editCellIdentifier) as! UIEditCell
-                    let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+
                     editCell.delegate = self
-                    editCell.setup(detail: item.detail)
+                    editCell.setup(detail: reminder.detail)
 
                     return editCell
 
                 case .priority:
                     let priorityCell = tableView.dequeueReusableCell(withIdentifier: .priorityCellIdentifier) as! UIPriorityCell
-                    let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
                     priorityCell.delegate = self
-                    priorityCell.setup(priority: item.priority)
+                    priorityCell.setup(priority: Priority(rawValue: reminder.priority)!)
                     return priorityCell
 
                 case .alarm:
                     let alarmCell = tableView.dequeueReusableCell(withIdentifier: .alarmCellIdentifier) as! UIAlarmCell
-                    let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
                     alarmCell.delegate = self
-                    alarmCell.setup(alarm: item.alarm)
+                    alarmCell.setup(alarm: reminder.alarmDate as Date?)
                     return alarmCell
 
                 default:
@@ -86,13 +87,13 @@ extension MainReminderViewController {
         reminderCell.setTitleDelegate(controller: self)
         reminderCell.buttonDelegate = self
 
-        let item = viewmodel.getReminderItem(forIndexPath: reminderIndex)
+        let reminder = viewmodel.getReminder(forIndexPath: reminderIndex)
         var lastSubreminder = false
         if indexPath.row == self.tableView(tableView, numberOfRowsInSection: 0) - 1 {
             lastSubreminder = true
         }
 
-        reminderCell.setup(item: item, filtering: mode.filter, lastSubreminder: lastSubreminder)
+        reminderCell.setup(reminder: reminder, filtering: mode.filter, lastSubreminder: lastSubreminder)
         return reminderCell
     }
 
@@ -190,7 +191,7 @@ extension MainReminderViewController {
         }
 
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: .reminderHeaderViewIdentitfier) as! UIReminderHeaderView
-        headerView.setup(item: viewmodel.getHeaderReminderItem())
+        headerView.setup(reminder: viewmodel.getHeaderReminder())
         headerView.delegate = self
 
         return headerView

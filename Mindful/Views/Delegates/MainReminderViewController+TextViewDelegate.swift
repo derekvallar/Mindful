@@ -27,8 +27,8 @@ extension MainReminderViewController: UITextViewDelegate {
                 return
         }
 
-        let item = ReminderViewModelSaveItem()
-        item.title = cell.getTitleText()
-        viewmodel.updateReminder(item: item, indexPath: indexPath)
+        let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+        reminder.title = cell.getTitleText()
+        viewmodel.saveReminders()
     }
 }

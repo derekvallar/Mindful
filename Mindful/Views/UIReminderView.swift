@@ -110,16 +110,16 @@ class UIReminderView: UIView {
         buttonDelegate?.didTapButton(type: completeDeleteButton.type)
     }
 
-    func setup(item: ReminderViewModelItem, filtering: Bool) {
+    func setup(reminder: Reminder, filtering: Bool) {
 
-        print(item.title, "has subs:", item.hasSubreminders)
+        print(reminder.title, "has subs:", reminder.hasSubreminders())
 
-        completeDeleteButton.isSelected = item.completed
-        titleTextView.text = item.title
-        detailLabel.text = item.detail
-        detailLabel.isHidden = item.detail != nil ? false : true
+        completeDeleteButton.isSelected = reminder.completed
+        titleTextView.text = reminder.title
+        detailLabel.text = reminder.detail
+        detailLabel.isHidden = reminder.detail != nil ? false : true
 
-        subreminderIcon.isHidden = !item.hasSubreminders
+        subreminderIcon.isHidden = !reminder.hasSubreminders()
         filterMode = filtering
         rearrangeIcon.isHidden = filterMode ? false : true
         synchronizeButtonImages()
