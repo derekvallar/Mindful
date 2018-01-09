@@ -17,8 +17,6 @@ extension MainReminderViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count = viewmodel.getReminderCount()
         count += indices.getExpandedCellCount()
-
-        print("Count:", count)
         return count
     }
 
@@ -53,25 +51,24 @@ extension MainReminderViewController {
                 switch mode.action {
                 case .edit:
                     let editCell = tableView.dequeueReusableCell(withIdentifier: .editCellIdentifier) as! UIEditCell
-                    editCell.delegate = self
                     let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    editCell.delegate = self
                     editCell.setup(detail: item.detail)
 
                     return editCell
 
                 case .priority:
                     let priorityCell = tableView.dequeueReusableCell(withIdentifier: .priorityCellIdentifier) as! UIPriorityCell
-                    priorityCell.delegate = self
                     let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
+                    priorityCell.delegate = self
                     priorityCell.setup(priority: item.priority)
-
                     return priorityCell
 
                 case .alarm:
                     let alarmCell = tableView.dequeueReusableCell(withIdentifier: .alarmCellIdentifier) as! UIAlarmCell
+                    let item = viewmodel.getReminderItem(forIndexPath: selectedIndex)
                     alarmCell.delegate = self
-                    alarmCell.setup()
-
+                    alarmCell.setup(alarm: item.alarm)
                     return alarmCell
 
                 default:
@@ -136,6 +133,10 @@ extension MainReminderViewController {
         }
 
         if indexPath == categoryIndex {
+            return nil
+        }
+
+        if let actionIndex = indices.getAction(), indexPath == actionIndex {
             return nil
         }
 

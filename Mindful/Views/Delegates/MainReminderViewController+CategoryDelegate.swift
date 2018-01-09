@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UserNotifications
 
 extension MainReminderViewController: UICategoryCellDelegate {
 
@@ -21,12 +22,32 @@ extension MainReminderViewController: UICategoryCellDelegate {
             let reminderCell = tableView.cellForRow(at: selectedIndex) as! UIReminderCell
             reminderCell.setUserInteraction(true)
             mode.action = .edit
+            setActionRow()
 
         case .priority:
             mode.action = .priority
+            setActionRow()
 
         case .alarm:
-            mode.action = .alarm
+            let notifications = UNUserNotificationCenter.current()
+            notifications.requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (granted, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                if granted {
+                    print("Request granted")
+                    DispatchQueue.main.async {
+                        self.mode.action = .alarm
+                        self.setActionRow()
+                    }
+                } else {
+                    print("Request denied")
+
+                    // TODO: Add an alertview to change notification settings
+                }
+            })
 
         case .subreminders:
             indices.setReturn()
@@ -44,7 +65,6 @@ extension MainReminderViewController: UICategoryCellDelegate {
                     self.tableView.endUpdates()
                 }
             })
-            return
 
         case .back:
             if mode.action == .edit {
@@ -56,25 +76,28 @@ extension MainReminderViewController: UICategoryCellDelegate {
             }
             mode.action = .none
 
-        default:
-            break
-        }
-
-        tableView.beginUpdates()
-        if mode.action == .none {
+            tableView.beginUpdates()
             if let actionIndex = indices.getAction() {
                 tableView.deleteRows(at: [actionIndex], with: .automatic)
                 indices.clearAction()
             }
-        } else {
-            indices.setAction()
-            guard let actionIndex = indices.getAction() else {
-                return
-            }
-            tableView.insertRows(at: [actionIndex], with: .automatic)
-            print("Scrolling")
+            tableView.endUpdates()
+            scrollIndexToMiddleIfNeeded(indices.getAction())
+
+        default:
+            break
         }
+    }
+
+    private func setActionRow() {
+        tableView.beginUpdates()
+        indices.setAction()
+        guard let actionIndex = indices.getAction() else {
+            return
+        }
+        tableView.insertRows(at: [actionIndex], with: .automatic)
         tableView.endUpdates()
         scrollIndexToMiddleIfNeeded(indices.getAction())
     }
 }
+

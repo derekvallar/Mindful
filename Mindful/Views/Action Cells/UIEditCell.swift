@@ -28,12 +28,12 @@ class UIEditCell: UITableViewCell {
 
         editLabel.text = "Notes:"
         editLabel.textColor = .textColor
-        editLabel.font = UIFont.systemFont(ofSize: .textSize)
+        editLabel.font = UIFont.systemFont(ofSize: .reminderTextSize)
 
         editTextView.isScrollEnabled = false
         editTextView.textColor = .textColor
         editTextView.backgroundColor = .backgroundTextFieldColor
-        editTextView.font = UIFont.systemFont(ofSize: .textSize)
+        editTextView.font = UIFont.systemFont(ofSize: .reminderTextSize)
 
         contentView.addSubview(editStackView)
         editStackView.addArrangedSubview(editLabel)

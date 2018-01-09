@@ -9,14 +9,13 @@
 import UIKit
 
 extension CGFloat {
-    static let textSize: CGFloat = 14.5
+    static let reminderTextSize: CGFloat = 14.5
     static let textSecondarySize: CGFloat = 12.5
 
-    static let actionViewSpacing: CGFloat = 10.0
-    static let viewSpacing: CGFloat = 8.0
-    static let viewSpacingInverse: CGFloat = -8.0
-    static let layoutSpacing: CGFloat = 12.0
-    static let layoutSpacingInverse: CGFloat = -12.0
+    static let reminderStackViewSpacingX: CGFloat = 8.0
+    static let reminderStackViewSpacingXInverse: CGFloat = -8.0
+    static let reminderStackViewSpacingY: CGFloat = 12.0
+    static let reminderStackViewSpacingYInverse: CGFloat = -12.0
 
     static let cellXSpacing: CGFloat = 10.0
     static let cellXSpacingInverse: CGFloat = -10.0

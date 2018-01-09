@@ -170,7 +170,6 @@ print("Complete Pressed")
         }
 
         let rowRect = tableView.rectForRow(at: category)
-        print("IndexRect:", rowRect)
         if !tableView.bounds.contains(rowRect) {
             let deadlineTime = DispatchTime.now() + .milliseconds(1)
             DispatchQueue.main.asyncAfter(deadline: deadlineTime) {

@@ -17,16 +17,35 @@ extension MainReminderViewController: UIActionCellDelegate {
 
         switch type {
         case .lowPriority:
-            viewmodel.updateReminder(completed: nil, title: nil, detail: nil, priority: Priority.low, indexPath: selectedIndex)
+            let item = ReminderViewModelSaveItem()
+            item.priority = Priority.low
+            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
 
         case .mediumPriority:
-            viewmodel.updateReminder(completed: nil, title: nil, detail: nil, priority: Priority.medium, indexPath: selectedIndex)
+            let item = ReminderViewModelSaveItem()
+            item.priority = Priority.medium
+            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
 
         case .highPriority:
-            viewmodel.updateReminder(completed: nil, title: nil, detail: nil, priority: Priority.high, indexPath: selectedIndex)
+            let item = ReminderViewModelSaveItem()
+            item.priority = Priority.high
+            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
 
-        case .alarmLabel:
+        case .alarmButton:
             scrollIndexToMiddleIfNeeded(indices.getAction())
+
+        case .alarmOff:
+            deleteNotifictionOfSelectedReminder()
+
+        case .alarmOn:
+            let item = ReminderViewModelSaveItem()
+            guard let actionIndex = indices.getAction(),
+                let cell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
+                    return
+            }
+            item.alarm = cell.getAlarmDate()
+            viewmodel.updateReminder(item: item, indexPath: selectedIndex)
+            createNotificationFromSelectedReminder()
 
         default:
             break

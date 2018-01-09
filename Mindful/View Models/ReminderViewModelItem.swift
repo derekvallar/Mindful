@@ -9,20 +9,25 @@
 import Foundation
 
 class ReminderViewModelItem {
+    var completed: Bool = false
+    var title: String = ""
+    var detail: String = ""
+    var priority: Priority = Priority.low
+    var alarm: Date?
+    var alarmString: String?
+    var isSubreminder: Bool = false
+    var hasSubreminders: Bool = false
 
-    var completed: Bool
-    var title: String
+    init() {}
+}
+
+class ReminderViewModelSaveItem {
+    var completed: Bool?
+    var title: String?
     var detail: String?
-    var priority: Priority
-    var isSubreminder: Bool
-    var hasSubreminders: Bool
+    var priority: Priority?
+    var alarm: Date?
+    var alarmString: String?
 
-    init(completed: Bool, title: String, detail: String?, priority: Priority, isSubreminder: Bool, hasSubreminders: Bool) {
-        self.completed = completed
-        self.title = title
-        self.detail = detail
-        self.priority = priority
-        self.isSubreminder = isSubreminder
-        self.hasSubreminders = hasSubreminders
-    }
+    init() {}
 }

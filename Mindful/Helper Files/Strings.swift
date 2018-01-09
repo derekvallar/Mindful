@@ -13,6 +13,11 @@ extension String {
     static let completedTitle = "Completed"
     static let subreminderTitle = "Subreminders"
 
+    static let alarmOffButtonTitle = "OFF"
+    static let alarmOnButtonTitle = "ON"
+
+    static let alarmBadgeCountString = "AlarmBadgeCountString"
+
     static let reminderCellIdentifier = "ReminderCellIdentifier"
     static let categoryCellIdentifier = "CategoryCellIdentifier"
     static let editCellIdentifier = "EditCellIdentifier"

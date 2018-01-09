@@ -35,7 +35,7 @@ class UIPriorityCell: UITableViewCell {
 
         priorityLabel.text = "Priority:"
         priorityLabel.textColor = .textColor
-        priorityLabel.font = UIFont.systemFont(ofSize: .textSize)
+        priorityLabel.font = UIFont.systemFont(ofSize: .reminderTextSize)
 
         buttonStackView.axis = .horizontal
         buttonStackView.distribution = .fillEqually
@@ -45,7 +45,7 @@ class UIPriorityCell: UITableViewCell {
         lowPriorityButton.setTitle("Low", for: .normal)
         lowPriorityButton.setTitleColor(.lowPriorityColor, for: .normal)
         lowPriorityButton.setTitleColor(UIColor.white, for: .selected)
-        lowPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .textSize)
+        lowPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .reminderTextSize)
 
         lowPriorityButton.backgroundColor = .lowPriorityColor
         lowPriorityButton.layer.cornerRadius = 15.0
@@ -57,7 +57,7 @@ class UIPriorityCell: UITableViewCell {
         mediumPriorityButton.setTitle("Medium", for: .normal)
         mediumPriorityButton.setTitleColor(.mediumPriorityColor, for: .normal)
         mediumPriorityButton.setTitleColor(UIColor.white, for: .selected)
-        mediumPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .textSize)
+        mediumPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .reminderTextSize)
 
         mediumPriorityButton.backgroundColor = .mediumPriorityColor
         mediumPriorityButton.layer.cornerRadius = 15.0
@@ -69,7 +69,7 @@ class UIPriorityCell: UITableViewCell {
         highPriorityButton.setTitle("High", for: .normal)
         highPriorityButton.setTitleColor(.highPriorityColor, for: .normal)
         highPriorityButton.setTitleColor(UIColor.white, for: .selected)
-        highPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .textSize)
+        highPriorityButton.titleLabel?.font = UIFont.systemFont(ofSize: .reminderTextSize)
 
         highPriorityButton.backgroundColor = .highPriorityColor
         highPriorityButton.layer.cornerRadius = 15.0

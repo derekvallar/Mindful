@@ -22,5 +22,5 @@ enum CategoryType {
 }
 
 enum ActionType {
-    case lowPriority, mediumPriority, highPriority, alarmLabel, alarmOn, alarmOff
+    case lowPriority, mediumPriority, highPriority, alarmButton, alarmOn, alarmOff
 }

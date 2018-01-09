@@ -16,9 +16,6 @@ class UIReminderView: UIView {
 
     weak var buttonDelegate: UIReminderViewDelegate?
 
-    private var cardView = UIView()
-    private var cardStackView = UIStackView()
-
     private var reminderStackView = UIStackView()
     private var completeDeleteButton = UICellButton()
     private var rearrangeIcon = UIImageView()
@@ -35,18 +32,11 @@ class UIReminderView: UIView {
     init() {
         super.init(frame: CGRect.zero)
         // Setup Views
-        
+
         backgroundColor = UIColor.white
-        
-        cardView.backgroundColor = UIColor.white
-        cardView.layer.cornerRadius = 7.0
-        cardView.layer.borderColor = UIColor.mediumPriorityColor.cgColor
-        
-        cardStackView.axis = .vertical
-        cardStackView.spacing = .viewSpacing
-        
+
         reminderStackView.axis = .horizontal
-        reminderStackView.spacing = .viewSpacing
+        reminderStackView.spacing = .reminderStackViewSpacingX
         reminderStackView.alignment = .center
         
         completeDeleteButton.addTarget(self, action: #selector(completeDeleteButtonPressed), for: .touchUpInside)
@@ -63,7 +53,7 @@ class UIReminderView: UIView {
         titleTextView.textColor = .textColor
         titleTextView.isScrollEnabled = false
         titleTextView.isUserInteractionEnabled = false
-        titleTextView.font = UIFont.systemFont(ofSize: .textSize)
+        titleTextView.font = UIFont.systemFont(ofSize: .reminderTextSize)
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
         titleTextView.layer.masksToBounds = false
@@ -82,11 +72,7 @@ class UIReminderView: UIView {
         
         // Add Subviews
         
-        self.addSubview(cardView)
-        cardView.addSubview(cardStackView)
-        
-        cardStackView.addArrangedSubview(reminderStackView)
-        
+        self.addSubview(reminderStackView)
         reminderStackView.addArrangedSubview(completeDeleteButton)
         reminderStackView.addArrangedSubview(infoStackView)
         reminderStackView.addArrangedSubview(subreminderIcon)
@@ -94,22 +80,19 @@ class UIReminderView: UIView {
         
         infoStackView.addArrangedSubview(titleTextView)
         infoStackView.addArrangedSubview(detailLabel)
-        
+
         
         // Setup Constraints
-        
+
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cardView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            cardView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            cardView.topAnchor.constraint(equalTo: self.topAnchor),
-            cardView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            reminderStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: .reminderStackViewSpacingX),
+            reminderStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: .reminderStackViewSpacingXInverse),
+            reminderStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: .reminderStackViewSpacingY),
+            reminderStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: .reminderStackViewSpacingYInverse)
         ])
-        
+
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cardStackView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: .viewSpacing),
-            cardStackView.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: .viewSpacingInverse),
-            cardStackView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: .layoutSpacing),
-            cardStackView.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: .layoutSpacingInverse)
+            completeDeleteButton.widthAnchor.constraint(equalToConstant: 40.0)
         ])
     }
 
