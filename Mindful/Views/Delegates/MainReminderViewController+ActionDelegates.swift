@@ -40,7 +40,6 @@ extension MainReminderViewController: UIActionCellDelegate {
 
         case .alarmOn:
             print("Alarm On")
-            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
             guard let actionIndex = indices.getAction(),
                   let cell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
                 return
@@ -59,18 +58,25 @@ extension MainReminderViewController: UIActionCellDelegate {
 
 extension MainReminderViewController: UIEditCellTextDelegate {
     func detailTextDidEndEditing(_ cell: UIEditCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
+        guard let selectedIndex = indices.getSelected() else {
             return
         }
 
-        let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+        let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
         reminder.detail = cell.getDetailText()
         viewmodel.saveReminders()
+
+        guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
+            return
+        }
+        selectedCell.setDetailText(text: reminder.detail)
+        print("Set detail")
     }
 }
 
 extension MainReminderViewController: UIAlarmCellDelegate {
     func alarmDateSelected(_ cell: UIAlarmCell) {
+        print("New Alarm Selected")
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }

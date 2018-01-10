@@ -94,13 +94,13 @@ class UIAlarmCell: UITableViewCell {
             offButton.isSelected = false
             onButton.isSelected = true
             dateTimeButton.isHidden = false
-
             alarmPicker.date = alarm
         } else {
             print("Didn't find alarm")
             offButton.isSelected = true
             onButton.isSelected = false
             dateTimeButton.isHidden = true
+            alarmPicker.date = Date()
         }
 
         dateTimeButton.setTitle(getDateText(), for: .normal)
@@ -112,6 +112,7 @@ class UIAlarmCell: UITableViewCell {
     }
 
     func getAlarmDate() -> Date {
+        print("PickerDate:", alarmPicker.date)
         return alarmPicker.date
     }
 
@@ -144,6 +145,7 @@ class UIAlarmCell: UITableViewCell {
             dateTimeButton.isHidden = true
             alarmPicker.isHidden = true
         }
+        delegate?.didTapActionButton(type: button.type)
     }
 
     @objc private func dateSelected(picker: UIPickerView) {

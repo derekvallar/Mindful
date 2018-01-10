@@ -45,11 +45,11 @@ extension MainReminderViewController: UITextViewDelegate {
 
 extension MainReminderViewController: UIReminderCellTextDelegate {
     func titleTextDidEndEditing(_ cell: UIReminderCell) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
+        guard let selectedIndex = indices.getSelected() else {
             return
         }
 
-        let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+        let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
         reminder.title = cell.getTitleText()
         viewmodel.saveReminders()
     }

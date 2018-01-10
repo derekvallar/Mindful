@@ -86,6 +86,8 @@ class MainReminderViewController: UITableViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        print("Badge:", UIApplication.shared.applicationIconBadgeNumber)
     }
 
     @objc func detailButtonPressed() {

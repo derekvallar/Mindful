@@ -67,6 +67,10 @@ class UIReminderCell: UITableViewCell {
         return reminderView.isCompleted()
     }
 
+    func setDetailText(text: String) {
+        reminderView.setDetailText(text: text)
+    }
+
     func setUserInteraction(_ bool: Bool) {
         reminderView.titleTextView.isUserInteractionEnabled = bool
     }

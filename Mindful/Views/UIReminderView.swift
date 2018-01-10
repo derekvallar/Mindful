@@ -163,6 +163,10 @@ class UIReminderView: UIView {
         return completeDeleteButton.isSelected
     }
 
+    func setDetailText(text: String) {
+        detailLabel.text = text
+    }
+
     private func synchronizeButtonImages() {
         if filterMode {
             completeDeleteButton.type = .reminder(type: .delete)
