@@ -10,7 +10,7 @@ import UIKit
 import UserNotifications
 
 extension MainReminderViewController {
-    func createNotificationFromSelectedReminder() {
+    func createNotificationForSelectedReminder(withDate date: Date) {
         print("Creating Notification")
         guard let selectedIndex = indices.getSelected() else {
             return
@@ -27,10 +27,7 @@ extension MainReminderViewController {
         content.sound = UNNotificationSound.default()
         content.badge = badgeCount as NSNumber
 
-        guard let alarmDate = reminder.alarmDate as Date? else {
-            return
-        }
-        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: alarmDate)
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
         let uniqueIDString = UUID().uuidString
 
@@ -43,13 +40,13 @@ extension MainReminderViewController {
             }
 
             print("Notification Set~!")
-            let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
+            reminder.alarmDate = date as NSDate
             reminder.alarmString = uniqueIDString
             self.viewmodel.saveReminders()
         }
     }
 
-    func deleteNotifictionOfSelectedReminder() {
+    func removeNotifictionOfSelectedReminder() {
         guard let selectedIndex = indices.getSelected() else {
             return
         }
@@ -60,11 +57,7 @@ extension MainReminderViewController {
             center.removePendingNotificationRequests(withIdentifiers: [alarmString])
         }
         reminder.alarmDate = nil
+        reminder.alarmString = nil
         viewmodel.saveReminders()
-    }
-
-    func recreateNotificationOfSelectedReminder() {
-        deleteNotifictionOfSelectedReminder()
-        createNotificationFromSelectedReminder()
     }
 }

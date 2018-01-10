@@ -72,8 +72,13 @@ extension MainReminderViewController: UICategoryCellDelegate {
                     return
                 }
                 selectedCell.setUserInteraction(false)
+
+            } else if mode.action == .priority {
+
             } else if mode.action == .alarm {
+
             }
+
             mode.action = .none
 
             tableView.beginUpdates()
@@ -82,7 +87,6 @@ extension MainReminderViewController: UICategoryCellDelegate {
                 indices.clearAction()
             }
             tableView.endUpdates()
-            scrollIndexToMiddleIfNeeded(indices.getAction())
 
         default:
             break

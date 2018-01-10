@@ -117,7 +117,7 @@ class UIReminderView: UIView {
         completeDeleteButton.isSelected = reminder.completed
         titleTextView.text = reminder.title
         detailLabel.text = reminder.detail
-        detailLabel.isHidden = reminder.detail != nil ? false : true
+        detailLabel.isHidden = reminder.detail == "" ? true : false
 
         subreminderIcon.isHidden = !reminder.hasSubreminders()
         filterMode = filtering

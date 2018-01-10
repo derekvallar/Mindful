@@ -8,10 +8,6 @@
 
 import Foundation
 
-protocol UICategoryCellDelegate: class {
-    func didTapCategoryButton(type: UIReminderButtonType)
-}
-
 protocol UIActionCellDelegate: class {
     func didTapActionButton(type: UIReminderButtonType)
 }

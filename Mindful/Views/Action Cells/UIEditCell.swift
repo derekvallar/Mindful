@@ -8,9 +8,14 @@
 
 import UIKit
 
+protocol UIEditCellTextDelegate: class {
+    func detailTextDidEndEditing(_ cell: UIEditCell)
+}
+
 class UIEditCell: UITableViewCell {
 
     weak var delegate: UIActionCellDelegate?
+    weak var textDelegate: UIEditCellTextDelegate?
 
     private var editStackView = UIStackView()
     private var editLabel = UILabel()
@@ -34,6 +39,7 @@ class UIEditCell: UITableViewCell {
         editTextView.textColor = .textColor
         editTextView.backgroundColor = .backgroundTextFieldColor
         editTextView.font = UIFont.systemFont(ofSize: .reminderTextSize)
+        editTextView.delegate = self
 
         contentView.addSubview(editStackView)
         editStackView.addArrangedSubview(editLabel)
@@ -53,5 +59,11 @@ class UIEditCell: UITableViewCell {
 
     func getDetailText() -> String {
         return editTextView.text
+    }
+}
+
+extension UIEditCell: UITextViewDelegate {
+    func textViewDidEndEditing(_ textView: UITextView) {
+        textDelegate?.detailTextDidEndEditing(self)
     }
 }

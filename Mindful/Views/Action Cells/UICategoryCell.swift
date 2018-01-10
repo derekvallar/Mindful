@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol UICategoryCellDelegate: class {
+    func didTapCategoryButton(type: UIReminderButtonType)
+}
+
 class UICategoryCell: UITableViewCell {
 
     weak var delegate: UICategoryCellDelegate?

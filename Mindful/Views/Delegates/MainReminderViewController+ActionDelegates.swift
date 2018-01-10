@@ -35,17 +35,18 @@ extension MainReminderViewController: UIActionCellDelegate {
             scrollIndexToMiddleIfNeeded(indices.getAction())
 
         case .alarmOff:
-            deleteNotifictionOfSelectedReminder()
+            print("Alarm Off")
+            removeNotifictionOfSelectedReminder()
 
         case .alarmOn:
+            print("Alarm On")
             let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
             guard let actionIndex = indices.getAction(),
-                let cell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
-                    return
+                  let cell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
+                return
             }
-            reminder.alarmDate = cell.getAlarmDate() as NSDate
-            viewmodel.saveReminders()
-            createNotificationFromSelectedReminder()
+            let date = cell.getAlarmDate()
+            createNotificationForSelectedReminder(withDate: date)
 
         default:
             break
@@ -53,5 +54,29 @@ extension MainReminderViewController: UIActionCellDelegate {
 
         tableView.beginUpdates()
         tableView.endUpdates()
+    }
+}
+
+extension MainReminderViewController: UIEditCellTextDelegate {
+    func detailTextDidEndEditing(_ cell: UIEditCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+
+        let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+        reminder.detail = cell.getDetailText()
+        viewmodel.saveReminders()
+    }
+}
+
+extension MainReminderViewController: UIAlarmCellDelegate {
+    func alarmDateSelected(_ cell: UIAlarmCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+
+        let date = cell.getAlarmDate()
+        removeNotifictionOfSelectedReminder()
+        createNotificationForSelectedReminder(withDate: date)
     }
 }

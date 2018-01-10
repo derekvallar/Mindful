@@ -108,6 +108,27 @@ class UIPriorityCell: UITableViewCell {
         }
     }
 
+    func getPriority() -> Priority {
+        for button in buttonStackView.arrangedSubviews {
+            guard let button = button as? UICellButton else {
+                continue
+            }
+            if button.isSelected {
+                switch button.type {
+                case .action(type: .highPriority):
+                    return Priority.high
+
+                case .action(type: .mediumPriority):
+                    return Priority.medium
+
+                default:
+                    return Priority.low
+                }
+            }
+        }
+        return Priority.low
+    }
+
     private func selectPriority(_ selected: UICellButton) {
         for view in buttonStackView.arrangedSubviews {
             guard let button = view as? UICellButton,

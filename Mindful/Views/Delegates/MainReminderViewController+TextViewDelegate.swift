@@ -20,11 +20,33 @@ extension MainReminderViewController: UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        let textViewPoint = textView.convert(textView.center, to: tableView)
+        print("TextViewDidEndEditing")
 
-        guard let indexPath = tableView.indexPathForRow(at: textViewPoint),
-            let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell else {
+        let textViewPoint = textView.convert(textView.center, to: tableView)
+        guard let indexPath = tableView.indexPathForRow(at: textViewPoint) else {
                 return
+        }
+
+        if let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell {
+            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+            reminder.title = cell.getTitleText()
+            viewmodel.saveReminders()
+            return
+        }
+
+        if let cell = tableView.cellForRow(at: indexPath) as? UIEditCell {
+            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+            reminder.detail = cell.getDetailText()
+            viewmodel.saveReminders()
+            return
+        }
+    }
+}
+
+extension MainReminderViewController: UIReminderCellTextDelegate {
+    func titleTextDidEndEditing(_ cell: UIReminderCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
         }
 
         let reminder = viewmodel.getReminder(forIndexPath: indexPath)

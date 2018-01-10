@@ -12,9 +12,14 @@ protocol UIReminderCellDelegate: class {
     func didTapReminderButton(_ cell: UIReminderCell, type: UIReminderButtonType)
 }
 
+protocol UIReminderCellTextDelegate: class {
+    func titleTextDidEndEditing(_ cell: UIReminderCell)
+}
+
 class UIReminderCell: UITableViewCell {
 
     weak var buttonDelegate: UIReminderCellDelegate?
+    weak var textDelegate: UIReminderCellTextDelegate?
 
     private var cellStackView = UIStackView()
     private var branchImage = UIImageView()
@@ -33,6 +38,7 @@ class UIReminderCell: UITableViewCell {
         branchImage.isHidden = true
         cellStackView.alignment = .center
         reminderView.buttonDelegate = self
+        reminderView.titleTextView.delegate = self
 
         contentView.addSubview(cellStackView)
         cellStackView.addArrangedSubview(branchImage)
@@ -65,13 +71,6 @@ class UIReminderCell: UITableViewCell {
         reminderView.titleTextView.isUserInteractionEnabled = bool
     }
 
-    func setTitleDelegate(controller: UIViewController) {
-        if let controller = controller as? MainReminderViewController {
-            reminderView.titleTextView.delegate = controller.self
-        }
-        return
-    }
-
     func titleViewBecomeFirstResponder() {
         reminderView.titleTextView.becomeFirstResponder()
     }
@@ -93,8 +92,13 @@ class UIReminderCell: UITableViewCell {
 }
 
 extension UIReminderCell: UIReminderViewDelegate {
-
     func didTapButton(type: UIReminderButtonType) {
         buttonDelegate?.didTapReminderButton(self, type: type)
+    }
+}
+
+extension UIReminderCell: UITextViewDelegate {
+    func textViewDidEndEditing(_ textView: UITextView) {
+        textDelegate?.titleTextDidEndEditing(self)
     }
 }

@@ -14,11 +14,6 @@ import CoreData
 public class Reminder: NSManagedObject {
 
     func setup(index: Int, subreminder: Bool) {
-        self.completed = false
-
-        self.title = String()
-        self.detail = String()
-
         self.index = Int16(index)
         self.priority = Priority.low.rawValue
         self.isSubreminder = subreminder

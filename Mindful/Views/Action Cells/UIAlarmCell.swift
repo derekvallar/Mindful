@@ -8,18 +8,23 @@
 
 import UIKit
 
+protocol UIAlarmCellDelegate: class {
+    func alarmDateSelected(_ cell: UIAlarmCell)
+}
+
 class UIAlarmCell: UITableViewCell {
 
     weak var delegate: UIActionCellDelegate?
+    weak var alarmDelegate: UIAlarmCellDelegate?
 
     private var alarmStackView = UIStackView()
 
     private var onOffStackView = UIStackView()
     private var alarmLabel = UILabel()
-    private var alarmOffButton = UICellButton()
-    private var alarmOnButton = UICellButton()
+    private var offButton = UICellButton()
+    private var onButton = UICellButton()
 
-    private var alarmDateTimeButton = UICellButton()
+    private var dateTimeButton = UICellButton()
     private var alarmPicker = UIDatePicker()
 
     required init?(coder aDecoder: NSCoder) {
@@ -45,35 +50,35 @@ class UIAlarmCell: UITableViewCell {
         alarmLabel.font = UIFont.systemFont(ofSize: .reminderTextSize)
         alarmLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        alarmOffButton.type = .action(type: .alarmOff)
-        alarmOffButton.setTitle(String.alarmOffButtonTitle, for: .normal)
-        alarmOffButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
-        alarmOffButton.setTitleColor(UIColor.backgroundColor, for: .selected)
-        alarmOffButton.addTarget(self, action: #selector(onOffButtonTapped(button:)), for: .touchUpInside)
+        offButton.type = .action(type: .alarmOff)
+        offButton.setTitle(String.alarmOffButtonTitle, for: .normal)
+        offButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
+        offButton.setTitleColor(UIColor.backgroundColor, for: .selected)
+        offButton.addTarget(self, action: #selector(onOffButtonTapped(button:)), for: .touchUpInside)
 
-        alarmOnButton.type = .action(type: .alarmOn)
-        alarmOnButton.setTitle(String.alarmOnButtonTitle, for: .normal)
-        alarmOnButton .setTitleColor(UIColor.textSecondaryColor, for: .normal)
-        alarmOnButton.setTitleColor(UIColor.backgroundColor, for: .selected)
-        alarmOnButton.addTarget(self, action: #selector(onOffButtonTapped(button:)), for: .touchUpInside)
+        onButton.type = .action(type: .alarmOn)
+        onButton.setTitle(String.alarmOnButtonTitle, for: .normal)
+        onButton .setTitleColor(UIColor.textSecondaryColor, for: .normal)
+        onButton.setTitleColor(UIColor.backgroundColor, for: .selected)
+        onButton.addTarget(self, action: #selector(onOffButtonTapped(button:)), for: .touchUpInside)
 
-        alarmDateTimeButton.type = .action(type: .alarmButton)
-        alarmDateTimeButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
+        dateTimeButton.type = .action(type: .alarmButton)
+        dateTimeButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
 //        alarmDateTimeButton.font = UIFont.systemFont(ofSize: .textSize)
-        alarmDateTimeButton.contentHorizontalAlignment = .left
-        alarmDateTimeButton.addTarget(self, action: #selector(alarmDateTimeButtonTapped(button:)), for: .touchUpInside)
+        dateTimeButton.contentHorizontalAlignment = .left
+        dateTimeButton.addTarget(self, action: #selector(alarmDateTimeButtonTapped(button:)), for: .touchUpInside)
 
         alarmPicker.datePickerMode = .dateAndTime
         alarmPicker.addTarget(self, action: #selector(dateSelected(picker:)), for: .valueChanged)
 
         contentView.addSubview(alarmStackView)
         alarmStackView.addArrangedSubview(onOffStackView)
-        alarmStackView.addArrangedSubview(alarmDateTimeButton)
+        alarmStackView.addArrangedSubview(dateTimeButton)
         alarmStackView.addArrangedSubview(alarmPicker)
 
         onOffStackView.addArrangedSubview(alarmLabel)
-        onOffStackView.addArrangedSubview(alarmOffButton)
-        onOffStackView.addArrangedSubview(alarmOnButton)
+        onOffStackView.addArrangedSubview(offButton)
+        onOffStackView.addArrangedSubview(onButton)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
             alarmStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
@@ -86,20 +91,24 @@ class UIAlarmCell: UITableViewCell {
     func setup(alarm: Date?) {
         if let alarm = alarm {
             print("Found alarm:", alarm)
-            alarmOffButton.isSelected = false
-            alarmOnButton.isSelected = true
-            alarmDateTimeButton.isHidden = false
+            offButton.isSelected = false
+            onButton.isSelected = true
+            dateTimeButton.isHidden = false
 
             alarmPicker.date = alarm
         } else {
             print("Didn't find alarm")
-            alarmOffButton.isSelected = true
-            alarmOnButton.isSelected = false
-            alarmDateTimeButton.isHidden = true
+            offButton.isSelected = true
+            onButton.isSelected = false
+            dateTimeButton.isHidden = true
         }
 
-        alarmDateTimeButton.setTitle(getDateText(), for: .normal)
+        dateTimeButton.setTitle(getDateText(), for: .normal)
         alarmPicker.isHidden = true
+    }
+
+    func alarmIsSet() -> Bool {
+        return onButton.isSelected ? true : false
     }
 
     func getAlarmDate() -> Date {
@@ -125,21 +134,20 @@ class UIAlarmCell: UITableViewCell {
             return
         }
 
-        if button === alarmOnButton {
-            alarmOffButton.isSelected = false
-            alarmOnButton.isSelected = true
-            alarmDateTimeButton.isHidden = false
+        if button === onButton {
+            offButton.isSelected = false
+            onButton.isSelected = true
+            dateTimeButton.isHidden = false
         } else {
-            alarmOffButton.isSelected = true
-            alarmOnButton.isSelected = false
-            alarmDateTimeButton.isHidden = true
+            offButton.isSelected = true
+            onButton.isSelected = false
+            dateTimeButton.isHidden = true
             alarmPicker.isHidden = true
         }
-        delegate?.didTapActionButton(type: button.type)
     }
 
     @objc private func dateSelected(picker: UIPickerView) {
-        alarmDateTimeButton.setTitle(getDateText(), for: .normal)
-        delegate?.didTapActionButton(type: .action(type: .alarmOn))
+        dateTimeButton.setTitle(getDateText(), for: .normal)
+        alarmDelegate?.alarmDateSelected(self)
     }
 }
