@@ -14,6 +14,8 @@ import CoreData
 public class Reminder: NSManagedObject {
 
     func setup(index: Int, subreminder: Bool) {
+        self.title = ""
+        self.detail = ""
         self.index = Int16(index)
         self.priority = Priority.low.rawValue
         self.isSubreminder = subreminder
@@ -41,6 +43,19 @@ public class Reminder: NSManagedObject {
         let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [completedPredicate, subreminderPredicate])
 
         request.sortDescriptors = [indexSort]
+        request.predicate = requestPredicate
+        return request
+    }
+
+    static func alarmFetchRequest() -> NSFetchRequest<Reminder> {
+        let request: NSFetchRequest<Reminder> = Reminder.fetchRequest()
+
+        let alarm = NSSortDescriptor(key: "alarmDate", ascending: true)
+        let alarmPredicate = NSPredicate(format: "alarmDate != nil")
+        let alarmStringPredicate = NSPredicate(format: "alarmID != nil")
+        let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [alarmPredicate, alarmStringPredicate])
+
+        request.sortDescriptors = [alarm]
         request.predicate = requestPredicate
         return request
     }

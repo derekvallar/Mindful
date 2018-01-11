@@ -22,11 +22,26 @@ extension MainReminderViewController: UIReminderCellDelegate {
             reminder.completed = cell.isCompleted()
             viewmodel.saveReminders()
 
+            if reminder.completed {
+                if let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                    UIApplication.shared.applicationIconBadgeNumber -= 1
+                }
+            } else {
+                if let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                    UIApplication.shared.applicationIconBadgeNumber += 1
+                }
+            }
+
         case .delete:
             viewmodel.deleteReminder(atIndexPath: indexPath)
             tableView.beginUpdates()
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()
+
+            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+            if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                UIApplication.shared.applicationIconBadgeNumber -= 1
+            }
 
         default:
             break

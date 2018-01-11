@@ -112,7 +112,6 @@ class UIAlarmCell: UITableViewCell {
     }
 
     func getAlarmDate() -> Date {
-        print("PickerDate:", alarmPicker.date)
         return alarmPicker.date
     }
 

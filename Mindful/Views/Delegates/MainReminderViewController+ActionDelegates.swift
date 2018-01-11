@@ -36,16 +36,19 @@ extension MainReminderViewController: UIActionCellDelegate {
 
         case .alarmOff:
             print("Alarm Off")
+            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                UIApplication.shared.applicationIconBadgeNumber -= 1
+            }
             removeNotifictionOfSelectedReminder()
 
         case .alarmOn:
             print("Alarm On")
-            guard let actionIndex = indices.getAction(),
-                  let cell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
-                return
+            createNotificationForSelectedReminder()
+            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                UIApplication.shared.applicationIconBadgeNumber += 1
             }
-            let date = cell.getAlarmDate()
-            createNotificationForSelectedReminder(withDate: date)
 
         default:
             break
@@ -76,13 +79,20 @@ extension MainReminderViewController: UIEditCellTextDelegate {
 
 extension MainReminderViewController: UIAlarmCellDelegate {
     func alarmDateSelected(_ cell: UIAlarmCell) {
-        print("New Alarm Selected")
-        guard let indexPath = tableView.indexPath(for: cell) else {
+        guard let selectedIndex = indices.getSelected() else {
             return
         }
 
-        let date = cell.getAlarmDate()
+        let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+        if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
+            UIApplication.shared.applicationIconBadgeNumber -= 1
+        }
+
         removeNotifictionOfSelectedReminder()
-        createNotificationForSelectedReminder(withDate: date)
+        createNotificationForSelectedReminder()
+
+        if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
+            UIApplication.shared.applicationIconBadgeNumber += 1
+        }
     }
 }

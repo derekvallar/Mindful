@@ -10,70 +10,91 @@ import UIKit
 import UserNotifications
 
 extension MainReminderViewController {
-    func createNotificationForSelectedReminder(withDate date: Date) {
-        print("Creating Notification:", date)
+    func createNotificationForSelectedReminder() {
+        print("Creating Notification")
 
-        DispatchQueue.global(qos: .background).async {
-            guard let selectedIndex = self.indices.getSelected() else {
+        guard let selectedIndex = self.indices.getSelected(),
+            let actionIndex = self.indices.getAction(),
+            let cell = self.tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
                 return
-            }
+        }
+        let date = cell.getAlarmDate()
 
+        DispatchQueue.global(qos: .background).sync {
             let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
-            let content = UNMutableNotificationContent()
-            let userdefaults = UserDefaults.standard
-            var badgeCount = userdefaults.integer(forKey: .alarmBadgeCountString)
-            badgeCount += 1
-
-            content.title = reminder.title
-            content.body = reminder.detail
-            content.sound = UNNotificationSound.default()
-            content.badge = badgeCount as NSNumber
-
-            let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
             let uniqueIDString = UUID().uuidString
 
-            let request = UNNotificationRequest(identifier: uniqueIDString, content: content, trigger: trigger)
-            let center = UNUserNotificationCenter.current()
-            center.add(request) { (error) in
-                if let error = error {
-                    print(error)
-                    return
-                }
+            reminder.alarmDate = date as NSDate
+            reminder.alarmID = uniqueIDString
+            self.viewmodel.saveReminders()
 
-                print("Notification Set~!")
-                reminder.alarmDate = date as NSDate
-                reminder.alarmString = uniqueIDString
-                self.viewmodel.saveReminders()
-
-                center.getPendingNotificationRequests { (requests) in
-                    print("Current Requests:")
-                    for request in requests {
-                        print(request)
-                        
-                    }
-                }
-            }
+            self.updateNotifications()
+            print("Done with background thread")
         }
     }
 
     func removeNotifictionOfSelectedReminder() {
         print("Removing Notification")
 
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global(qos: .background).sync {
             guard let selectedIndex = self.indices.getSelected() else {
                 return
             }
 
             let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
-            if let alarmString = reminder.alarmString {
+            if let alarmString = reminder.alarmID {
                 let center = UNUserNotificationCenter.current()
                 center.removePendingNotificationRequests(withIdentifiers: [alarmString])
             }
             reminder.alarmDate = nil
-            reminder.alarmString = nil
+            reminder.alarmID = nil
             self.viewmodel.saveReminders()
             print("Removed")
+
+            self.updateNotifications()
+        }
+    }
+
+    func updateNotifications() {
+        guard let reminders = viewmodel.getAlarmReminders() else {
+            return
+        }
+
+        let center = UNUserNotificationCenter.current()
+        var badgeCount = 1
+
+        center.removeAllPendingNotificationRequests()
+
+        for reminder in reminders {
+            guard let date = reminder.alarmDate,
+                  let uniqueIDString = reminder.alarmID else {
+                continue
+            }
+
+            let content = UNMutableNotificationContent()
+            content.title = reminder.title
+            content.body = reminder.detail
+            content.sound = UNNotificationSound.default()
+            content.badge = badgeCount as NSNumber
+            badgeCount += 1
+
+            let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date as Date)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+            let request = UNNotificationRequest(identifier: uniqueIDString, content: content, trigger: trigger)
+
+            center.add(request) { (error) in
+                if let error = error {
+                    print(error)
+                }
+            }
+        }
+
+        center.getPendingNotificationRequests { (requests) in
+            print("Pending yes:", requests.count)
+            for request in requests {
+                print("Pending request")
+                print((request.trigger as? UNCalendarNotificationTrigger)?.dateComponents)
+            }
         }
     }
 }

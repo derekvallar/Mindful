@@ -21,6 +21,7 @@ extension MainReminderViewController: UICategoryCellDelegate {
         case .edit:
             let reminderCell = tableView.cellForRow(at: selectedIndex) as! UIReminderCell
             reminderCell.setUserInteraction(true)
+            reminderCell.titleViewBecomeFirstResponder()
             mode.action = .edit
             setActionRow()
 
@@ -67,6 +68,7 @@ extension MainReminderViewController: UICategoryCellDelegate {
             })
 
         case .back:
+            print("Back button pressed")
             if mode.action == .edit {
                 guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
                     return

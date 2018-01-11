@@ -2,7 +2,7 @@
 //  Reminder+CoreDataProperties.swift
 //  Mindful
 //
-//  Created by Derek Vitaliano Vallar on 1/9/18.
+//  Created by Derek Vitaliano Vallar on 1/10/18.
 //  Copyright © 2018 Derek Vallar. All rights reserved.
 //
 //
@@ -25,7 +25,7 @@ extension Reminder {
     @NSManaged public var isSubreminder: Bool
     @NSManaged public var priority: Int16
     @NSManaged public var title: String
-    @NSManaged public var alarmString: String?
+    @NSManaged public var alarmID: String?
     @NSManaged public var parent: Reminder?
     @NSManaged public var subreminders: NSSet?
 

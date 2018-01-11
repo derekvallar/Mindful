@@ -127,6 +127,10 @@ class MainReminderViewController: UITableViewController {
         tableView.endUpdates()
 
         tableView(tableView, didSelectRowAt: firstRow)
+        guard let cell = tableView.cellForRow(at: firstRow) as? UIReminderCell else {
+            return
+        }
+        cell.titleViewBecomeFirstResponder()
     }
 
     @objc func completedButtonPressed() {

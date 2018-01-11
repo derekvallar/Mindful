@@ -27,10 +27,18 @@ class ReminderViewModel {
         return reminders.count
     }
 
-//    func getReminderItem(forIndexPath indexPath: IndexPath) -> ReminderViewModelItem {
-//        let reminder = getReminder(forIndexPath: indexPath)
-//        return getItem(forReminder: reminder)
-//    }
+    func getAlarmReminders() -> [Reminder]? {
+        let fetchRequest: NSFetchRequest<Reminder> = Reminder.alarmFetchRequest()
+        var fetchedReminders: [Reminder]
+
+        do {
+            fetchedReminders = try context.fetch(fetchRequest)
+            return fetchedReminders
+        } catch {
+            print("Could not fetch:", error)
+        }
+        return nil
+    }
 
     func getHeaderReminder() -> Reminder {
         return parentReminder!
@@ -59,33 +67,6 @@ class ReminderViewModel {
 
         saveReminders()
     }
-
-//    func updateReminder(item: ReminderViewModelSaveItem, indexPath: IndexPath) {
-//        let reminder = getReminder(forIndexPath: indexPath)
-//
-//        if let completed = item.completed {
-//            reminder.completed = completed
-//            if completed {
-//                reminder.completedDate = Date() as NSDate
-//            }
-//        }
-//
-//        if let title = item.title {
-//            reminder.title = title
-//        }
-//
-//        if let detail = item.detail {
-//            reminder.detail = detail
-//        }
-//
-//        if let priority = item.priority {
-//            reminder.priority = Int16(priority.rawValue)
-//        }
-//
-//        reminder.alarmDate = item.alarm as NSDate?
-//
-//        saveReminders()
-//    }
 
     func updateParentReminder(completed: Bool) {
         guard let parentReminder = parentReminder else {
@@ -168,26 +149,6 @@ class ReminderViewModel {
     func getReminder(forIndexPath indexPath: IndexPath) -> Reminder {
         return reminders[indexPath.row]
     }
-
-//    private func getItem(forReminder reminder: Reminder) -> ReminderViewModelItem {
-//        let item = ReminderViewModelItem()
-//
-//        item.completed = reminder.completed
-//        item.title = reminder.title!
-//        if let savedDetail = reminder.detail {
-//            item.detail = savedDetail
-//        }
-//
-//        item.priority = Priority(rawValue: (reminder.priority))!
-//        item.alarm = reminder.alarmDate as Date?
-//        item.alarmString = reminder.alarmString
-//        item.isSubreminder = reminder.isSubreminder
-//        if let subreminders = reminder.subreminders, subreminders.count > 0 {
-//            item.hasSubreminders = true
-//        }
-//
-//        return item
-//    }
 
     private func updateIndices() {
         var count = reminders.count
