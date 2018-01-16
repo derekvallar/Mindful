@@ -9,6 +9,7 @@
 struct MindfulMode {
     var filter: Bool
     var reminder: ReminderMode
+    var oldReminder: ReminderMode?
     var action: ActionMode
 
     init() {

@@ -36,9 +36,9 @@ class UIReminderView: UIView {
         backgroundColor = UIColor.white
 
         reminderStackView.axis = .horizontal
-        reminderStackView.spacing = .reminderStackViewSpacingX
+        reminderStackView.spacing = .reminderStackViewLeading
         reminderStackView.alignment = .center
-        
+
         completeDeleteButton.addTarget(self, action: #selector(completeDeleteButtonPressed), for: .touchUpInside)
         completeDeleteButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
         
@@ -85,10 +85,10 @@ class UIReminderView: UIView {
         // Setup Constraints
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            reminderStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: .reminderStackViewSpacingX),
-            reminderStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: .reminderStackViewSpacingXInverse),
-            reminderStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: .reminderStackViewSpacingY),
-            reminderStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: .reminderStackViewSpacingYInverse)
+            reminderStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            reminderStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            reminderStackView.topAnchor.constraint(equalTo: self.topAnchor),
+            reminderStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
         ])
 
         NSLayoutConstraint.setupAndActivate(constraints: [

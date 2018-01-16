@@ -86,8 +86,6 @@ class MainReminderViewController: UITableViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        print("Badge:", UIApplication.shared.applicationIconBadgeNumber)
     }
 
     @objc func detailButtonPressed() {
@@ -104,6 +102,8 @@ class MainReminderViewController: UITableViewController {
                 navigationItem.title = .mainTitle
             } else if mode.reminder == .completed {
                 navigationItem.title = .completedTitle
+            } else if mode.reminder == .subreminders {
+                navigationItem.title = .subreminderTitle
             }
             
             navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)

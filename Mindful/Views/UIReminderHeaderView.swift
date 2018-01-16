@@ -30,10 +30,10 @@ class UIReminderHeaderView: UITableViewHeaderFooterView {
 
         contentView.addSubview(reminderView)
         NSLayoutConstraint.setupAndActivate(constraints: [
-            reminderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
-            reminderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
-            reminderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
-            reminderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+            reminderView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .reminderStackViewLeading),
+            reminderView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .reminderStackViewTrailing),
+            reminderView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .reminderStackViewTop),
+            reminderView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .reminderStackViewBottom)
             ])
     }
 

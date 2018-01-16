@@ -30,8 +30,6 @@ extension MainReminderViewController {
 
             if let categoryIndex = indices.getCategory(), categoryIndex == indexPath {
 
-                print("Category Cell")
-
                 let categoryCell = tableView.dequeueReusableCell(withIdentifier: .categoryCellIdentifier) as! UICategoryCell
                 categoryCell.delegate = self
                 let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
@@ -45,9 +43,6 @@ extension MainReminderViewController {
             }
 
             if let actionIndex = indices.getAction(), actionIndex == indexPath {
-
-                print("Action Cell")
-
                 switch mode.action {
                 case .edit:
                     let editCell = tableView.dequeueReusableCell(withIdentifier: .editCellIdentifier) as! UIEditCell
@@ -84,8 +79,6 @@ extension MainReminderViewController {
             reminderIndex.row -= indices.getExpandedCellCount()
         }
 
-        print("Reminder Cell")
-
         let reminderCell = tableView.dequeueReusableCell(withIdentifier: .reminderCellIdentifier, for: indexPath) as! UIReminderCell
         reminderCell.buttonDelegate = self
         reminderCell.textDelegate = self
@@ -102,11 +95,7 @@ extension MainReminderViewController {
 
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        print("Will Select:", indexPath)
-
-//        if let cell = tableView.cellForRow(at: indexPath) {
-//            print("size:", cell.bounds.height)
-//        }
+//        print("Will Select:", indexPath)
 
         if mode.filter == true {
             return nil
@@ -150,7 +139,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Did Select:", indexPath)
+//        print("Did Select:", indexPath)
 
         if indices.getSelected() == nil {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
@@ -168,7 +157,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        print("Did deselect:", indexPath)
+//        print("Did deselect:", indexPath)
 
         view.endEditing(true)
         if let selectedIndex = indices.getSelected() {
@@ -188,7 +177,6 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        print("CheckingHeader")
         if mode.reminder != .subreminders {
             return nil
         }
@@ -201,7 +189,6 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        print("CheckingFooter")
         if mode.reminder != .subreminders {
             return nil
         }

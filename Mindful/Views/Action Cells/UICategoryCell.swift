@@ -73,13 +73,13 @@ class UICategoryCell: UITableViewCell {
         // Setup Constraints
 
         // Silences UIView-Encapsulated-Layout-Height constraint error
-        let bottomConstraint = categoryStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+        let bottomConstraint = categoryStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .actionCellBottom)
         bottomConstraint.priority = UILayoutPriority(999)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            categoryStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
-            categoryStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
-            categoryStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
+            categoryStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .actionCellLeading),
+            categoryStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .actionCellTrailing),
+            categoryStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .actionCellTop),
             bottomConstraint
         ])
     }

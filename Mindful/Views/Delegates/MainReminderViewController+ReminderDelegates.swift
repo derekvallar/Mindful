@@ -24,11 +24,17 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
             if reminder.completed {
                 if let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                    print("Date completed, dropping badge number")
                     UIApplication.shared.applicationIconBadgeNumber -= 1
+                } else {
+                    print("Date not completed, not dropping badge number")
                 }
             } else {
                 if let alarm = reminder.alarmDate as Date?, alarm < Date() {
+                    print("Date completed, increasing badge number")
                     UIApplication.shared.applicationIconBadgeNumber += 1
+                } else {
+                    print("Date not completed, not increasing badge number")
                 }
             }
 

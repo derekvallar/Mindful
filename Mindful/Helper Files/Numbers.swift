@@ -12,15 +12,15 @@ extension CGFloat {
     static let reminderTextSize: CGFloat = 14.5
     static let textSecondarySize: CGFloat = 12.5
 
-    static let reminderStackViewSpacingX: CGFloat = 8.0
-    static let reminderStackViewSpacingXInverse: CGFloat = -8.0
-    static let reminderStackViewSpacingY: CGFloat = 12.0
-    static let reminderStackViewSpacingYInverse: CGFloat = -12.0
+    static let reminderStackViewLeading: CGFloat = 8.0
+    static let reminderStackViewTrailing: CGFloat = -8.0
+    static let reminderStackViewTop: CGFloat = 12.0
+    static let reminderStackViewBottom: CGFloat = -12.0
 
-    static let cellXSpacing: CGFloat = 10.0
-    static let cellXSpacingInverse: CGFloat = -10.0
-    static let cellYSpacing: CGFloat = 5.0
-    static let cellYSpacingInverse: CGFloat = -5.0
+    static let actionCellLeading: CGFloat = 10.0
+    static let actionCellTrailing: CGFloat = -10.0
+    static let actionCellTop: CGFloat = 5.0
+    static let actionCellBottom: CGFloat = -5.0
 
     static let buttonBorderWidth: CGFloat = 2.0
 

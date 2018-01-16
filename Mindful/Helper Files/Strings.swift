@@ -8,10 +8,16 @@
 
 extension String {
     static let appName = "Mindful"
+
     static let mainTitle = "Reminders"
-    static let filterTitle = "Filter Reminders"
+    static let filterTitle = "Filter"
+    static let filterSubremindersTitle = "Filter Subreminders"
     static let completedTitle = "Completed"
     static let subreminderTitle = "Subreminders"
+
+    static let editTitle = "Edit"
+    static let priorityTitle = "Priority"
+    static let alarmTitle = "Alarm"
 
     static let alarmOffButtonTitle = "OFF"
     static let alarmOnButtonTitle = "ON"

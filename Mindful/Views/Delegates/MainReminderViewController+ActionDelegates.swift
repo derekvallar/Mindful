@@ -35,17 +35,40 @@ extension MainReminderViewController: UIActionCellDelegate {
             scrollIndexToMiddleIfNeeded(indices.getAction())
 
         case .alarmOff:
-            print("Alarm Off")
-            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
             if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
                 UIApplication.shared.applicationIconBadgeNumber -= 1
             }
-            removeNotifictionOfSelectedReminder()
+
+            guard let id = reminder.alarmID else {
+                return
+            }
+            reminder.alarmDate = nil
+            reminder.alarmID = nil
+
+            DispatchQueue.global(qos: .background).async {
+                self.viewmodel.saveReminders()
+                self.removeNotification(withIdentifier: id)
+            }
 
         case .alarmOn:
-            print("Alarm On")
-            createNotificationForSelectedReminder()
-            let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
+            guard let actionIndex = indices.getAction(),
+                  let alarmCell = tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
+                return
+            }
+
+            let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
+            let uniqueIDString = UUID().uuidString
+            let date = alarmCell.getAlarmDate()
+
+            reminder.alarmDate = date as NSDate
+            reminder.alarmID = uniqueIDString
+            self.viewmodel.saveReminders()
+
+            DispatchQueue.global(qos: .background).async {
+                self.updateNotifications()
+            }
+
             if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
                 UIApplication.shared.applicationIconBadgeNumber += 1
             }
@@ -73,23 +96,33 @@ extension MainReminderViewController: UIEditCellTextDelegate {
             return
         }
         selectedCell.setDetailText(text: reminder.detail)
-        print("Set detail")
     }
 }
 
 extension MainReminderViewController: UIAlarmCellDelegate {
     func alarmDateSelected(_ cell: UIAlarmCell) {
-        guard let selectedIndex = indices.getSelected() else {
+        let date = cell.getAlarmDate()
+
+        guard let selectedIndex = self.indices.getSelected() else {
             return
         }
 
-        let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
-        if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
+        let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
+        guard let id = reminder.alarmID else {
+            return
+        }
+
+        if !reminder.completed, let oldDate = reminder.alarmDate as Date?, oldDate < Date() {
             UIApplication.shared.applicationIconBadgeNumber -= 1
         }
 
-        removeNotifictionOfSelectedReminder()
-        createNotificationForSelectedReminder()
+        reminder.alarmDate = date as NSDate
+        self.viewmodel.saveReminders()
+
+        DispatchQueue.global(qos: .background).async {
+            self.removeNotification(withIdentifier: id)
+            self.updateNotifications()
+        }
 
         if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
             UIApplication.shared.applicationIconBadgeNumber += 1

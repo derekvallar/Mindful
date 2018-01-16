@@ -19,6 +19,7 @@ extension MainReminderViewController: UICategoryCellDelegate {
 
         switch type {
         case .edit:
+            navigationItem.title = .editTitle
             let reminderCell = tableView.cellForRow(at: selectedIndex) as! UIReminderCell
             reminderCell.setUserInteraction(true)
             reminderCell.titleViewBecomeFirstResponder()
@@ -26,10 +27,12 @@ extension MainReminderViewController: UICategoryCellDelegate {
             setActionRow()
 
         case .priority:
+            navigationItem.title = .priorityTitle
             mode.action = .priority
             setActionRow()
 
         case .alarm:
+            navigationItem.title = .alarmTitle
             let notifications = UNUserNotificationCenter.current()
             notifications.requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (granted, error) in
                 if let error = error {
@@ -51,12 +54,19 @@ extension MainReminderViewController: UICategoryCellDelegate {
             })
 
         case .subreminders:
+            navigationItem.title = .subreminderTitle
             indices.setReturn()
             tableView(tableView, didDeselectRowAt: selectedIndex)
+            mode.oldReminder = mode.reminder
             mode.reminder = .subreminders
             mode.action = .none
 
-            navigationItem.setRightBarButtonItems([addButton], animated: true)
+            if mode.oldReminder == .completed {
+                navigationItem.setRightBarButtonItems([], animated: true)
+            } else {
+                navigationItem.setRightBarButtonItems([addButton], animated: true)
+            }
+
             viewmodel.initializeSubreminders(ofIndexPath: selectedIndex, completion: { (completed) in
                 if completed {
                     print("subreminder reloading")
@@ -68,20 +78,22 @@ extension MainReminderViewController: UICategoryCellDelegate {
             })
 
         case .back:
-            print("Back button pressed")
             if mode.action == .edit {
                 guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
                     return
                 }
                 selectedCell.setUserInteraction(false)
-
-            } else if mode.action == .priority {
-
-            } else if mode.action == .alarm {
-
             }
 
             mode.action = .none
+
+            if mode.reminder == .main {
+                navigationItem.title = .mainTitle
+            } else if mode.reminder == .completed {
+                navigationItem.title = .completedTitle
+            } else if mode.reminder == .subreminders {
+                navigationItem.title = .subreminderTitle
+            }
 
             tableView.beginUpdates()
             if let actionIndex = indices.getAction() {

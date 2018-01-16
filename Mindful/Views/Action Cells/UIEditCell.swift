@@ -46,10 +46,10 @@ class UIEditCell: UITableViewCell {
         editStackView.addArrangedSubview(editTextView)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            editStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
-            editStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
-            editStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
-            editStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse),
+            editStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .actionCellLeading),
+            editStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .actionCellTrailing),
+            editStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .actionCellTop),
+            editStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .actionCellBottom),
         ])
     }
 

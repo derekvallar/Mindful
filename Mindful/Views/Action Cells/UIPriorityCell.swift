@@ -87,10 +87,10 @@ class UIPriorityCell: UITableViewCell {
         buttonStackView.addArrangedSubview(highPriorityButton)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            priorityStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
-            priorityStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
-            priorityStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
-            priorityStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+            priorityStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .actionCellLeading),
+            priorityStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .actionCellTrailing),
+            priorityStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .actionCellTop),
+            priorityStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .actionCellBottom)
         ])
     }
 

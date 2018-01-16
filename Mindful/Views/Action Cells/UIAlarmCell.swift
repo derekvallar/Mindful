@@ -34,8 +34,6 @@ class UIAlarmCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        print("Initing action cell")
-
         // Setup Variables
 
         alarmStackView.axis = .vertical
@@ -81,22 +79,20 @@ class UIAlarmCell: UITableViewCell {
         onOffStackView.addArrangedSubview(onButton)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            alarmStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .cellXSpacing),
-            alarmStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .cellXSpacingInverse),
-            alarmStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .cellYSpacing),
-            alarmStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .cellYSpacingInverse)
+            alarmStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .actionCellLeading),
+            alarmStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .actionCellTrailing),
+            alarmStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .actionCellTop),
+            alarmStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .actionCellBottom)
         ])
     }
 
     func setup(alarm: Date?) {
         if let alarm = alarm {
-            print("Found alarm:", alarm)
             offButton.isSelected = false
             onButton.isSelected = true
             dateTimeButton.isHidden = false
             alarmPicker.date = alarm
         } else {
-            print("Didn't find alarm")
             offButton.isSelected = true
             onButton.isSelected = false
             dateTimeButton.isHidden = true

@@ -53,7 +53,8 @@ public class Reminder: NSManagedObject {
         let alarm = NSSortDescriptor(key: "alarmDate", ascending: true)
         let alarmPredicate = NSPredicate(format: "alarmDate != nil")
         let alarmStringPredicate = NSPredicate(format: "alarmID != nil")
-        let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [alarmPredicate, alarmStringPredicate])
+        let uncompletedPredicate = NSPredicate(format: "completed == %@", NSNumber(value: false))
+        let requestPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [alarmPredicate, alarmStringPredicate, uncompletedPredicate])
 
         request.sortDescriptors = [alarm]
         request.predicate = requestPredicate

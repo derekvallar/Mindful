@@ -10,49 +10,12 @@ import UIKit
 import UserNotifications
 
 extension MainReminderViewController {
-    func createNotificationForSelectedReminder() {
-        print("Creating Notification")
 
-        guard let selectedIndex = self.indices.getSelected(),
-            let actionIndex = self.indices.getAction(),
-            let cell = self.tableView.cellForRow(at: actionIndex) as? UIAlarmCell else {
-                return
-        }
-        let date = cell.getAlarmDate()
-
-        DispatchQueue.global(qos: .background).sync {
-            let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
-            let uniqueIDString = UUID().uuidString
-
-            reminder.alarmDate = date as NSDate
-            reminder.alarmID = uniqueIDString
-            self.viewmodel.saveReminders()
-
-            self.updateNotifications()
-            print("Done with background thread")
-        }
-    }
-
-    func removeNotifictionOfSelectedReminder() {
+    func removeNotification(withIdentifier id: String) {
         print("Removing Notification")
 
-        DispatchQueue.global(qos: .background).sync {
-            guard let selectedIndex = self.indices.getSelected() else {
-                return
-            }
-
-            let reminder = self.viewmodel.getReminder(forIndexPath: selectedIndex)
-            if let alarmString = reminder.alarmID {
-                let center = UNUserNotificationCenter.current()
-                center.removePendingNotificationRequests(withIdentifiers: [alarmString])
-            }
-            reminder.alarmDate = nil
-            reminder.alarmID = nil
-            self.viewmodel.saveReminders()
-            print("Removed")
-
-            self.updateNotifications()
-        }
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: [id])
     }
 
     func updateNotifications() {
@@ -90,10 +53,16 @@ extension MainReminderViewController {
         }
 
         center.getPendingNotificationRequests { (requests) in
-            print("Pending yes:", requests.count)
+            print("Pending requests:", requests.count)
             for request in requests {
-                print("Pending request")
                 print((request.trigger as? UNCalendarNotificationTrigger)?.dateComponents)
+            }
+        }
+
+        center.getDeliveredNotifications { (requests) in
+            print("Delivered requests:", requests.count)
+            for request in requests {
+                print(request.request.content.title)
             }
         }
     }

@@ -20,8 +20,6 @@ struct ActionIndices {
 
         selected = index
         category = categoryIndex
-
-        print("Selected:", selected, ", category:", category)
     }
 
     mutating func clearSelected() {
@@ -41,8 +39,6 @@ struct ActionIndices {
 
         action = categoryCellIndex
         self.category = newCategoryIndex
-
-        print("Selected:", selectedCellIndex, ", category:", category, ", action:", action)
     }
 
     mutating func clearAction() {

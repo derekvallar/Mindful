@@ -14,18 +14,40 @@ extension MainReminderViewController: UIReminderFooterViewDelegate {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
 
-        mode.reminder = .main
+        let oldReminder = mode.oldReminder ?? .main
+
         mode.action = .none
-        navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
 
-        viewmodel.initializeTableData(withCompleted: false, completion: { (completed) in
-            let indexSet: IndexSet = [0]
-            self.tableView.beginUpdates()
-            self.tableView.reloadSections(indexSet, with: .automatic)
-            self.tableView.endUpdates()
+        if oldReminder == .completed {
+            mode.reminder = .completed
+            navigationItem.title = .completedTitle
+            navigationItem.setRightBarButtonItems([completedButton], animated: true)
 
-            self.tableView(self.tableView, didSelectRowAt: self.indices.getReturn()!)
-            self.indices.clearReturn()
-        })
+            viewmodel.initializeTableData(withCompleted: true, completion: { (completed) in
+                let indexSet: IndexSet = [0]
+                self.tableView.beginUpdates()
+                self.tableView.reloadSections(indexSet, with: .automatic)
+                self.tableView.endUpdates()
+
+                self.tableView(self.tableView, didSelectRowAt: self.indices.getReturn()!)
+                self.indices.clearReturn()
+            })
+        } else {
+            mode.reminder = .main
+            navigationItem.title = .mainTitle
+            navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
+
+            viewmodel.initializeTableData(withCompleted: false, completion: { (completed) in
+                let indexSet: IndexSet = [0]
+                self.tableView.beginUpdates()
+                self.tableView.reloadSections(indexSet, with: .automatic)
+                self.tableView.endUpdates()
+
+                self.tableView(self.tableView, didSelectRowAt: self.indices.getReturn()!)
+                self.indices.clearReturn()
+            })
+        }
+
+        mode.oldReminder = nil
     }
 }

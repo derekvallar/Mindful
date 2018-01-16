@@ -45,10 +45,10 @@ class UIReminderCell: UITableViewCell {
         cellStackView.addArrangedSubview(reminderView)
 
         NSLayoutConstraint.setupAndActivate(constraints: [
-            cellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            cellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            cellStackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            cellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            cellStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .reminderStackViewLeading),
+            cellStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .reminderStackViewTrailing),
+            cellStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .reminderStackViewTop),
+            cellStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: .reminderStackViewBottom)
         ])
     }
 
