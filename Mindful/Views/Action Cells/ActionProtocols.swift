@@ -11,3 +11,8 @@ import Foundation
 protocol UIActionCellDelegate: class {
     func didTapActionButton(type: UIReminderButtonType)
 }
+
+protocol UIActionCellAnimation: class {
+    func animateShow()
+    func animateHide()
+}

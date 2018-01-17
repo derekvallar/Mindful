@@ -26,9 +26,12 @@ class UIPriorityCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-
         // Setup Variables
 
+        selectionStyle = .none
+        backgroundColor = UIColor.white
+        clipsToBounds = true
+        
         priorityStackView.axis = .vertical
         priorityStackView.distribution = .fill
         priorityStackView.spacing = 5.0
@@ -160,4 +163,14 @@ class UIPriorityCell: UITableViewCell {
         selectPriority(selected)
     }
 
+}
+
+extension UIEditCell: UIActionCellAnimation {
+    func animateShow() {
+
+    }
+
+    func animateHide() {
+        
+    }
 }

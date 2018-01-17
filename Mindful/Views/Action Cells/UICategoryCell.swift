@@ -34,6 +34,10 @@ class UICategoryCell: UITableViewCell {
 
         // Setup Variables
 
+        selectionStyle = .none
+        backgroundColor = UIColor.white
+        clipsToBounds = true
+
         categoryStackView.axis = .horizontal
         categoryStackView.distribution = .fillEqually
         categoryStackView.alignment = .center
@@ -80,7 +84,8 @@ class UICategoryCell: UITableViewCell {
             categoryStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: .actionCellLeading),
             categoryStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: .actionCellTrailing),
             categoryStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: .actionCellTop),
-            bottomConstraint
+            bottomConstraint,
+            categoryStackView.heightAnchor.constraint(equalToConstant: 40.0)
         ])
     }
 
@@ -97,8 +102,16 @@ class UICategoryCell: UITableViewCell {
     }
 
     func setup(isSubreminder: Bool, showCategories show: Bool) {
+        print("Setting up cat cell")
         self.isSubreminder = isSubreminder
         showCategories(show)
+
+        editTextButton.alpha = 1.0
+        changePriorityButton.alpha = 1.0
+        setAlarmButton.alpha = 1.0
+        subreminderButton.alpha = 1.0
+
+        animateShowCategories(withSubreminder: true)
     }
 
     private func showCategories(_ show: Bool) {
@@ -115,5 +128,65 @@ class UICategoryCell: UITableViewCell {
             setAlarmButton.isHidden = true
             subreminderButton.isHidden = true
         }
+    }
+
+    func animateShowCategories(withSubreminder: Bool) {
+        editTextButton.frame.origin.y -= 40.0
+        changePriorityButton.frame.origin.y -= 40.0
+        setAlarmButton.frame.origin.y -= 40.0
+        subreminderButton.frame.origin.y -= 40.0
+
+        let duration = 0.4
+
+        UIView.animate(withDuration: duration, animations: {
+            self.editTextButton.frame.origin.y += 40.0
+        }, completion: nil)
+
+        UIView.animate(withDuration: duration, delay: 0.04, options: [], animations: {
+            self.changePriorityButton.frame.origin.y += 40.0
+        }, completion: nil)
+
+        UIView.animate(withDuration: duration, delay: 0.08, options: [], animations: {
+            self.setAlarmButton.frame.origin.y += 40.0
+        }, completion: nil)
+
+        UIView.animate(withDuration: duration, delay: 0.12, options: [], animations: {
+            self.subreminderButton.frame.origin.y += 40.0
+        }, completion: nil)
+    }
+
+    func animateHideCategories(withSubreminder: Bool) {
+        let duration = 0.3
+
+//        UIView.animate(withDuration: fadeDuration) {
+//            self.editTextButton.alpha = 0.0
+//            self.changePriorityButton.alpha = 0.0
+//            self.setAlarmButton.alpha = 0.0
+//            self.subreminderButton.alpha = 0.0
+//        }
+
+        UIView.animate(withDuration: duration, animations: {
+            self.editTextButton.frame.origin.y -= 40.0
+        }, completion: { _ in
+            self.editTextButton.frame.origin.y += 40.0
+        })
+
+        UIView.animate(withDuration: duration, delay: 0.04, options: [], animations: {
+            self.changePriorityButton.frame.origin.y -= 40.0
+        }, completion: { _ in
+            self.changePriorityButton.frame.origin.y += 40.0
+        })
+
+        UIView.animate(withDuration: duration, delay: 0.08, options: [], animations: {
+            self.setAlarmButton.frame.origin.y -= 40.0
+        }, completion: { _ in
+            self.setAlarmButton.frame.origin.y += 40.0
+        })
+
+        UIView.animate(withDuration: duration, delay: 0.12, options: [], animations: {
+            self.subreminderButton.frame.origin.y -= 40.0
+        }, completion: { _ in
+            self.subreminderButton.frame.origin.y += 40.0
+        })
     }
 }

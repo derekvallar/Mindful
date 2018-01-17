@@ -37,6 +37,8 @@ class UIReminderCell: UITableViewCell {
 
         branchImage.isHidden = true
         cellStackView.alignment = .center
+        cellStackView.spacing = .reminderStackViewLeading
+
         reminderView.buttonDelegate = self
         reminderView.titleTextView.delegate = self
 

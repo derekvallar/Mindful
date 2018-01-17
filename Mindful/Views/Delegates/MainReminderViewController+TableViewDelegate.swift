@@ -95,7 +95,7 @@ extension MainReminderViewController {
 
 
     override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-//        print("Will Select:", indexPath)
+        print("Will Select:", indexPath)
 
         if mode.filter == true {
             return nil
@@ -139,7 +139,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print("Did Select:", indexPath)
+        print("Did Select:", indexPath)
 
         if indices.getSelected() == nil {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
@@ -157,17 +157,30 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-//        print("Did deselect:", indexPath)
+        print("Did deselect:", indexPath)
 
         view.endEditing(true)
         if let selectedIndex = indices.getSelected() {
             tableView.deselectRow(at: selectedIndex, animated: true)
         }
+
+
+
         var deleteRows = [IndexPath]()
         deleteRows.append(indices.getCategory()!)
+
+        guard let categoryCell = tableView.cellForRow(at: indices.getCategory()!) as? UICategoryCell else {
+            return
+        }
+        categoryCell.animateHideCategories(withSubreminder: true)
+
         if let actionIndex = indices.getAction() {
             deleteRows.append(actionIndex)
+            if let actionCell = tableView.cellForRow(at: actionIndex) as? UIActionCellAnimation {
+                actionCell.animateHide()
+            }
         }
+
         indices.clearSelected()
         mode.action = .none
 
@@ -184,7 +197,6 @@ extension MainReminderViewController {
         let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: .reminderHeaderViewIdentitfier) as! UIReminderHeaderView
         headerView.setup(reminder: viewmodel.getHeaderReminder())
         headerView.delegate = self
-
         return headerView
     }
 

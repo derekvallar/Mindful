@@ -36,6 +36,10 @@ class UIAlarmCell: UITableViewCell {
 
         // Setup Variables
 
+        selectionStyle = .none
+        backgroundColor = UIColor.white
+        clipsToBounds = true
+        
         alarmStackView.axis = .vertical
         alarmStackView.distribution = .fill
 
@@ -146,5 +150,15 @@ class UIAlarmCell: UITableViewCell {
     @objc private func dateSelected(picker: UIPickerView) {
         dateTimeButton.setTitle(getDateText(), for: .normal)
         alarmDelegate?.alarmDateSelected(self)
+    }
+}
+
+extension UIEditCell: UIActionCellAnimation {
+    func animateShow() {
+
+    }
+
+    func animateHide() {
+        
     }
 }

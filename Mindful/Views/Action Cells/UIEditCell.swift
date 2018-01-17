@@ -28,6 +28,10 @@ class UIEditCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        selectionStyle = .none
+        backgroundColor = UIColor.white
+        clipsToBounds = true
+        
         editStackView.axis = .vertical
         editStackView.distribution = .fill
 
@@ -59,6 +63,16 @@ class UIEditCell: UITableViewCell {
 
     func getDetailText() -> String {
         return editTextView.text
+    }
+}
+
+extension UIEditCell: UIActionCellAnimation {
+    func animateShow() {
+
+    }
+
+    func animateHide() {
+
     }
 }
 
