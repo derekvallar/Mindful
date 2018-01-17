@@ -82,7 +82,7 @@ class ReminderViewModel {
         let toReminder = getReminder(forIndexPath: to)
         let fromReminderIndex = fromReminder.index
 
-        print("Swapping:", fromReminder.index, ",", toReminder.index)
+//        print("Swapping:", fromReminder.title, ",", toReminder.title)
 
         fromReminder.index = toReminder.index
         toReminder.index = fromReminderIndex

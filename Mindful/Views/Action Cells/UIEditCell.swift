@@ -66,16 +66,6 @@ class UIEditCell: UITableViewCell {
     }
 }
 
-extension UIEditCell: UIActionCellAnimation {
-    func animateShow() {
-
-    }
-
-    func animateHide() {
-
-    }
-}
-
 extension UIEditCell: UITextViewDelegate {
     func textViewDidEndEditing(_ textView: UITextView) {
         textDelegate?.detailTextDidEndEditing(self)

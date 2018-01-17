@@ -35,10 +35,9 @@ extension MainReminderViewController {
             tableView.addSubview(view)
 
             UIView.animate(withDuration: 0.25, animations: {
-                view.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
                 view.alpha = 1.0
             }, completion: { finished in
-                
+
                 print("Finished:", finished)
                 if finished {
                     cell.isHidden = true
@@ -48,27 +47,23 @@ extension MainReminderViewController {
             rearrange = Rearrange(cell: cell, snapshotView: view, snapshotOffset: location.y - view.center.y, currentIndexPath: indexPath)
 
         case .changed:
-            var indexPath: IndexPath!
-
-            if let path = tableView.indexPathForRow(at: location) {
-                indexPath = path
-            } else {
-                return
-            }
-
-            guard var rearrange = rearrange,
+            guard let rearrange = rearrange,
                   let snapshotView = rearrange.snapshotView,
                   let currentIndexPath = rearrange.currentIndexPath else {
                 return
             }
-            
+
             if snapshotView.alpha == 1.0 {
                 snapshotView.alpha = 0.8
             }
             
             snapshotView.center.y = location.y - rearrange.snapshotOffset!
-            
+            guard let indexPath = tableView.indexPathForRow(at: snapshotView.center) else {
+                return
+            }
+
             if currentIndexPath != indexPath {
+                print("Current:", currentIndexPath, "Destination:", indexPath)
                 tableView.moveRow(at: currentIndexPath, to: indexPath)
                 viewmodel.swapReminders(fromIndexPath: currentIndexPath, to: indexPath)
                 rearrange.currentIndexPath = indexPath
@@ -103,8 +98,8 @@ extension MainReminderViewController {
         
         let cellImageView = UIImageView(image: image)
         cellImageView.layer.masksToBounds = false
-        cellImageView.layer.shadowOffset = CGSize(width: 0.0, height: 15.0)
-        cellImageView.layer.shadowRadius = 5.0
+        cellImageView.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        cellImageView.layer.shadowRadius = 15.0
         cellImageView.layer.shadowOpacity = 0.3
         
         return cellImageView

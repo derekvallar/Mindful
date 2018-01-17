@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct Rearrange {
+class Rearrange {
     var cell: UITableViewCell?
     var snapshotView: UIView?
     var snapshotOffset: CGFloat?
@@ -21,7 +21,7 @@ struct Rearrange {
         self.currentIndexPath = currentIndexPath
     }
 
-    mutating func clear() {
+    func clear() {
         snapshotView?.removeFromSuperview()
         cell = nil
         snapshotView = nil

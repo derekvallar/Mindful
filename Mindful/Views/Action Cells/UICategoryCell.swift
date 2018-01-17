@@ -158,13 +158,6 @@ class UICategoryCell: UITableViewCell {
     func animateHideCategories(withSubreminder: Bool) {
         let duration = 0.3
 
-//        UIView.animate(withDuration: fadeDuration) {
-//            self.editTextButton.alpha = 0.0
-//            self.changePriorityButton.alpha = 0.0
-//            self.setAlarmButton.alpha = 0.0
-//            self.subreminderButton.alpha = 0.0
-//        }
-
         UIView.animate(withDuration: duration, animations: {
             self.editTextButton.frame.origin.y -= 40.0
         }, completion: { _ in

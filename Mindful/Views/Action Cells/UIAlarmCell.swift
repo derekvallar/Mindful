@@ -153,7 +153,7 @@ class UIAlarmCell: UITableViewCell {
     }
 }
 
-extension UIEditCell: UIActionCellAnimation {
+extension UIAlarmCell: UIActionCellAnimation {
     func animateShow() {
 
     }

@@ -165,7 +165,7 @@ class UIPriorityCell: UITableViewCell {
 
 }
 
-extension UIEditCell: UIActionCellAnimation {
+extension UIPriorityCell: UIActionCellAnimation {
     func animateShow() {
 
     }
