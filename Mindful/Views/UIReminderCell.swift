@@ -69,6 +69,10 @@ class UIReminderCell: UITableViewCell {
         return reminderView.isCompleted()
     }
 
+    func setAlarmText(text: String) {
+        reminderView.setAlarmText(text: text)
+    }
+
     func setDetailText(text: String) {
         reminderView.setDetailText(text: text)
     }

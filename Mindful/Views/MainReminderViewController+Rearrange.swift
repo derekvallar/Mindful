@@ -56,7 +56,7 @@ extension MainReminderViewController {
             if snapshotView.alpha == 1.0 {
                 snapshotView.alpha = 0.8
             }
-            
+
             snapshotView.center.y = location.y - rearrange.snapshotOffset!
             guard let indexPath = tableView.indexPathForRow(at: snapshotView.center) else {
                 return

@@ -97,6 +97,26 @@ class MainReminderViewController: UITableViewController {
         if mode.filter {
             navigationItem.title = .filterTitle
             navigationItem.setRightBarButtonItems(nil, animated: true)
+
+
+            // TODO: Remove debug
+
+            let center = UNUserNotificationCenter.current()
+            center.getPendingNotificationRequests { (requests) in
+                print("Pending requests:", requests.count)
+                for request in requests {
+                    print((request.trigger as? UNCalendarNotificationTrigger)?.dateComponents)
+                }
+            }
+
+            center.getDeliveredNotifications { (requests) in
+                print("Delivered requests:", requests.count)
+                for request in requests {
+                    print((request.request.trigger as? UNCalendarNotificationTrigger)?.dateComponents)
+                }
+            }
+
+
         } else {
             if mode.reminder == .main {
                 navigationItem.title = .mainTitle

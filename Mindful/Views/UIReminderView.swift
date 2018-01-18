@@ -51,6 +51,7 @@ class UIReminderView: UIView {
         infoStackView.axis = .vertical
         infoStackView.alignment = .leading
         infoStackView.distribution = .fill
+        infoStackView.spacing = 3.0
         infoStackView.setContentHuggingPriority(UILayoutPriority.defaultLow, for: UILayoutConstraintAxis.horizontal)
         
         titleTextView.textColor = .textColor
@@ -62,7 +63,10 @@ class UIReminderView: UIView {
         titleTextView.layer.masksToBounds = false
         
         alarmLabel.isHidden = true
-        
+        alarmLabel.textColor = .textSecondaryColor
+        alarmLabel.font = UIFont.systemFont(ofSize: .textSecondarySize)
+        alarmLabel.clipsToBounds = true
+
         detailLabel.isHidden = true
         detailLabel.textColor = .textSecondaryColor
         detailLabel.font = UIFont.systemFont(ofSize: .textSecondarySize)
@@ -82,6 +86,7 @@ class UIReminderView: UIView {
         reminderStackView.addArrangedSubview(rearrangeIcon)
         
         infoStackView.addArrangedSubview(titleTextView)
+        infoStackView.addArrangedSubview(alarmLabel)
         infoStackView.addArrangedSubview(detailLabel)
 
         
@@ -116,13 +121,13 @@ class UIReminderView: UIView {
     }
 
     func setup(reminder: Reminder, filtering: Bool) {
-
-        print(reminder.title, "has subs:", reminder.hasSubreminders())
-
         completeDeleteButton.isSelected = reminder.completed
         titleTextView.text = reminder.title
-        detailLabel.text = reminder.detail
-        detailLabel.isHidden = reminder.detail == "" ? true : false
+
+        if let date = reminder.alarmDate as Date? {
+            setAlarmText(text: date.getText())
+        }
+        setDetailText(text: reminder.detail)
 
         subreminderIcon.isHidden = !reminder.hasSubreminders()
         filterMode = filtering
@@ -168,8 +173,14 @@ class UIReminderView: UIView {
         return completeDeleteButton.isSelected
     }
 
+    func setAlarmText(text: String) {
+        alarmLabel.text = text
+        alarmLabel.isHidden = text == "" ? true : false
+    }
+
     func setDetailText(text: String) {
         detailLabel.text = text
+        detailLabel.isHidden = text == "" ? true : false
     }
 
     private func synchronizeButtonImages() {

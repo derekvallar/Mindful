@@ -21,7 +21,7 @@ extension MainReminderViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("Cell for Rows:", indexPath)
+//        print("Cell for Rows:", indexPath)
 
         var reminderIndex = indexPath
 

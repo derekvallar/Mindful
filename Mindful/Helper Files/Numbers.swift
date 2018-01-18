@@ -30,4 +30,6 @@ extension CGFloat {
     static let estimatedActionRowHeight: CGFloat = 36.5
     static let estimatedSmallExpandedActionRowHeight: CGFloat = 105.0
     static let estimatedLargeExpandedActionRowHeight: CGFloat = 317.5
+
+    static let animateSubtle: CGFloat = 0.2
 }

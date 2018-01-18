@@ -102,7 +102,6 @@ class UICategoryCell: UITableViewCell {
     }
 
     func setup(isSubreminder: Bool, showCategories show: Bool) {
-        print("Setting up cat cell")
         self.isSubreminder = isSubreminder
         showCategories(show)
 

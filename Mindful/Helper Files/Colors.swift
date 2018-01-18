@@ -17,6 +17,7 @@ extension UIColor {
     static let textSecondaryColor: UIColor = #colorLiteral(red: 0.7647058824, green: 0.7647058824, blue: 0.7647058824, alpha: 1)
     static let textWrittenSecondaryColor: UIColor = #colorLiteral(red: 0.6094480939, green: 0.6154822334, blue: 0.6154822334, alpha: 1)
     static let textCompletedColor: UIColor = #colorLiteral(red: 1, green: 0.8235294118, blue: 0.3921568627, alpha: 1)
+    static let textOverdueAlarmColor: UIColor = #colorLiteral(red: 1, green: 0.3137254902, blue: 0.3137254902, alpha: 1)
 
     static let lowPriorityColor: UIColor = #colorLiteral(red: 0.9019607843, green: 0.9019607843, blue: 0.9019607843, alpha: 1)
     static let mediumPriorityColor: UIColor = #colorLiteral(red: 1, green: 0.7450980392, blue: 0.3921568627, alpha: 1)

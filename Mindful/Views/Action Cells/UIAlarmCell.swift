@@ -9,7 +9,7 @@
 import UIKit
 
 protocol UIAlarmCellDelegate: class {
-    func alarmDateSelected(_ cell: UIAlarmCell)
+    func alarmDateSelected()
 }
 
 class UIAlarmCell: UITableViewCell {
@@ -103,7 +103,7 @@ class UIAlarmCell: UITableViewCell {
             alarmPicker.date = Date()
         }
 
-        dateTimeButton.setTitle(getDateText(), for: .normal)
+        dateTimeButton.setTitle(alarmPicker.date.getText(), for: .normal)
         alarmPicker.isHidden = true
     }
 
@@ -113,14 +113,6 @@ class UIAlarmCell: UITableViewCell {
 
     func getAlarmDate() -> Date {
         return alarmPicker.date
-    }
-
-    private func getDateText() -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-
-        return formatter.string(from: alarmPicker.date)
     }
 
     @objc private func alarmDateTimeButtonTapped(button: UICellButton) {
@@ -148,8 +140,8 @@ class UIAlarmCell: UITableViewCell {
     }
 
     @objc private func dateSelected(picker: UIPickerView) {
-        dateTimeButton.setTitle(getDateText(), for: .normal)
-        alarmDelegate?.alarmDateSelected(self)
+        dateTimeButton.setTitle(alarmPicker.date.getText(), for: .normal)
+        alarmDelegate?.alarmDateSelected()
     }
 }
 
