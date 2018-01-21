@@ -38,7 +38,7 @@ class UIReminderHeaderView: UITableViewHeaderFooterView {
     }
 
     func setup(reminder: Reminder) {
-        reminderView.setup(reminder: reminder, filtering: false)
+        reminderView.setup(reminder: reminder, filter: false)
     }
 
     func isCompleted() -> Bool {

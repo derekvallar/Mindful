@@ -32,7 +32,7 @@ extension MainReminderViewController {
             self.viewmodel.saveReminders()
 
             DispatchQueue.main.sync {
-                UIView.animate(withDuration: 0.2, animations: {
+                UIView.animate(withDuration: .animateSubtle, animations: {
                     selectedCell.setAlarmText(text: date.getText())
                 })
                 self.tableView.beginUpdates()
@@ -68,7 +68,9 @@ extension MainReminderViewController {
                     UIApplication.shared.applicationIconBadgeNumber -= 1
                 }
 
-                selectedCell.setAlarmText(text: "")
+                UIView.animate(withDuration: .animateSubtle, animations: {
+                    selectedCell.setAlarmText(text: "")
+                })
                 self.tableView.beginUpdates()
                 self.tableView.endUpdates()
             }
@@ -112,8 +114,11 @@ extension MainReminderViewController {
                     if setDate < currentDate {
                         UIApplication.shared.applicationIconBadgeNumber += 1
                     }
-                    
-                    selectedCell.setAlarmText(text: "")
+
+                    UIView.animate(withDuration: .animateSubtle, animations: {
+                        selectedCell.setAlarmText(text: setDate.getText())
+                    })
+
                     self.tableView.beginUpdates()
                     self.tableView.endUpdates()
                 }

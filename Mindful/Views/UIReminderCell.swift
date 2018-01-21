@@ -89,8 +89,12 @@ class UIReminderCell: UITableViewCell {
         reminderView.changeFilterMode(filtering)
     }
 
+    func editMode(_ isEditing: Bool) {
+        reminderView.editMode(isEditing)
+    }
+
     func setup(reminder: Reminder, filtering: Bool, lastSubreminder: Bool) {
-        reminderView.setup(reminder: reminder, filtering: filtering)
+        reminderView.setup(reminder: reminder, filter: filtering)
 
         if reminder.isSubreminder {
             branchImage.isHidden = false

@@ -24,17 +24,19 @@ class UIReminderView: UIView {
     private var infoStackView = UIStackView()
     private var alarmLabel = UILabel()
     private var detailLabel = UILabel()
+    private var titleUnderline = UIView()
 
     private var filterMode = false
+    private var editMode = false
 
     var titleTextView = UITextView()
 
     init() {
         super.init(frame: CGRect.zero)
+
         // Setup Views
 
         backgroundColor = UIColor.white
-
         
         reminderStackView.axis = .horizontal
         reminderStackView.spacing = .reminderStackViewLeading
@@ -61,16 +63,23 @@ class UIReminderView: UIView {
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
         titleTextView.layer.masksToBounds = false
-        
+
+        let underlineFrame = CGRect(x: titleTextView.frame.minX, y: titleTextView.frame.minY, width: titleTextView.frame.width, height: 2.0)
+
+        titleUnderline.isHidden = true
+        titleUnderline.frame = underlineFrame
+        titleUnderline.backgroundColor = UIColor.textSecondaryColor
+        titleUnderline.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+        titleTextView.addSubview(titleUnderline)
+
         alarmLabel.isHidden = true
         alarmLabel.textColor = .textSecondaryColor
         alarmLabel.font = UIFont.systemFont(ofSize: .textSecondarySize)
-        alarmLabel.clipsToBounds = true
 
         detailLabel.isHidden = true
         detailLabel.textColor = .textSecondaryColor
         detailLabel.font = UIFont.systemFont(ofSize: .textSecondarySize)
-        
+
         rearrangeIcon.image = #imageLiteral(resourceName: "RearrangeIcon")
         rearrangeIcon.isHidden = true
         
@@ -120,7 +129,7 @@ class UIReminderView: UIView {
         buttonDelegate?.didTapButton(type: completeDeleteButton.type)
     }
 
-    func setup(reminder: Reminder, filtering: Bool) {
+    func setup(reminder: Reminder, filter: Bool) {
         completeDeleteButton.isSelected = reminder.completed
         titleTextView.text = reminder.title
 
@@ -130,8 +139,11 @@ class UIReminderView: UIView {
         setDetailText(text: reminder.detail)
 
         subreminderIcon.isHidden = !reminder.hasSubreminders()
-        filterMode = filtering
+
+        filterMode = filter
         rearrangeIcon.isHidden = filterMode ? false : true
+        editMode(false)
+
         synchronizeButtonImages()
     }
 
@@ -141,24 +153,24 @@ class UIReminderView: UIView {
             completeDeleteButton.isSelected = false
 
             if rearrangeIcon.isHidden {
-                UIView.animate(withDuration: 0.15, animations: {
+                UIView.animate(withDuration: .animateSubtle, animations: {
                     self.rearrangeIcon.isHidden = false
                 })
             }
         } else {
             if !rearrangeIcon.isHidden {
-                UIView.animate(withDuration: 0.15, animations: {
+                UIView.animate(withDuration: .animateSubtle, animations: {
                     self.rearrangeIcon.isHidden = true
                 })
             }
         }
 
-        UIView.animate(withDuration: 0.075, animations: {
+        UIView.animate(withDuration: .animateSubtle / 2, animations: {
             self.completeDeleteButton.alpha = 0.0
             self.rearrangeIcon.alpha = 0.0
         }) { (_) in
             self.synchronizeButtonImages()
-            UIView.animate(withDuration: 0.075, animations: {
+            UIView.animate(withDuration: .animateSubtle / 2, animations: {
                 self.completeDeleteButton.alpha = 1.0
                 self.rearrangeIcon.alpha = 1.0
             })
@@ -180,7 +192,22 @@ class UIReminderView: UIView {
 
     func setDetailText(text: String) {
         detailLabel.text = text
-        detailLabel.isHidden = text == "" ? true : false
+
+        if !editMode {
+            detailLabel.isHidden = text == "" ? true : false
+        }
+    }
+
+    func editMode(_ isEditing: Bool) {
+        editMode = isEditing
+        if titleUnderline.isHidden == !editMode {
+            return
+        }
+        UIView.animate(withDuration: .animateSubtle, animations: {
+            self.titleUnderline.isHidden = self.editMode ? false : true
+            self.alarmLabel.isHidden = self.editMode ? true : false
+            self.detailLabel.isHidden = self.editMode ? true : false
+        })
     }
 
     private func synchronizeButtonImages() {

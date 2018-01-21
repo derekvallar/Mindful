@@ -53,7 +53,7 @@ class MainReminderViewController: UITableViewController {
         navigationController?.navigationBar.titleTextAttributes = textAtr
 
         navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.barTintColor = .backgroundColor
+        navigationController?.navigationBar.barTintColor = .backgroundBlue
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
 
@@ -151,6 +151,7 @@ class MainReminderViewController: UITableViewController {
             return
         }
         cell.titleViewBecomeFirstResponder()
+        cell.editMode(true)
     }
 
     @objc func completedButtonPressed() {

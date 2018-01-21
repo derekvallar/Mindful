@@ -43,19 +43,19 @@ class UICategoryCell: UITableViewCell {
         categoryStackView.alignment = .center
 
         editTextButton.type = .category(type: .edit)
-        editTextButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
+        editTextButton.setImage(#imageLiteral(resourceName: "EditIcon"), for: .normal)
         editTextButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
         changePriorityButton.type = .category(type: .priority)
-        changePriorityButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
+        changePriorityButton.setImage(#imageLiteral(resourceName: "PriorityIcon"), for: .normal)
         changePriorityButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
         setAlarmButton.type = .category(type: .alarm)
-        setAlarmButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
+        setAlarmButton.setImage(#imageLiteral(resourceName: "AlarmIcon"), for: .normal)
         setAlarmButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
         subreminderButton.type = .category(type: .subreminders)
-        subreminderButton.setImage(#imageLiteral(resourceName: "TestIcon"), for: .normal)
+        subreminderButton.setImage(#imageLiteral(resourceName: "AddSubreminderIcon"), for: .normal)
         subreminderButton.addTarget(self, action: #selector(actionPressed), for: .touchUpInside)
 
         returnButton.type = .category(type: .back)
@@ -135,47 +135,43 @@ class UICategoryCell: UITableViewCell {
         setAlarmButton.frame.origin.y -= 40.0
         subreminderButton.frame.origin.y -= 40.0
 
-        let duration = 0.4
-
-        UIView.animate(withDuration: duration, animations: {
+        UIView.animate(withDuration: .animateNormal, animations: {
             self.editTextButton.frame.origin.y += 40.0
         }, completion: nil)
 
-        UIView.animate(withDuration: duration, delay: 0.04, options: [], animations: {
+        UIView.animate(withDuration: .animateNormal, delay: 0.04, options: [], animations: {
             self.changePriorityButton.frame.origin.y += 40.0
         }, completion: nil)
 
-        UIView.animate(withDuration: duration, delay: 0.08, options: [], animations: {
+        UIView.animate(withDuration: .animateNormal, delay: 0.08, options: [], animations: {
             self.setAlarmButton.frame.origin.y += 40.0
         }, completion: nil)
 
-        UIView.animate(withDuration: duration, delay: 0.12, options: [], animations: {
+        UIView.animate(withDuration: .animateNormal, delay: 0.12, options: [], animations: {
             self.subreminderButton.frame.origin.y += 40.0
         }, completion: nil)
     }
 
     func animateHideCategories(withSubreminder: Bool) {
-        let duration = 0.3
-
-        UIView.animate(withDuration: duration, animations: {
+        UIView.animate(withDuration: .animateSubtle, animations: {
             self.editTextButton.frame.origin.y -= 40.0
         }, completion: { _ in
             self.editTextButton.frame.origin.y += 40.0
         })
 
-        UIView.animate(withDuration: duration, delay: 0.04, options: [], animations: {
+        UIView.animate(withDuration: .animateSubtle, delay: 0.04, options: [], animations: {
             self.changePriorityButton.frame.origin.y -= 40.0
         }, completion: { _ in
             self.changePriorityButton.frame.origin.y += 40.0
         })
 
-        UIView.animate(withDuration: duration, delay: 0.08, options: [], animations: {
+        UIView.animate(withDuration: .animateSubtle, delay: 0.08, options: [], animations: {
             self.setAlarmButton.frame.origin.y -= 40.0
         }, completion: { _ in
             self.setAlarmButton.frame.origin.y += 40.0
         })
 
-        UIView.animate(withDuration: duration, delay: 0.12, options: [], animations: {
+        UIView.animate(withDuration: .animateSubtle, delay: 0.12, options: [], animations: {
             self.subreminderButton.frame.origin.y -= 40.0
         }, completion: { _ in
             self.subreminderButton.frame.origin.y += 40.0

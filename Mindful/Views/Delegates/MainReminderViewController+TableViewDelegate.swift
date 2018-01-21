@@ -114,6 +114,7 @@ extension MainReminderViewController {
 
         if indexPath == selectedIndex {
             if mode.action == .edit {
+                print("here")
                 guard let cell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
                     return nil
                 }
@@ -158,36 +159,8 @@ extension MainReminderViewController {
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         print("Did deselect:", indexPath)
-
-        view.endEditing(true)
-        if let selectedIndex = indices.getSelected() {
-            tableView.deselectRow(at: selectedIndex, animated: true)
-        }
-
-
-
-        var deleteRows = [IndexPath]()
-        deleteRows.append(indices.getCategory()!)
-
-        guard let categoryCell = tableView.cellForRow(at: indices.getCategory()!) as? UICategoryCell else {
-            return
-        }
-        categoryCell.animateHideCategories(withSubreminder: true)
-
-        if let actionIndex = indices.getAction() {
-            deleteRows.append(actionIndex)
-            if let actionCell = tableView.cellForRow(at: actionIndex) as? UIActionCellAnimation {
-                actionCell.animateHide()
-            }
-        }
-
-        indices.clearSelected()
-        mode.action = .none
-
-        tableView.beginUpdates()
-        tableView.deleteRows(at: deleteRows, with: .automatic)
-        tableView.endUpdates()
-    }
+        closeReminder()
+   }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if mode.reminder != .subreminders {

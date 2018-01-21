@@ -23,6 +23,7 @@ extension MainReminderViewController: UICategoryCellDelegate {
             let reminderCell = tableView.cellForRow(at: selectedIndex) as! UIReminderCell
             reminderCell.setUserInteraction(true)
             reminderCell.titleViewBecomeFirstResponder()
+            reminderCell.editMode(true)
             mode.action = .edit
             setActionRow()
 
@@ -78,29 +79,7 @@ extension MainReminderViewController: UICategoryCellDelegate {
             })
 
         case .back:
-            if mode.action == .edit {
-                guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
-                    return
-                }
-                selectedCell.setUserInteraction(false)
-            }
-
-            mode.action = .none
-
-            if mode.reminder == .main {
-                navigationItem.title = .mainTitle
-            } else if mode.reminder == .completed {
-                navigationItem.title = .completedTitle
-            } else if mode.reminder == .subreminders {
-                navigationItem.title = .subreminderTitle
-            }
-
-            tableView.beginUpdates()
-            if let actionIndex = indices.getAction() {
-                tableView.deleteRows(at: [actionIndex], with: .automatic)
-                indices.clearAction()
-            }
-            tableView.endUpdates()
+            closeReminderAction()
 
         default:
             break

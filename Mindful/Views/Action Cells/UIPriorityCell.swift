@@ -165,12 +165,3 @@ class UIPriorityCell: UITableViewCell {
 
 }
 
-extension UIPriorityCell: UIActionCellAnimation {
-    func animateShow() {
-
-    }
-
-    func animateHide() {
-        
-    }
-}

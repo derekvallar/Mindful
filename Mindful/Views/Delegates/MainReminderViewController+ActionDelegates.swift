@@ -32,9 +32,12 @@ extension MainReminderViewController: UIActionCellDelegate {
             viewmodel.saveReminders()
 
         case .alarmButton:
+            guard let alarmIndex = indices.getAction(),
+                  let alarmCell = tableView.cellForRow(at: alarmIndex) as? UIAlarmCell else {
+                return
+            }
+            alarmCell.animatePicker(tableView: tableView)
             scrollIndexToMiddleIfNeeded(indices.getAction())
-            tableView.beginUpdates()
-            tableView.endUpdates()
 
         case .alarmOff:
             removeAlarmFromSelectedCell()

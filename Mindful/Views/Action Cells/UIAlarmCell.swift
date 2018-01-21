@@ -50,28 +50,33 @@ class UIAlarmCell: UITableViewCell {
         alarmLabel.text = "Alarm:"
         alarmLabel.textColor = .textColor
         alarmLabel.font = UIFont.systemFont(ofSize: .reminderTextSize)
-        alarmLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        alarmLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
 
         offButton.type = .action(type: .alarmOff)
         offButton.setTitle(String.alarmOffButtonTitle, for: .normal)
         offButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
-        offButton.setTitleColor(UIColor.backgroundColor, for: .selected)
+        offButton.setTitleColor(UIColor.backgroundBlue, for: .selected)
         offButton.addTarget(self, action: #selector(onOffButtonTapped(button:)), for: .touchUpInside)
 
         onButton.type = .action(type: .alarmOn)
         onButton.setTitle(String.alarmOnButtonTitle, for: .normal)
-        onButton .setTitleColor(UIColor.textSecondaryColor, for: .normal)
-        onButton.setTitleColor(UIColor.backgroundColor, for: .selected)
+        onButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
+        onButton.setTitleColor(UIColor.backgroundBlue, for: .selected)
         onButton.addTarget(self, action: #selector(onOffButtonTapped(button:)), for: .touchUpInside)
 
         dateTimeButton.type = .action(type: .alarmButton)
         dateTimeButton.setTitleColor(UIColor.textSecondaryColor, for: .normal)
 //        alarmDateTimeButton.font = UIFont.systemFont(ofSize: .textSize)
         dateTimeButton.contentHorizontalAlignment = .left
+        dateTimeButton.contentVerticalAlignment = .top
+        dateTimeButton.setContentHuggingPriority(.defaultHigh, for: .vertical)
+
         dateTimeButton.addTarget(self, action: #selector(alarmDateTimeButtonTapped(button:)), for: .touchUpInside)
 
         alarmPicker.datePickerMode = .dateAndTime
         alarmPicker.addTarget(self, action: #selector(dateSelected(picker:)), for: .valueChanged)
+        alarmPicker.setContentHuggingPriority(.defaultLow, for: .vertical)
+
 
         contentView.addSubview(alarmStackView)
         alarmStackView.addArrangedSubview(onOffStackView)
@@ -115,9 +120,39 @@ class UIAlarmCell: UITableViewCell {
         return alarmPicker.date
     }
 
+    func animatePicker(tableView: UITableView) {
+        if alarmPicker.isHidden {
+            print("Showing picker")
+
+            UIView.animate(withDuration: .animateNormal) {
+                self.alarmPicker.isHidden = false
+            }
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        } else {
+            print("Hiding picker")
+
+//            alarmPicker.isHidden = true
+//            tableView.beginUpdates()
+//            tableView.endUpdates()
+//            alarmPicker.isHidden = false
+
+            UIView.animate(withDuration: .animateSubtle, animations: {
+//                self.alarmPicker.frame.origin.y -= self.alarmPicker.frame.height
+//                self.alarmPicker.alpha = 0.0
+                self.alarmPicker.isHidden = true
+
+            }, completion: { (_) in
+//                self.alarmPicker.alpha = 1.0
+//                self.alarmPicker.frame.origin.y += self.alarmPicker.frame.height
+//                self.alarmPicker.isHidden = true
+            })
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
+    }
+
     @objc private func alarmDateTimeButtonTapped(button: UICellButton) {
-        print("Tapped")
-        alarmPicker.isHidden = !alarmPicker.isHidden
         delegate?.didTapActionButton(type: button.type)
     }
 
@@ -145,12 +180,3 @@ class UIAlarmCell: UITableViewCell {
     }
 }
 
-extension UIAlarmCell: UIActionCellAnimation {
-    func animateShow() {
-
-    }
-
-    func animateHide() {
-        
-    }
-}
