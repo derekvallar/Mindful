@@ -9,8 +9,8 @@
 import UIKit
 
 extension UIColor {
-    static let backgroundBlue: UIColor = #colorLiteral(red: 0.5294117647, green: 0.862745098, blue: 0.999525249, alpha: 1)
-    static let completedGreen: UIColor = #colorLiteral(red: 0.4418799877, green: 0.9847810864, blue: 0.6884994507, alpha: 1)
+    static let backgroundBlue: UIColor = #colorLiteral(red: 0, green: 0.8431372549, blue: 1, alpha: 1)
+    static let completedGreen: UIColor = #colorLiteral(red: 0, green: 0.9522126317, blue: 0.6535474062, alpha: 1)
 
     static let textColor: UIColor = #colorLiteral(red: 0.2156862745, green: 0.2156862745, blue: 0.2078431373, alpha: 1)
     static let textSecondaryColor: UIColor = #colorLiteral(red: 0.5490196078, green: 0.7058823529, blue: 0.7843137255, alpha: 1)

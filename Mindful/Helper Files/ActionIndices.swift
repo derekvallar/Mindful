@@ -14,12 +14,14 @@ struct ActionIndices {
     private var action: IndexPath?
     private var back: IndexPath?
 
-    mutating func setSelected(to index: IndexPath) {
-        var categoryIndex = index
-        categoryIndex.row += 1
-
+    mutating func setSelected(to index: IndexPath, withCategory: Bool) {
         selected = index
-        category = categoryIndex
+
+        if withCategory {
+            var categoryIndex = index
+            categoryIndex.row += 1
+            category = categoryIndex
+        }
     }
 
     mutating func clearSelected() {
@@ -29,7 +31,7 @@ struct ActionIndices {
     }
 
     mutating func setAction() {
-        guard let selectedCellIndex = selected,
+        guard let _ = selected,
               let categoryCellIndex = category else {
             return
         }

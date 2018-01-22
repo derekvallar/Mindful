@@ -16,6 +16,7 @@ extension MainReminderViewController: UIReminderFooterViewDelegate {
 
         let oldReminder = mode.oldReminder ?? .main
 
+        mode.filter = false
         mode.action = .none
 
         if oldReminder == .completed {

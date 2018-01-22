@@ -13,6 +13,7 @@ protocol UIReminderCellDelegate: class {
 }
 
 protocol UIReminderCellTextDelegate: class {
+    func titleTextDidChange(_ textView: UITextView)
     func titleTextDidEndEditing(_ cell: UIReminderCell)
 }
 
@@ -35,12 +36,16 @@ class UIReminderCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = UIColor.white
 
-        branchImage.isHidden = true
         cellStackView.alignment = .center
         cellStackView.spacing = .reminderStackViewLeading
 
+        branchImage.isHidden = true
+        reminderView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+
         reminderView.buttonDelegate = self
         reminderView.titleTextView.delegate = self
+        reminderView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        reminderView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
 
         contentView.addSubview(cellStackView)
         cellStackView.addArrangedSubview(branchImage)
@@ -67,6 +72,10 @@ class UIReminderCell: UITableViewCell {
 
     func isCompleted() -> Bool {
         return reminderView.isCompleted()
+    }
+
+    func setTitleText(text: String) {
+        reminderView.titleTextView.text = text
     }
 
     func setAlarmText(text: String) {
@@ -112,6 +121,10 @@ extension UIReminderCell: UIReminderViewDelegate {
 }
 
 extension UIReminderCell: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        textDelegate?.titleTextDidChange(textView)
+    }
+
     func textViewDidEndEditing(_ textView: UITextView) {
         textDelegate?.titleTextDidEndEditing(self)
     }

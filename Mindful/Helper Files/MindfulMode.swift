@@ -7,15 +7,17 @@
 //
 
 struct MindfulMode {
-    var filter: Bool
     var reminder: ReminderMode
     var oldReminder: ReminderMode?
     var action: ActionMode
+    var filter: Bool
+    var creatingReminder: Bool
 
     init() {
-        filter = false
         reminder = .main
         action = .none
+        filter = false
+        creatingReminder = false
     }
 
     enum ReminderMode {

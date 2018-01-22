@@ -50,19 +50,29 @@ extension MainReminderViewController: UIActionCellDelegate {
 }
 
 extension MainReminderViewController: UIEditCellTextDelegate {
+    func detailTextDidChange() {
+        let currentOffset = tableView.contentOffset
+        UIView.setAnimationsEnabled(false)
+        tableView.beginUpdates()
+        tableView.endUpdates()
+        UIView.setAnimationsEnabled(true)
+        tableView.setContentOffset(currentOffset, animated: false)
+    }
+
     func detailTextDidEndEditing(_ cell: UIEditCell) {
         guard let selectedIndex = indices.getSelected() else {
             return
         }
 
+        let editedTitle = cell.getDetailText().replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
         let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
-        reminder.detail = cell.getDetailText()
+        reminder.detail = editedTitle
         viewmodel.saveReminders()
 
         guard let selectedCell = tableView.cellForRow(at: selectedIndex) as? UIReminderCell else {
             return
         }
-        selectedCell.setDetailText(text: reminder.detail)
+        selectedCell.setDetailText(text: editedTitle)
     }
 }
 

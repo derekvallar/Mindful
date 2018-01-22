@@ -16,7 +16,6 @@ class MainReminderViewController: UITableViewController {
     var mode = MindfulMode()
     var indices = ActionIndices()
     var rearrange: Rearrange?
-    let userNotificationCenter = UNUserNotificationCenter.current()
 
     var addButton: UIBarButtonItem!, completedButton: UIBarButtonItem!, detailButton: UIBarButtonItem!
 
@@ -37,9 +36,9 @@ class MainReminderViewController: UITableViewController {
         navigationItem.title = .mainTitle
 
         addButton = UIBarButtonItem(image: #imageLiteral(resourceName: "AddIcon"), style: .done, target: self, action: #selector(addButtonPressed))
-        completedButton = UIBarButtonItem(image: #imageLiteral(resourceName: "CompletedIcon"), style: .done, target: self, action: #selector(completedButtonPressed))
-        
         addButton.tintColor = UIColor.white
+
+        completedButton = UIBarButtonItem(image: #imageLiteral(resourceName: "CompletedIcon"), style: .done, target: self, action: #selector(completedButtonPressed))
         completedButton.tintColor = UIColor.white
 
         navigationItem.rightBarButtonItems = [addButton, completedButton]
@@ -56,7 +55,6 @@ class MainReminderViewController: UITableViewController {
         navigationController?.navigationBar.barTintColor = .backgroundBlue
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationController?.navigationBar.shadowImage = UIImage()
-
 
         // Setup the table view
 
@@ -98,7 +96,6 @@ class MainReminderViewController: UITableViewController {
             navigationItem.title = .filterTitle
             navigationItem.setRightBarButtonItems(nil, animated: true)
 
-
             // TODO: Remove debug
 
             let center = UNUserNotificationCenter.current()
@@ -120,13 +117,14 @@ class MainReminderViewController: UITableViewController {
         } else {
             if mode.reminder == .main {
                 navigationItem.title = .mainTitle
+                navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
             } else if mode.reminder == .completed {
                 navigationItem.title = .completedTitle
+                navigationItem.setRightBarButtonItems([completedButton], animated: true)
             } else if mode.reminder == .subreminders {
                 navigationItem.title = .subreminderTitle
+                navigationItem.setRightBarButtonItems([addButton], animated: true)
             }
-            
-            navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
         }
         
         for cell in tableView.visibleCells {
@@ -139,6 +137,9 @@ class MainReminderViewController: UITableViewController {
         if let selectedIndex = indices.getSelected() {
             tableView(tableView, didDeselectRowAt: selectedIndex)
         }
+
+        print("here")
+        mode.creatingReminder = true
         viewmodel.addReminder()
 
         let firstRow = IndexPath.init(row: 0, section: 0)
@@ -146,12 +147,19 @@ class MainReminderViewController: UITableViewController {
         tableView.insertRows(at: [firstRow], with: .top)
         tableView.endUpdates()
 
+        print("huh")
         tableView(tableView, didSelectRowAt: firstRow)
         guard let cell = tableView.cellForRow(at: firstRow) as? UIReminderCell else {
             return
         }
+
         cell.titleViewBecomeFirstResponder()
-        cell.editMode(true)
+
+        if mode.reminder == .main {
+            navigationItem.setRightBarButtonItems([completedButton], animated: true)
+        } else if mode.reminder == .subreminders {
+            navigationItem.setRightBarButtonItems([completedButton], animated: true)
+        }
     }
 
     @objc func completedButtonPressed() {
@@ -166,10 +174,13 @@ print("Complete Pressed")
             completed = true
             navigationItem.setRightBarButtonItems([completedButton], animated: true)
             navigationItem.title = .completedTitle
+            navigationController?.navigationBar.barTintColor = .completedGreen
             mode.reminder = .completed
+
         } else if mode.reminder == .completed {
             navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
             navigationItem.title = .mainTitle
+            navigationController?.navigationBar.barTintColor = .backgroundBlue
             mode.reminder = .main
         }
         
@@ -191,17 +202,19 @@ print("Complete Pressed")
 
     // TODO: Currently scrolltoRow doesn't work w/o a delay. Find a fix in future iOS updates.
     func scrollIndexToMiddleIfNeeded(_ index: IndexPath?) {
+        print("Trying to scroll")
+
         guard let index = index,
               let category = indices.getCategory() else {
             return
         }
 
-        let rowRect = tableView.rectForRow(at: category)
-        if !tableView.bounds.contains(rowRect) {
-            let deadlineTime = DispatchTime.now() + .milliseconds(1)
-            DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
-                self.tableView.scrollToRow(at: index, at: .middle, animated: true)
-            }
+        let rect = tableView.rectForRow(at: index)
+
+        print("Scrolling to middle")
+        let deadlineTime = DispatchTime.now() + .milliseconds(1)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            self.tableView.scrollRectToVisible(rect, animated: true)
         }
     }
 }

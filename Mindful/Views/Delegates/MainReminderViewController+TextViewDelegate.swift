@@ -8,9 +8,23 @@
 
 import UIKit
 
-extension MainReminderViewController: UITextViewDelegate {
+extension MainReminderViewController: UIReminderCellTextDelegate {
+    func titleTextDidChange(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            if mode.reminder == .main {
+                navigationItem.setRightBarButtonItems([completedButton], animated: true)
+            } else if mode.reminder == .subreminders  {
+                navigationItem.setRightBarButtonItems([], animated: true)
+            }
+        } else {
+            if mode.reminder == .main {
+                navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
+            } else if mode.reminder == .subreminders  {
+                navigationItem.setRightBarButtonItems([addButton], animated: true)
+            }
+        }
 
-    func textViewDidChange(_ textView: UITextView) {
+        print("textviewdidchaange")
         let currentOffset = tableView.contentOffset
         UIView.setAnimationsEnabled(false)
         tableView.beginUpdates()
@@ -19,38 +33,35 @@ extension MainReminderViewController: UITextViewDelegate {
         tableView.setContentOffset(currentOffset, animated: false)
     }
 
-    func textViewDidEndEditing(_ textView: UITextView) {
-        print("TextViewDidEndEditing")
-
-        let textViewPoint = textView.convert(textView.center, to: tableView)
-        guard let indexPath = tableView.indexPathForRow(at: textViewPoint) else {
-                return
-        }
-
-        if let cell = tableView.cellForRow(at: indexPath) as? UIReminderCell {
-            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
-            reminder.title = cell.getTitleText()
-            viewmodel.saveReminders()
-            return
-        }
-
-        if let cell = tableView.cellForRow(at: indexPath) as? UIEditCell {
-            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
-            reminder.detail = cell.getDetailText()
-            viewmodel.saveReminders()
-            return
-        }
-    }
-}
-
-extension MainReminderViewController: UIReminderCellTextDelegate {
     func titleTextDidEndEditing(_ cell: UIReminderCell) {
+        print("didendediting")
         guard let selectedIndex = indices.getSelected() else {
             return
         }
 
+        let editedTitle = cell.getTitleText().replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
+
+        if mode.creatingReminder && editedTitle.isEmpty {
+            viewmodel.deleteReminder(atIndexPath: selectedIndex)
+            tableView.beginUpdates()
+            tableView.deleteRows(at: [selectedIndex], with: .fade)
+            tableView.endUpdates()
+
+            if mode.reminder == .main {
+                navigationItem.setRightBarButtonItems([addButton, completedButton], animated: true)
+            } else if mode.reminder == .subreminders  {
+                navigationItem.setRightBarButtonItems([addButton], animated: true)
+            }
+            return
+        }
+
         let reminder = viewmodel.getReminder(forIndexPath: selectedIndex)
-        reminder.title = cell.getTitleText()
-        viewmodel.saveReminders()
+        if editedTitle.isEmpty {
+            cell.setTitleText(text: reminder.title)
+        } else {
+            reminder.title = editedTitle
+            cell.setTitleText(text: editedTitle)
+            viewmodel.saveReminders()
+        }
     }
 }

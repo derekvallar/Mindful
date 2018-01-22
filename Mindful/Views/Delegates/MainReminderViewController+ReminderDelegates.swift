@@ -18,7 +18,16 @@ extension MainReminderViewController: UIReminderCellDelegate {
 
         switch type {
         case .complete:
-            let reminder = viewmodel.getReminder(forIndexPath: indexPath)
+            var actualIndex = indexPath
+            print("ActualIndexBefore:", actualIndex)
+
+            if let selectedIndex = indices.getSelected(), actualIndex > selectedIndex {
+                actualIndex.row -= indices.getExpandedCellCount()
+            }
+
+            print("ActualIndexAfter:", actualIndex)
+
+            let reminder = viewmodel.getReminder(forIndexPath: actualIndex)
             reminder.completed = cell.isCompleted()
             viewmodel.saveReminders()
 
@@ -39,18 +48,17 @@ extension MainReminderViewController: UIReminderCellDelegate {
             }
 
         case .delete:
-            viewmodel.deleteReminder(atIndexPath: indexPath)
-            tableView.beginUpdates()
-            tableView.deleteRows(at: [indexPath], with: .fade)
-            tableView.endUpdates()
-
             let reminder = viewmodel.getReminder(forIndexPath: indexPath)
             if !reminder.completed, let alarm = reminder.alarmDate as Date?, alarm < Date() {
                 UIApplication.shared.applicationIconBadgeNumber -= 1
             }
 
-        default:
-            break
+            viewmodel.deleteReminder(atIndexPath: indexPath)
+            tableView.beginUpdates()
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.endUpdates()
+
+
         }
     }
 }

@@ -70,7 +70,7 @@ extension MainReminderViewController {
             }
 
         default:
-            guard var rearrange = rearrange,
+            guard let rearrange = rearrange,
                   let snapshotView = rearrange.snapshotView,
                   let cell = rearrange.cell else {
                 return

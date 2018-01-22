@@ -26,6 +26,8 @@ class UIReminderFooterView: UITableViewHeaderFooterView {
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = UIColor.white
+        containerView.backgroundColor = UIColor.white
         containerView.addTarget(self, action: #selector(returnTapped), for: .touchUpInside)
         returnImage.image = #imageLiteral(resourceName: "TestIcon")
 

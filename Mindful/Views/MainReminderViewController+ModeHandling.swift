@@ -10,9 +10,16 @@ import Foundation
 
 extension MainReminderViewController {
     func closeReminder() {
+        print("closingreminder")
         view.endEditing(true)
         if let selectedIndex = indices.getSelected() {
             tableView.deselectRow(at: selectedIndex, animated: true)
+        }
+
+        if mode.creatingReminder {
+            indices.clearSelected()
+            mode.creatingReminder = false
+            return
         }
 
         closeReminderAction()
@@ -21,20 +28,21 @@ extension MainReminderViewController {
               let categoryCell = tableView.cellForRow(at: categoryIndex) as? UICategoryCell else {
             return
         }
+
+        print("closing cat")
         categoryCell.animateHideCategories(withSubreminder: true)
 
         indices.clearSelected()
-        mode.action = .none
-
         tableView.beginUpdates()
         tableView.deleteRows(at: [categoryIndex], with: .automatic)
         tableView.endUpdates()
     }
 
     func closeReminderAction() {
-        if mode.action == .none {
+        guard let actionIndex = indices.getAction() else {
             return
         }
+        print("closing action")
 
         if mode.action == .edit {
             guard let selectedIndex = indices.getSelected(),
@@ -55,11 +63,9 @@ extension MainReminderViewController {
             navigationItem.title = .subreminderTitle
         }
 
+        indices.clearAction()
         tableView.beginUpdates()
-        if let actionIndex = indices.getAction() {
-            tableView.deleteRows(at: [actionIndex], with: .automatic)
-            indices.clearAction()
-        }
+        tableView.deleteRows(at: [actionIndex], with: .automatic)
         tableView.endUpdates()
     }
 }

@@ -45,8 +45,6 @@ class UIReminderView: UIView {
         completeDeleteButton.addTarget(self, action: #selector(completeDeleteButtonPressed), for: .touchUpInside)
         completeDeleteButton.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
 
-//completeDeleteButton.backgroundColor = UIColor.blue
-
         rearrangeIcon.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
         subreminderIcon.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: UILayoutConstraintAxis.horizontal)
         
@@ -54,12 +52,13 @@ class UIReminderView: UIView {
         infoStackView.alignment = .leading
         infoStackView.distribution = .fill
         infoStackView.spacing = 3.0
-        infoStackView.setContentHuggingPriority(UILayoutPriority.defaultLow, for: UILayoutConstraintAxis.horizontal)
-        
+        infoStackView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
         titleTextView.textColor = .textColor
         titleTextView.isScrollEnabled = false
         titleTextView.isUserInteractionEnabled = false
         titleTextView.font = UIFont.systemFont(ofSize: .reminderTextSize)
+
         titleTextView.textContainerInset = UIEdgeInsets.zero
         titleTextView.textContainer.lineFragmentPadding = 0.0
         titleTextView.layer.masksToBounds = false
@@ -79,6 +78,7 @@ class UIReminderView: UIView {
         detailLabel.isHidden = true
         detailLabel.textColor = .textSecondaryColor
         detailLabel.font = UIFont.systemFont(ofSize: .textSecondarySize)
+        detailLabel.numberOfLines = 3
 
         rearrangeIcon.image = #imageLiteral(resourceName: "RearrangeIcon")
         rearrangeIcon.isHidden = true
@@ -120,9 +120,7 @@ class UIReminderView: UIView {
     }
 
     @objc func completeDeleteButtonPressed() {
-        if filterMode {
-
-        } else {
+        if !filterMode {
             completeDeleteButton.isSelected = !completeDeleteButton.isSelected
         }
 
@@ -133,9 +131,8 @@ class UIReminderView: UIView {
         completeDeleteButton.isSelected = reminder.completed
         titleTextView.text = reminder.title
 
-        if let date = reminder.alarmDate as Date? {
-            setAlarmText(text: date.getText())
-        }
+        let date = (reminder.alarmDate as Date?)?.getText() ?? ""
+        setAlarmText(text: date)
         setDetailText(text: reminder.detail)
 
         subreminderIcon.isHidden = !reminder.hasSubreminders()
@@ -150,8 +147,6 @@ class UIReminderView: UIView {
     func changeFilterMode(_ filtering: Bool) {
         filterMode = filtering
         if filterMode {
-            completeDeleteButton.isSelected = false
-
             if rearrangeIcon.isHidden {
                 UIView.animate(withDuration: .animateSubtle, animations: {
                     self.rearrangeIcon.isHidden = false
@@ -203,6 +198,7 @@ class UIReminderView: UIView {
         if titleUnderline.isHidden == !editMode {
             return
         }
+        print("Showing edit mode:", isEditing)
         UIView.animate(withDuration: .animateSubtle, animations: {
             self.titleUnderline.isHidden = self.editMode ? false : true
             self.alarmLabel.isHidden = self.editMode ? true : false
@@ -214,7 +210,7 @@ class UIReminderView: UIView {
         if filterMode {
             completeDeleteButton.type = .reminder(type: .delete)
             completeDeleteButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .normal)
-            completeDeleteButton.setImage(nil, for: .selected)
+            completeDeleteButton.setImage(#imageLiteral(resourceName: "DeleteIcon"), for: .selected)
         } else {
             completeDeleteButton.type = .reminder(type: .complete)
             completeDeleteButton.setImage(#imageLiteral(resourceName: "CompleteIndicator"), for: .normal)

@@ -9,6 +9,7 @@
 import UIKit
 
 protocol UIEditCellTextDelegate: class {
+    func detailTextDidChange()
     func detailTextDidEndEditing(_ cell: UIEditCell)
 }
 
@@ -75,6 +76,10 @@ class UIEditCell: UITableViewCell {
 }
 
 extension UIEditCell: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        textDelegate?.detailTextDidChange()
+    }
+
     func textViewDidEndEditing(_ textView: UITextView) {
         textDelegate?.detailTextDidEndEditing(self)
     }

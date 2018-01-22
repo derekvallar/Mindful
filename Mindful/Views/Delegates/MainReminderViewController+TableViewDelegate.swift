@@ -146,7 +146,13 @@ extension MainReminderViewController {
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
         }
 
-        indices.setSelected(to: indexPath)
+        if mode.creatingReminder {
+            indices.setSelected(to: indexPath, withCategory: false)
+            return
+        } else {
+            indices.setSelected(to: indexPath, withCategory: true)
+        }
+
         guard let categoryIndex = indices.getCategory() else {
             return
         }

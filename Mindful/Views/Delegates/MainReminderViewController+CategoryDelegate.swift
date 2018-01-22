@@ -94,7 +94,6 @@ extension MainReminderViewController: UICategoryCellDelegate {
         }
         tableView.insertRows(at: [actionIndex], with: .automatic)
         tableView.endUpdates()
-        scrollIndexToMiddleIfNeeded(indices.getAction())
     }
 }
 
